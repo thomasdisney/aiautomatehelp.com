@@ -13,11 +13,7 @@ export default function Home() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const subject = encodeURIComponent(`New inquiry from ${formData.name} - ${formData.company}`);
-    const body = encodeURIComponent(
-      `Name: ${formData.name}\nEmail: ${formData.email}\nCompany: ${formData.company}\n\nMessage:\n${formData.message}`
-    );
-    window.location.href = `mailto:thomasdisney7@gmail.com?subject=${subject}&body=${body}`;
+    // Never mailto a person. Persist will own intake; do not leak operator contact.
     setFormSubmitted(true);
   };
 
@@ -529,8 +525,8 @@ export default function Home() {
             <div className="mb-6 md:mb-0">
               <div className="text-2xl font-bold mb-2">AutomateAI</div>
               <p className="text-gray-400">
-                <a href="mailto:thomasdisney7@gmail.com" className="hover:text-white transition-colors">
-                  thomasdisney7@gmail.com
+                <a href="#contact" className="hover:text-white transition-colors">
+                  Support via this site
                 </a>
               </p>
             </div>
