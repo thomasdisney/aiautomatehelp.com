@@ -25,7 +25,7 @@ const STEPS = [
   {
     n: "02",
     title: "Quote",
-    body: "I reply yes or no. If yes, you get a written scope, a fixed price, and a delivery date.",
+    body: "I reply yes or no on the status page. I may ask a follow-up there first. If yes, you get a written scope, a fixed price, and a delivery date.",
   },
   {
     n: "03",
@@ -222,7 +222,7 @@ export default function Home() {
             <h2 className="font-serif text-3xl text-ink">How to start</h2>
             <ol className="mt-6 list-decimal space-y-3 pl-5 leading-relaxed text-ink/70">
               <li>Name one workflow: trigger, tools, done-when.</li>
-              <li>I reply with yes or no and a fixed quote.</li>
+              <li>I reply on the status page with yes or no and a fixed quote. I may ask a follow-up there first.</li>
               <li>If you accept on the status page, you pay the quoted amount there. Then I build.</li>
             </ol>
             <p className="mt-6 leading-relaxed text-ink/70">

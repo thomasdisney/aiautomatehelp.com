@@ -34,7 +34,7 @@ const ERRORS: Record<string, string> = {
 };
 
 const STATUS_COPY: Record<string, string> = {
-  received: "I have the brief. A yes or no and, if yes, a fixed quote will show here.",
+  received: "I have the brief. I may ask a follow-up here. A yes or no and, if yes, a fixed quote will show here.",
   quoted: "This is a fixed quote for the scope I understood, with a delivery date. After you accept, you pay that amount here before I start.",
   declined: "I am not taking this job.",
   accepted: "You accepted this quote. The price and delivery date stay as written. You can still turn it down until it is paid. I will not start until it is paid.",

@@ -45,6 +45,7 @@ export type OpsQueue = {
   attention: number;
   last: OpsEvent | null;
   needs: OpsWorkItem[];
+  waiting: OpsWorkItem[];
 };
 
 export function opsLastPath(): string {
@@ -111,6 +112,7 @@ export function emptyQueue(last: OpsEvent | null = null): OpsQueue {
     attention: 0,
     last,
     needs: [],
+    waiting: [],
   };
 }
 
@@ -133,8 +135,23 @@ export function hasOpenQuestion(record: IntakeRecord): boolean {
   return record.updateAt < record.customerReplyAt;
 }
 
+export function hasPublicOperatorUpdate(record: IntakeRecord): boolean {
+  const thread = hydrateThread(record);
+  if (thread.length) {
+    return thread.some((entry) => entry.role === "operator");
+  }
+  return Boolean(record.updateText);
+}
+
+export function isWaitingOnCustomer(record: IntakeRecord): boolean {
+  if (record.status !== "received") return false;
+  if (hasOpenQuestion(record)) return false;
+  return hasPublicOperatorUpdate(record);
+}
+
 export function toWorkItem(record: IntakeRecord): OpsWorkItem | null {
   const open = hasOpenQuestion(record);
+  if (isWaitingOnCustomer(record)) return null;
   const waiting =
     record.status === "received" || record.status === "accepted" || record.status === "paid";
   if (!open && !waiting) return null;
@@ -156,6 +173,17 @@ export function toWorkItem(record: IntakeRecord): OpsWorkItem | null {
   };
 }
 
+export function toWaitingItem(record: IntakeRecord): OpsWorkItem | null {
+  if (!isWaitingOnCustomer(record)) return null;
+  const at = record.updateAt || record.receivedAt;
+  return {
+    id: record.id,
+    status: record.status,
+    event: "received",
+    at: at.slice(0, 40),
+  };
+}
+
 export function summarizeQueue(records: IntakeRecord[], last: OpsEvent | null): OpsQueue {
   const queue = emptyQueue(last);
   for (const record of records) {
@@ -163,6 +191,8 @@ export function summarizeQueue(records: IntakeRecord[], last: OpsEvent | null): 
     if (hasOpenQuestion(record)) queue.questions += 1;
     const item = toWorkItem(record);
     if (item) queue.needs.push(item);
+    const waiting = toWaitingItem(record);
+    if (waiting) queue.waiting.push(waiting);
   }
   queue.attention = queue.needs.length;
   return queue;

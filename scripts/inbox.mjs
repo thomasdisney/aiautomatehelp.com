@@ -55,6 +55,7 @@ if (cmd === "queue") {
   console.log(`questions ${queue.questions}`);
   console.log(`declined ${queue.declined}`);
   console.log(`withdrawn ${queue.withdrawn}`);
+  console.log(`waiting ${(queue.waiting ?? []).length}`);
   if (queue.last) {
     console.log(`last ${queue.last.event} ${queue.last.id} ${queue.last.status} ${queue.last.at}`);
   } else {
@@ -62,6 +63,9 @@ if (cmd === "queue") {
   }
   for (const item of queue.needs ?? []) {
     console.log(`need ${item.event} ${item.id} ${item.status} ${item.at}`);
+  }
+  for (const item of queue.waiting ?? []) {
+    console.log(`wait ${item.event} ${item.id} ${item.status} ${item.at}`);
   }
   process.exit(0);
 }
