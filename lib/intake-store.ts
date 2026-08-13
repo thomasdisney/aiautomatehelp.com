@@ -7,6 +7,7 @@ import {
   type IntakeFields,
   type IntakeRecord,
 } from "@/lib/intake";
+import { applyCustomerAction, emailsMatch, type CustomerDecision } from "@/lib/status";
 
 export {
   detectIntakeBackend,
@@ -103,6 +104,24 @@ async function persistDir(record: IntakeRecord, dir: string): Promise<boolean> {
     mode: 0o600,
   });
   return true;
+}
+
+export async function replyToIntake(
+  id: string,
+  email: string,
+  action: { decision: CustomerDecision; note: string },
+): Promise<
+  | { ok: true; record: IntakeRecord }
+  | { ok: false; error: "not_found" | "not_allowed" | "store" }
+> {
+  const current = await getIntake(id);
+  if (!current || !emailsMatch(current.email, email)) {
+    return { ok: false, error: "not_found" };
+  }
+  const applied = applyCustomerAction(current, action, new Date().toISOString());
+  if (!applied.ok) return applied;
+  const stored = await saveIntake(applied.record);
+  return stored ? { ok: true, record: applied.record } : { ok: false, error: "store" };
 }
 
 export async function persistIntake(

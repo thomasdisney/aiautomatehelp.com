@@ -223,7 +223,7 @@ export default function Home() {
             <ol className="mt-6 list-decimal space-y-3 pl-5 leading-relaxed text-ink/70">
               <li>Name one workflow: trigger, tools, done-when.</li>
               <li>I reply with yes or no and a fixed quote.</li>
-              <li>If you accept, you pay first. Then I build.</li>
+              <li>If you accept on the status page, you pay first. Then I build.</li>
             </ol>
             <p className="mt-6 leading-relaxed text-ink/70">
               There is no personal email, phone number, or calendar on this site.

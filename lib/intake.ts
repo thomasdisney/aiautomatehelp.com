@@ -4,9 +4,16 @@ export const FIELD_LIMITS = {
   company: 120,
   message: 4000,
   quoteText: 500,
+  customerReply: 2000,
 } as const;
 
-export const INTAKE_STATUSES = ["received", "quoted", "declined"] as const;
+export const INTAKE_STATUSES = [
+  "received",
+  "quoted",
+  "declined",
+  "accepted",
+  "withdrawn",
+] as const;
 export type IntakeStatus = (typeof INTAKE_STATUSES)[number];
 
 const CONTROL_CHARS = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g;
@@ -56,6 +63,8 @@ export type IntakeRecord = IntakeFields & {
   receivedAt: string;
   status: IntakeStatus;
   quoteText: string;
+  customerReply: string;
+  customerReplyAt: string;
 };
 
 export function parseIntakeStatus(value: unknown): IntakeStatus | null {
@@ -95,13 +104,20 @@ export function toIntakeRecord(
   id: string,
   data: IntakeFields,
   receivedAt: string,
-  extras: { status?: IntakeStatus; quoteText?: string } = {},
+  extras: {
+    status?: IntakeStatus;
+    quoteText?: string;
+    customerReply?: string;
+    customerReplyAt?: string;
+  } = {},
 ): IntakeRecord {
   return {
     id,
     receivedAt,
     status: extras.status ?? "received",
     quoteText: extras.quoteText ?? "",
+    customerReply: extras.customerReply ?? "",
+    customerReplyAt: extras.customerReplyAt ?? "",
     name: data.name,
     email: data.email,
     company: data.company,
@@ -130,10 +146,13 @@ export function parseIntakeRecord(raw: string): IntakeRecord | null {
   }
   const status = parseIntakeStatus(row.status) ?? "received";
   const quoteText = sanitizeText(row.quoteText, FIELD_LIMITS.quoteText);
+  const customerReply = sanitizeText(row.customerReply, FIELD_LIMITS.customerReply);
+  const customerReplyAt =
+    typeof row.customerReplyAt === "string" ? row.customerReplyAt.slice(0, 40) : "";
   return toIntakeRecord(
     id,
     { name, email, company, message },
     receivedAt.slice(0, 40),
-    { status, quoteText },
+    { status, quoteText, customerReply, customerReplyAt },
   );
 }

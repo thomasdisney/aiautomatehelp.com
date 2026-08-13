@@ -14,7 +14,27 @@ export type PublicStatus = {
   status: IntakeRecord["status"];
   receivedAt: string;
   quoteText?: string;
+  customerReply?: string;
 };
+
+export const CUSTOMER_DECISIONS = ["accept", "decline", "question"] as const;
+export type CustomerDecision = (typeof CUSTOMER_DECISIONS)[number];
+
+export type CustomerActionParse =
+  | { ok: true; dropped: true }
+  | {
+      ok: true;
+      dropped: false;
+      id: string;
+      email: string;
+      decision: CustomerDecision;
+      note: string;
+    }
+  | { ok: false; error: "invalid" };
+
+export type ApplyCustomerAction =
+  | { ok: true; record: IntakeRecord }
+  | { ok: false; error: "not_allowed" };
 
 export type InboxPatch =
   | { ok: true; id: string; status: IntakeStatus; quoteText: string }
@@ -50,7 +70,67 @@ export function toPublicStatus(record: IntakeRecord): PublicStatus {
     receivedAt: record.receivedAt,
   };
   if (record.quoteText) view.quoteText = record.quoteText;
+  if (record.customerReply) view.customerReply = record.customerReply;
   return view;
+}
+
+export function parseCustomerAction(body: unknown): CustomerActionParse {
+  if (!body || typeof body !== "object") return { ok: false, error: "invalid" };
+  const raw = body as Record<string, unknown>;
+  const honeypot = typeof raw.website === "string" ? raw.website.trim() : "";
+  if (honeypot) return { ok: true, dropped: true };
+
+  const idRaw = typeof raw.id === "string" ? raw.id.trim().toLowerCase() : "";
+  const email = sanitizeText(raw.email, FIELD_LIMITS.email).toLowerCase();
+  const decisionRaw = typeof raw.decision === "string" ? raw.decision.trim() : "";
+  const note = sanitizeText(raw.note, FIELD_LIMITS.customerReply);
+  if (!intakeBlobPath(idRaw) || !isValidEmail(email)) {
+    return { ok: false, error: "invalid" };
+  }
+  if (!CUSTOMER_DECISIONS.includes(decisionRaw as CustomerDecision)) {
+    return { ok: false, error: "invalid" };
+  }
+  if (decisionRaw === "question" && !note) return { ok: false, error: "invalid" };
+  return {
+    ok: true,
+    dropped: false,
+    id: idRaw,
+    email,
+    decision: decisionRaw as CustomerDecision,
+    note,
+  };
+}
+
+export function applyCustomerAction(
+  record: IntakeRecord,
+  action: { decision: CustomerDecision; note: string },
+  now: string,
+): ApplyCustomerAction {
+  const stamp = now.slice(0, 40);
+  if (action.decision === "question") {
+    if (!action.note) return { ok: false, error: "not_allowed" };
+    return {
+      ok: true,
+      record: {
+        ...record,
+        customerReply: action.note,
+        customerReplyAt: stamp,
+      },
+    };
+  }
+
+  if (record.status !== "quoted") return { ok: false, error: "not_allowed" };
+
+  const nextStatus = action.decision === "accept" ? "accepted" : "withdrawn";
+  return {
+    ok: true,
+    record: {
+      ...record,
+      status: nextStatus,
+      customerReply: action.note || record.customerReply,
+      customerReplyAt: action.note ? stamp : record.customerReplyAt,
+    },
+  };
 }
 
 export function parseInboxPatch(body: unknown): InboxPatch {

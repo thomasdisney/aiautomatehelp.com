@@ -56,6 +56,10 @@ if (cmd === "list") {
       console.log("quoteText");
       console.log(item.quoteText);
     }
+    if (item.customerReply) {
+      console.log("customerReply");
+      console.log(item.customerReply);
+    }
   }
   process.exit(0);
 }
