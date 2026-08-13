@@ -1,9 +1,16 @@
 import { NextResponse } from "next/server";
 import { bearerMatches, inboxReadToken } from "@/lib/inbox-auth";
 import { intakeBlobPath } from "@/lib/intake";
-import { deleteIntake, getOpsLastEvent, getOpsQueue, listIntake, updateIntake } from "@/lib/intake-store";
+import {
+  deleteIntake,
+  getIntake,
+  getOpsLastEvent,
+  getOpsQueue,
+  listIntake,
+  updateIntake,
+} from "@/lib/intake-store";
 import { summarizeQueue } from "@/lib/ops-queue";
-import { parseInboxPatch, toPublicStatus } from "@/lib/status";
+import { parseInboxId, parseInboxPatch, toPublicStatus } from "@/lib/status";
 
 const WINDOW_MS = 60 * 60 * 1000;
 const MAX_PER_WINDOW = 30;
@@ -45,6 +52,26 @@ export async function GET(request: Request) {
   if (!authorize(request)) return unauthorized();
 
   const url = new URL(request.url);
+  const requestedId = parseInboxId(url.searchParams.get("id"));
+  if (url.searchParams.has("id") && !requestedId) {
+    return NextResponse.json(
+      { ok: false, code: "invalid" },
+      { status: 400, headers: { "cache-control": "no-store" } },
+    );
+  }
+  if (requestedId) {
+    const item = await getIntake(requestedId);
+    if (!item) {
+      return NextResponse.json(
+        { ok: false, code: "not_found" },
+        { status: 404, headers: { "cache-control": "no-store" } },
+      );
+    }
+    return NextResponse.json(
+      { ok: true, item },
+      { headers: { "cache-control": "no-store" } },
+    );
+  }
   const queueOnly = url.searchParams.get("view") === "queue";
   if (queueOnly) {
     const queue = await getOpsQueue();

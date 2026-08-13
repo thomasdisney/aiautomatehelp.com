@@ -25,6 +25,13 @@ export type OpsEvent = {
   at: string;
 };
 
+export type OpsWorkItem = {
+  id: string;
+  status: IntakeStatus;
+  event: OpsEventType;
+  at: string;
+};
+
 export type OpsQueue = {
   received: number;
   quoted: number;
@@ -36,6 +43,7 @@ export type OpsQueue = {
   questions: number;
   attention: number;
   last: OpsEvent | null;
+  needs: OpsWorkItem[];
 };
 
 export function opsLastPath(): string {
@@ -101,6 +109,37 @@ export function emptyQueue(last: OpsEvent | null = null): OpsQueue {
     questions: 0,
     attention: 0,
     last,
+    needs: [],
+  };
+}
+
+export function hasOpenQuestion(record: IntakeRecord): boolean {
+  if (!record.customerReply) return false;
+  if (!record.updateAt) return true;
+  if (!record.customerReplyAt) return true;
+  return record.updateAt < record.customerReplyAt;
+}
+
+export function toWorkItem(record: IntakeRecord): OpsWorkItem | null {
+  const open = hasOpenQuestion(record);
+  const waiting =
+    record.status === "received" || record.status === "accepted" || record.status === "paid";
+  if (!open && !waiting) return null;
+
+  const event: OpsEventType = open ? "question" : eventFromStatus(record.status);
+  const at =
+    event === "question"
+      ? record.customerReplyAt || record.receivedAt
+      : record.status === "paid"
+        ? record.paidAt || record.receivedAt
+        : record.status === "accepted"
+          ? record.customerReplyAt || record.receivedAt
+          : record.receivedAt;
+  return {
+    id: record.id,
+    status: record.status,
+    event,
+    at: at.slice(0, 40),
   };
 }
 
@@ -108,15 +147,11 @@ export function summarizeQueue(records: IntakeRecord[], last: OpsEvent | null): 
   const queue = emptyQueue(last);
   for (const record of records) {
     queue[record.status] += 1;
-    if (
-      record.customerReply &&
-      record.status === "quoted" &&
-      (!record.updateAt || record.updateAt < record.customerReplyAt)
-    ) {
-      queue.questions += 1;
-    }
+    if (hasOpenQuestion(record)) queue.questions += 1;
+    const item = toWorkItem(record);
+    if (item) queue.needs.push(item);
   }
-  queue.attention = queue.received + queue.questions + queue.accepted + queue.paid;
+  queue.attention = queue.needs.length;
   return queue;
 }
 

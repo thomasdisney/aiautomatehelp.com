@@ -59,6 +59,11 @@ export type StatusLookup =
   | { ok: true; dropped: false; id: string; email: string }
   | { ok: false; error: "invalid" };
 
+export function parseInboxId(value: unknown): string | null {
+  const id = typeof value === "string" ? value.trim().toLowerCase() : "";
+  return intakeBlobPath(id) ? id : null;
+}
+
 export function parseStatusLookup(body: unknown): StatusLookup {
   if (!body || typeof body !== "object") return { ok: false, error: "invalid" };
   const raw = body as Record<string, unknown>;
