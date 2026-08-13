@@ -21,8 +21,9 @@ export default function PrivacyPage() {
       </p>
       <p className="mt-3 leading-relaxed text-ink/70">
         When the inbox is live, a brief includes name, email, optional company,
-        and the job description. I store only what I need to quote and deliver
-        that job.
+        and the job description. I store that in a private inbox on this site
+        so I can quote and deliver the job. It is not emailed to a personal
+        inbox.
       </p>
       <h2 className="mt-10 text-xl font-semibold text-ink">How I treat that text</h2>
       <p className="mt-3 leading-relaxed text-ink/70">

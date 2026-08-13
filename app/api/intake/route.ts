@@ -25,7 +25,10 @@ function allowRequest(ip: string): boolean {
 }
 
 export function GET() {
-  return NextResponse.json({ connected: intakeStoreConfigured() });
+  return NextResponse.json(
+    { connected: intakeStoreConfigured() },
+    { headers: { "cache-control": "no-store" } },
+  );
 }
 
 export async function POST(request: Request) {

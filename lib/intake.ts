@@ -44,3 +44,68 @@ export function parseIntake(body: unknown): IntakeParse {
   if (!isValidEmail(email)) return { ok: false, error: "email" };
   return { ok: true, dropped: false, data: { name, email, company, message } };
 }
+
+export type IntakeBackend = "blob" | "webhook" | "dir" | "none";
+
+export type IntakeRecord = IntakeFields & {
+  id: string;
+  receivedAt: string;
+  status: "received";
+};
+
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+export function detectIntakeBackend(
+  env: Record<string, string | undefined> = process.env,
+): IntakeBackend {
+  if (env.BLOB_READ_WRITE_TOKEN || (env.BLOB_STORE_ID && env.VERCEL_OIDC_TOKEN)) {
+    return "blob";
+  }
+  if (env.INTAKE_WEBHOOK_URL) return "webhook";
+  if (env.INTAKE_DIR) return "dir";
+  return "none";
+}
+
+export function intakeBlobPath(id: string): string | null {
+  if (!UUID_RE.test(id)) return null;
+  return `intake/${id}.json`;
+}
+
+export function toIntakeRecord(
+  id: string,
+  data: IntakeFields,
+  receivedAt: string,
+): IntakeRecord {
+  return {
+    id,
+    receivedAt,
+    status: "received",
+    name: data.name,
+    email: data.email,
+    company: data.company,
+    message: data.message,
+  };
+}
+
+export function parseIntakeRecord(raw: string): IntakeRecord | null {
+  let value: unknown;
+  try {
+    value = JSON.parse(raw);
+  } catch {
+    return null;
+  }
+  if (!value || typeof value !== "object") return null;
+  const row = value as Record<string, unknown>;
+  const id = typeof row.id === "string" ? row.id : "";
+  if (!intakeBlobPath(id)) return null;
+  const name = sanitizeText(row.name, FIELD_LIMITS.name);
+  const email = sanitizeText(row.email, FIELD_LIMITS.email);
+  const company = sanitizeText(row.company, FIELD_LIMITS.company);
+  const message = sanitizeText(row.message, FIELD_LIMITS.message);
+  const receivedAt = typeof row.receivedAt === "string" ? row.receivedAt : "";
+  if (!name || !email || !message || !receivedAt || !isValidEmail(email)) {
+    return null;
+  }
+  return toIntakeRecord(id, { name, email, company, message }, receivedAt.slice(0, 40));
+}

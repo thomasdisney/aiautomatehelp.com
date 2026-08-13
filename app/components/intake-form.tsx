@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { FIELD_LIMITS } from "@/lib/intake";
 
 type Status =
@@ -18,9 +18,37 @@ const ERRORS: Record<string, string> = {
 };
 
 export function IntakeForm({ connected }: { connected: boolean }) {
+  const [live, setLive] = useState<boolean | null>(connected ? true : null);
   const [status, setStatus] = useState<Status>({ kind: "idle" });
 
-  if (!connected) {
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/intake", { cache: "no-store" })
+      .then((res) => res.json() as Promise<{ connected?: boolean }>)
+      .then((json) => {
+        if (!cancelled) setLive(Boolean(json.connected));
+      })
+      .catch(() => {
+        if (!cancelled) setLive(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (live === null) {
+    return (
+      <div className="rounded-2xl border border-ink/10 bg-white p-6 sm:p-8" role="status">
+        <p className="text-sm font-medium uppercase tracking-wide text-ink/50">Inbox status</p>
+        <p className="mt-3 text-lg font-semibold text-ink">Checking the inbox…</p>
+        <p className="mt-3 leading-relaxed text-ink/70">
+          I will not show a send button until I know a brief can be stored here.
+        </p>
+      </div>
+    );
+  }
+
+  if (!live) {
     return (
       <div className="rounded-2xl border border-ink/10 bg-white p-6 sm:p-8">
         <p className="text-sm font-medium uppercase tracking-wide text-ink/50">Inbox status</p>
