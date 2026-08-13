@@ -36,9 +36,9 @@ const ERRORS: Record<string, string> = {
 
 const STATUS_COPY: Record<string, string> = {
   received: "I have the brief. I may ask a follow-up here. A yes or no and, if yes, a fixed quote will show here.",
-  quoted: "This is a fixed quote for the scope I understood, with a delivery date and a done-when test. Accepting agrees to that test, price, and date. After you accept, you pay that amount here before I start.",
+  quoted: "This is a fixed quote for the scope I understood, with a delivery date and a done-when test. Accepting agrees to that price, date, and test together. After you accept, you pay that amount here before I start.",
   declined: "I am not taking this job.",
-  accepted: "You accepted this quote, including the done-when test. The price, date, and test stay as written. You can still turn it down until it is paid. I will not start until it is paid.",
+  accepted: "You accepted this quote, including the price, date, and done-when test. Those terms stay as written. You can still turn it down until it is paid. I will not start until it is paid.",
   withdrawn: "You turned those terms down. They stay closed. If I post a new quote here, you can accept that one. Or send a new brief.",
   paid: "Paid. I will start the written scope. Check here for the handoff.",
   delivered: "Handed off. The note below is how it runs. Ask here if something in that scope is broken.",
@@ -157,7 +157,16 @@ export function StatusForm({
           email: result.email,
           decision,
           note,
-          ...(decision === "accept" && result.doneWhen ? { doneWhen: result.doneWhen } : {}),
+          ...(decision === "accept" &&
+          result.doneWhen &&
+          result.amountCents &&
+          result.dueAt
+            ? {
+                doneWhen: result.doneWhen,
+                amountCents: result.amountCents,
+                dueAt: result.dueAt,
+              }
+            : {}),
         }),
       });
       const json = (await res.json()) as {
@@ -334,6 +343,8 @@ export function StatusForm({
           <ReplyPanel
             quoted={result.status === "quoted"}
             accepted={result.status === "accepted"}
+            amountCents={result.amountCents}
+            dueAt={result.dueAt}
             doneWhen={result.doneWhen}
             busy={replyBusy}
             error={replyError}
@@ -427,6 +438,8 @@ function PayPanel({
 function ReplyPanel({
   quoted,
   accepted,
+  amountCents,
+  dueAt,
   doneWhen,
   busy,
   error,
@@ -434,21 +447,24 @@ function ReplyPanel({
 }: {
   quoted: boolean;
   accepted: boolean;
+  amountCents?: number;
+  dueAt?: string;
   doneWhen?: string;
   busy: boolean;
   error: string;
   onSend: (decision: "accept" | "decline" | "question", note: string) => Promise<boolean>;
 }) {
   const [note, setNote] = useState("");
-  const [ackDoneWhen, setAckDoneWhen] = useState(false);
+  const [ackTerms, setAckTerms] = useState(false);
   const canDecline = quoted || accepted;
-  const canAccept = quoted && Boolean(doneWhen) && ackDoneWhen;
+  const canAccept =
+    quoted && Boolean(doneWhen) && Boolean(amountCents) && Boolean(dueAt) && ackTerms;
 
   async function submit(decision: "accept" | "decline" | "question") {
     const saved = await onSend(decision, note);
     if (saved) {
       setNote("");
-      setAckDoneWhen(false);
+      setAckTerms(false);
     }
   }
 
@@ -457,7 +473,7 @@ function ReplyPanel({
       <p className="text-sm font-medium text-ink">Reply on this brief</p>
       <p className="text-sm leading-relaxed text-ink/60">
         {quoted
-          ? "Accept, turn it down, or ask a question here. Accepting agrees to the done-when test, price, and date. Notes stay on this page in order. After you accept, payment is the stored amount only. You can still turn it down until it is paid."
+          ? "Accept, turn it down, or ask a question here. Accepting agrees to the stored price, date, and done-when test together. Notes stay on this page in order. After you accept, payment is the stored amount only. You can still turn it down until it is paid."
           : accepted
             ? "You can still turn this quote down until it is paid. Ask a question here. Notes stay on this page in order. There is no personal inbox."
             : "Ask a question about this brief here. Notes stay on this page in order. There is no personal inbox."}
@@ -477,15 +493,18 @@ function ReplyPanel({
           className="mt-1.5 w-full resize-y rounded-lg border border-ink/15 px-3 py-2.5 outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
         />
       </div>
-      {quoted && doneWhen ? (
+      {quoted && doneWhen && amountCents && dueAt ? (
         <label className="flex items-start gap-3 text-sm leading-relaxed text-ink">
           <input
             type="checkbox"
             className="mt-1"
-            checked={ackDoneWhen}
-            onChange={(event) => setAckDoneWhen(event.target.checked)}
+            checked={ackTerms}
+            onChange={(event) => setAckTerms(event.target.checked)}
           />
-          <span>I accept that this job is done when {doneWhen}</span>
+          <span>
+            I accept {formatUsd(amountCents)}, delivery by {formatDueAt(dueAt) || dueAt},
+            and that this job is done when {doneWhen}
+          </span>
         </label>
       ) : null}
       {error ? (

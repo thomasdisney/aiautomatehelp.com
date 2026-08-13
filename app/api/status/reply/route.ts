@@ -53,6 +53,8 @@ export async function POST(request: Request) {
     decision: parsed.decision,
     note: parsed.note,
     doneWhen: parsed.decision === "accept" ? parsed.doneWhen : undefined,
+    amountCents: parsed.decision === "accept" ? parsed.amountCents : undefined,
+    dueAt: parsed.decision === "accept" ? parsed.dueAt : undefined,
   });
   if (!updated.ok) {
     const status =

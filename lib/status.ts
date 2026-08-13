@@ -49,6 +49,8 @@ export type CustomerActionParse =
       decision: "accept";
       note: string;
       doneWhen: string;
+      amountCents: number;
+      dueAt: string;
     }
   | { ok: false; error: "invalid" };
 
@@ -139,6 +141,9 @@ export function parseCustomerAction(body: unknown): CustomerActionParse {
   if (decisionRaw === "question" && !note) return { ok: false, error: "invalid" };
   if (decisionRaw === "accept") {
     if (!doneWhen) return { ok: false, error: "invalid" };
+    const amountCents = parseAmountCents(raw.amountCents);
+    const dueAt = parseDueAt(raw.dueAt);
+    if (amountCents === null || !dueAt) return { ok: false, error: "invalid" };
     return {
       ok: true,
       dropped: false,
@@ -147,6 +152,8 @@ export function parseCustomerAction(body: unknown): CustomerActionParse {
       decision: "accept",
       note,
       doneWhen,
+      amountCents,
+      dueAt,
     };
   }
   return {
@@ -165,9 +172,27 @@ export function doneWhenMatches(offered: string, accepted: string): boolean {
   return Boolean(left) && left === right;
 }
 
+export function quoteTermsMatch(
+  record: { amountCents: number; dueAt: string; doneWhen: string },
+  action: { amountCents?: number; dueAt?: string; doneWhen?: string },
+): boolean {
+  if (!doneWhenMatches(record.doneWhen, action.doneWhen ?? "")) return false;
+  const amount = parseAmountCents(action.amountCents);
+  if (amount === null || amount !== record.amountCents) return false;
+  const dueAt = parseDueAt(action.dueAt ?? "");
+  const storedDue = parseDueAt(record.dueAt);
+  return Boolean(dueAt && storedDue && dueAt === storedDue);
+}
+
 export function applyCustomerAction(
   record: IntakeRecord,
-  action: { decision: CustomerDecision; note: string; doneWhen?: string },
+  action: {
+    decision: CustomerDecision;
+    note: string;
+    doneWhen?: string;
+    amountCents?: number;
+    dueAt?: string;
+  },
   now: string,
 ): ApplyCustomerAction {
   const stamp = now.slice(0, 40);
@@ -204,7 +229,7 @@ export function applyCustomerAction(
   }
 
   if (record.status !== "quoted") return { ok: false, error: "not_allowed" };
-  if (!doneWhenMatches(record.doneWhen, action.doneWhen ?? "")) {
+  if (!quoteTermsMatch(record, action)) {
     return { ok: false, error: "not_allowed" };
   }
 

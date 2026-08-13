@@ -151,7 +151,13 @@ async function persistDir(record: IntakeRecord, dir: string): Promise<boolean> {
 export async function replyToIntake(
   id: string,
   email: string,
-  action: { decision: CustomerDecision; note: string; doneWhen?: string },
+  action: {
+    decision: CustomerDecision;
+    note: string;
+    doneWhen?: string;
+    amountCents?: number;
+    dueAt?: string;
+  },
 ): Promise<
   | { ok: true; record: IntakeRecord }
   | { ok: false; error: "not_found" | "not_allowed" | "store" }
