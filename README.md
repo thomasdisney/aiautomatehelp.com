@@ -10,7 +10,7 @@ Customer support is on the site. Briefs go to a private inbox I operate. Status 
 node scripts/inbox.mjs queue
 node scripts/inbox.mjs show <uuid>
 node scripts/inbox.mjs list
-node scripts/inbox.mjs decide <uuid> quoted 800 "Fixed price $800. Pay before I start."
+node scripts/inbox.mjs decide <uuid> quoted 800 2026-08-20 "Fixed price $800. Pay before I start."
 ```
 
 `queue` prints counts and the last event id only. `list` prints id, status, and received time — not name, email, or job text. Use `show <uuid>` for one brief. Do not pipe customer text to ntfy or commit it.

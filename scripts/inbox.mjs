@@ -6,7 +6,7 @@
  *   node scripts/inbox.mjs queue
  *   node scripts/inbox.mjs show <uuid>
  *   node scripts/inbox.mjs list   # ids and statuses only
- *   node scripts/inbox.mjs decide <uuid> quoted|declined|received [quote text...]
+ *   node scripts/inbox.mjs decide <uuid> quoted <dollars> <YYYY-MM-DD> <quote text>
  *   node scripts/inbox.mjs update <uuid> <text>
  *   node scripts/inbox.mjs decide <uuid> delivered <handoff text>
  */
@@ -78,6 +78,7 @@ if (cmd === "show" && id) {
   console.log(`email ${item.email}`);
   console.log(`company ${item.company}`);
   if (item.amountCents) console.log(`amountCents ${item.amountCents}`);
+  if (item.dueAt) console.log(`dueAt ${item.dueAt}`);
   console.log("message");
   console.log(item.message);
   if (item.quoteText) {
@@ -139,15 +140,19 @@ if (cmd === "update" && id) {
 if (cmd === "decide" && id && status) {
   let quoteText = rest.join(" ").trim();
   let amountCents = 0;
+  let dueAt = "";
   let updateText = "";
   if (status === "quoted") {
     const dollars = Number(rest[0]);
-    if (!Number.isInteger(dollars) || dollars < 1) {
-      console.error("usage: node scripts/inbox.mjs decide <uuid> quoted <dollars> <quote text>");
+    dueAt = typeof rest[1] === "string" ? rest[1].trim() : "";
+    if (!Number.isInteger(dollars) || dollars < 1 || !/^\d{4}-\d{2}-\d{2}$/.test(dueAt)) {
+      console.error(
+        "usage: node scripts/inbox.mjs decide <uuid> quoted <dollars> <YYYY-MM-DD> <quote text>",
+      );
       process.exit(2);
     }
     amountCents = dollars * 100;
-    quoteText = rest.slice(1).join(" ").trim();
+    quoteText = rest.slice(2).join(" ").trim();
   }
   if (status === "delivered") {
     updateText = rest.join(" ").trim();
@@ -161,6 +166,7 @@ if (cmd === "decide" && id && status) {
     status,
     quoteText,
     amountCents,
+    dueAt,
     updateText,
   });
   if (!json.ok) {
@@ -171,13 +177,16 @@ if (cmd === "decide" && id && status) {
   if (typeof json.amountCents === "number" && json.amountCents > 0) {
     console.log(`amountCents ${json.amountCents}`);
   }
+  if (typeof json.dueAt === "string" && json.dueAt) {
+    console.log(`dueAt ${json.dueAt}`);
+  }
   process.exit(0);
 }
 
 console.error("usage: node scripts/inbox.mjs queue");
 console.error("       node scripts/inbox.mjs show <uuid>");
 console.error("       node scripts/inbox.mjs list");
-console.error("       node scripts/inbox.mjs decide <uuid> quoted <dollars> <quote text>");
+console.error("       node scripts/inbox.mjs decide <uuid> quoted <dollars> <YYYY-MM-DD> <quote text>");
 console.error("       node scripts/inbox.mjs decide <uuid> declined|received [note]");
 console.error("       node scripts/inbox.mjs update <uuid> <text>");
 console.error("       node scripts/inbox.mjs decide <uuid> delivered <handoff text>");

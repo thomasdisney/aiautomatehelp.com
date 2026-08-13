@@ -2,9 +2,11 @@ import { timingSafeEqualString } from "./inbox-auth.ts";
 import {
   FIELD_LIMITS,
   appendThread,
+  dueAtInRange,
   hydrateThread,
   intakeBlobPath,
   isValidEmail,
+  parseDueAt,
   parseIntakeStatus,
   sanitizeText,
   type IntakeRecord,
@@ -21,6 +23,7 @@ export type PublicStatus = {
   customerReply?: string;
   updateText?: string;
   amountCents?: number;
+  dueAt?: string;
   thread?: ThreadEntry[];
 };
 
@@ -50,6 +53,7 @@ export type InboxPatch =
       status: IntakeStatus | null;
       quoteText: string;
       amountCents: number;
+      dueAt: string;
       updateText: string;
     }
   | { ok: false; error: "invalid" };
@@ -96,6 +100,7 @@ export function toPublicStatus(record: IntakeRecord): PublicStatus {
   if (record.customerReply) view.customerReply = record.customerReply;
   if (record.updateText) view.updateText = record.updateText;
   if (record.amountCents > 0) view.amountCents = record.amountCents;
+  if (record.dueAt) view.dueAt = record.dueAt;
   const thread = hydrateThread(record);
   if (thread.length) view.thread = thread;
   return view;
@@ -183,7 +188,19 @@ export function parseInboxPatch(body: unknown): InboxPatch {
   if (status === "delivered" && !updateText) return { ok: false, error: "invalid" };
   const amountCents = status === "quoted" ? parseAmountCents(raw.amountCents) : 0;
   if (status === "quoted" && amountCents === null) return { ok: false, error: "invalid" };
-  return { ok: true, id, status, quoteText, amountCents: amountCents ?? 0, updateText };
+  const dueAt = status === "quoted" ? parseDueAt(raw.dueAt) : "";
+  if (status === "quoted" && (!dueAt || !dueAtInRange(dueAt))) {
+    return { ok: false, error: "invalid" };
+  }
+  return {
+    ok: true,
+    id,
+    status,
+    quoteText,
+    amountCents: amountCents ?? 0,
+    dueAt: dueAt || "",
+    updateText,
+  };
 }
 
 export function applyOperatorPatch(
@@ -192,6 +209,7 @@ export function applyOperatorPatch(
     status: IntakeStatus | null;
     quoteText: string;
     amountCents: number;
+    dueAt: string;
     updateText: string;
   },
   now: string,
@@ -215,6 +233,7 @@ export function applyOperatorPatch(
       status: nextStatus,
       quoteText: patch.status ? patch.quoteText : record.quoteText,
       amountCents: patch.status === "quoted" ? patch.amountCents : record.amountCents,
+      dueAt: patch.status === "quoted" ? patch.dueAt : record.dueAt,
       updateText: patch.updateText ? patch.updateText : record.updateText,
       updateAt: patch.updateText ? stamp : record.updateAt,
       thread: patch.updateText

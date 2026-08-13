@@ -116,6 +116,7 @@ export async function PATCH(request: Request) {
     status: parsed.status,
     quoteText: parsed.quoteText,
     amountCents: parsed.amountCents,
+    dueAt: parsed.dueAt,
     updateText: parsed.updateText,
   });
   if (!updated.ok) {

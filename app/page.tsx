@@ -25,7 +25,7 @@ const STEPS = [
   {
     n: "02",
     title: "Quote",
-    body: "I reply yes or no. If yes, you get a written scope and a fixed price.",
+    body: "I reply yes or no. If yes, you get a written scope, a fixed price, and a delivery date.",
   },
   {
     n: "03",

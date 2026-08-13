@@ -53,6 +53,52 @@ export function isValidEmail(email: string): boolean {
   return EMAIL_RE.test(email) && email.length <= FIELD_LIMITS.email;
 }
 
+export const MIN_DELIVERY_DAYS = 1;
+export const MAX_DELIVERY_DAYS = 90;
+const DUE_AT_RE = /^(\d{4})-(\d{2})-(\d{2})$/;
+
+export function parseDueAt(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const raw = value.trim();
+  const match = DUE_AT_RE.exec(raw);
+  if (!match) return null;
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  if (year < 2020 || year > 2100) return null;
+  const utc = new Date(Date.UTC(year, month - 1, day));
+  if (
+    utc.getUTCFullYear() !== year ||
+    utc.getUTCMonth() !== month - 1 ||
+    utc.getUTCDate() !== day
+  ) {
+    return null;
+  }
+  return raw;
+}
+
+export function utcDateString(now: Date = new Date()): string {
+  return now.toISOString().slice(0, 10);
+}
+
+export function addUtcDays(ymd: string, days: number): string | null {
+  const parsed = parseDueAt(ymd);
+  if (!parsed || !Number.isInteger(days)) return null;
+  const [year, month, day] = parsed.split("-").map(Number);
+  const utc = new Date(Date.UTC(year, month - 1, day + days));
+  return parseDueAt(utc.toISOString().slice(0, 10));
+}
+
+export function dueAtInRange(dueAt: string, now: Date = new Date()): boolean {
+  const parsed = parseDueAt(dueAt);
+  if (!parsed) return false;
+  const today = utcDateString(now);
+  const min = addUtcDays(today, MIN_DELIVERY_DAYS);
+  const max = addUtcDays(today, MAX_DELIVERY_DAYS);
+  if (!min || !max) return false;
+  return parsed >= min && parsed <= max;
+}
+
 export function parseIntake(body: unknown): IntakeParse {
   if (!body || typeof body !== "object") return { ok: false, error: "invalid" };
   const raw = body as Record<string, unknown>;
@@ -83,6 +129,7 @@ export type IntakeRecord = IntakeFields & {
   amountCents: number;
   paidAt: string;
   paymentRef: string;
+  dueAt: string;
   thread: ThreadEntry[];
 };
 
@@ -181,6 +228,7 @@ export function toIntakeRecord(
     amountCents?: number;
     paidAt?: string;
     paymentRef?: string;
+    dueAt?: string;
     thread?: ThreadEntry[];
   } = {},
 ): IntakeRecord {
@@ -196,6 +244,7 @@ export function toIntakeRecord(
     amountCents: extras.amountCents ?? 0,
     paidAt: extras.paidAt ?? "",
     paymentRef: extras.paymentRef ?? "",
+    dueAt: parseDueAt(extras.dueAt) ?? "",
     thread: parseThread(extras.thread),
     name: data.name,
     email: data.email,
@@ -240,6 +289,7 @@ export function parseIntakeRecord(raw: string): IntakeRecord | null {
   const paidAt = typeof row.paidAt === "string" ? row.paidAt.slice(0, 40) : "";
   const paymentRef =
     typeof row.paymentRef === "string" ? row.paymentRef.replace(/[^A-Za-z0-9_]/g, "").slice(0, 200) : "";
+  const dueAt = parseDueAt(row.dueAt) ?? "";
   const thread = parseThread(row.thread);
   return toIntakeRecord(
     id,
@@ -255,6 +305,7 @@ export function parseIntakeRecord(raw: string): IntakeRecord | null {
       amountCents,
       paidAt,
       paymentRef,
+      dueAt,
       thread,
     },
   );

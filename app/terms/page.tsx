@@ -14,9 +14,9 @@ export default function TermsPage() {
       </p>
       <h2 className="mt-10 text-xl font-semibold text-ink">The offer</h2>
       <p className="mt-3 leading-relaxed text-ink/70">
-        A quote is an offer for one written scope at a fixed price. Work starts
-        after payment. There is no monthly retainer on this site unless we later
-        agree to one in writing.
+        A quote is an offer for one written scope at a fixed price, with a
+        delivery date. Work starts after payment. There is no monthly retainer
+        on this site unless we later agree to one in writing.
       </p>
       <h2 className="mt-10 text-xl font-semibold text-ink">Scope</h2>
       <p className="mt-3 leading-relaxed text-ink/70">

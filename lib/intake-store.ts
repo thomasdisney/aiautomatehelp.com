@@ -75,6 +75,7 @@ export async function updateIntake(
     status: IntakeRecord["status"] | null;
     quoteText: string;
     amountCents: number;
+    dueAt: string;
     updateText: string;
   },
 ): Promise<UpdateIntakeResult> {

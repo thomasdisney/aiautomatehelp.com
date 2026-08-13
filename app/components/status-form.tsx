@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { FIELD_LIMITS, parseThread, type ThreadEntry } from "@/lib/intake";
+import { FIELD_LIMITS, parseDueAt, parseThread, type ThreadEntry } from "@/lib/intake";
 
 type Found = {
   kind: "found";
@@ -13,6 +13,7 @@ type Found = {
   customerReply?: string;
   updateText?: string;
   amountCents?: number;
+  dueAt?: string;
   thread: ThreadEntry[];
 };
 
@@ -34,7 +35,7 @@ const ERRORS: Record<string, string> = {
 
 const STATUS_COPY: Record<string, string> = {
   received: "I have the brief. A yes or no and, if yes, a fixed quote will show here.",
-  quoted: "This is a fixed quote for the scope I understood. After you accept, you pay that amount here before I start.",
+  quoted: "This is a fixed quote for the scope I understood, with a delivery date. After you accept, you pay that amount here before I start.",
   declined: "I am not taking this job.",
   accepted: "You accepted this quote. I will not start until it is paid.",
   withdrawn: "You turned down this quote. Send a new brief if you want a different job.",
@@ -46,6 +47,22 @@ function formatUsd(cents: number): string {
   return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(
     cents / 100,
   );
+}
+
+function formatDueAt(value: string): string {
+  const dueAt = parseDueAt(value);
+  if (!dueAt) return "";
+  const [year, month, day] = dueAt.split("-").map(Number);
+  return new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    timeZone: "UTC",
+  }).format(new Date(Date.UTC(year, month - 1, day)));
+}
+
+function readDueAt(value: unknown): string | undefined {
+  return parseDueAt(value) ?? undefined;
 }
 
 export function StatusForm({
@@ -86,6 +103,7 @@ export function StatusForm({
         customerReply?: string;
         updateText?: string;
         amountCents?: number;
+        dueAt?: unknown;
         thread?: unknown;
       };
       if (json.code === "not_found" || res.status === 404) {
@@ -109,6 +127,7 @@ export function StatusForm({
         customerReply: typeof json.customerReply === "string" ? json.customerReply : undefined,
         updateText: typeof json.updateText === "string" ? json.updateText : undefined,
         amountCents: typeof json.amountCents === "number" ? json.amountCents : undefined,
+        dueAt: readDueAt(json.dueAt),
         thread: parseThread(json.thread),
       });
     } catch {
@@ -147,6 +166,7 @@ export function StatusForm({
         customerReply?: string;
         updateText?: string;
         amountCents?: number;
+        dueAt?: unknown;
         thread?: unknown;
       };
       if (!res.ok || !json.ok || !json.id || !json.status || !json.receivedAt) {
@@ -165,6 +185,7 @@ export function StatusForm({
         customerReply: typeof json.customerReply === "string" ? json.customerReply : undefined,
         updateText: typeof json.updateText === "string" ? json.updateText : undefined,
         amountCents: typeof json.amountCents === "number" ? json.amountCents : result.amountCents,
+        dueAt: readDueAt(json.dueAt) ?? result.dueAt,
         thread: parseThread(json.thread),
       });
       return true;
@@ -251,6 +272,11 @@ export function StatusForm({
             </p>
             {result.amountCents ? (
               <p className="mt-4 text-lg font-semibold text-ink">{formatUsd(result.amountCents)}</p>
+            ) : null}
+            {result.dueAt ? (
+              <p className="mt-2 text-sm font-medium text-ink">
+                Delivery by {formatDueAt(result.dueAt) || result.dueAt}.
+              </p>
             ) : null}
             {result.quoteText ? (
               <p className="mt-4 leading-relaxed text-ink">{result.quoteText}</p>
