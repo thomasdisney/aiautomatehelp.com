@@ -24,6 +24,7 @@ export type PublicStatus = {
   updateText?: string;
   amountCents?: number;
   dueAt?: string;
+  doneWhen?: string;
   thread?: ThreadEntry[];
 };
 
@@ -56,6 +57,7 @@ export type InboxPatch =
       dueAt: string;
       updateText: string;
       operatorNote: string;
+      doneWhen: string;
     }
   | { ok: false; error: "invalid" };
 
@@ -102,6 +104,7 @@ export function toPublicStatus(record: IntakeRecord): PublicStatus {
   if (record.updateText) view.updateText = record.updateText;
   if (record.amountCents > 0) view.amountCents = record.amountCents;
   if (record.dueAt) view.dueAt = record.dueAt;
+  if (record.doneWhen) view.doneWhen = record.doneWhen;
   const thread = hydrateThread(record);
   if (thread.length) view.thread = thread;
   return view;
@@ -217,6 +220,8 @@ export function parseInboxPatch(body: unknown): InboxPatch {
   if (status === "quoted" && (!dueAt || !dueAtInRange(dueAt))) {
     return { ok: false, error: "invalid" };
   }
+  const doneWhen = status === "quoted" ? sanitizeText(raw.doneWhen, FIELD_LIMITS.doneWhen) : "";
+  if (status === "quoted" && !doneWhen) return { ok: false, error: "invalid" };
   return {
     ok: true,
     id,
@@ -226,6 +231,7 @@ export function parseInboxPatch(body: unknown): InboxPatch {
     dueAt: dueAt || "",
     updateText,
     operatorNote,
+    doneWhen,
   };
 }
 
@@ -251,6 +257,7 @@ export function applyOperatorPatch(
     dueAt: string;
     updateText: string;
     operatorNote?: string;
+    doneWhen?: string;
   },
   now: string,
 ): ApplyOperatorPatch {
@@ -259,6 +266,13 @@ export function applyOperatorPatch(
   }
 
   const nextStatus = patch.status ?? record.status;
+  const nextDoneWhen =
+    patch.status === "quoted"
+      ? sanitizeText(patch.doneWhen ?? "", FIELD_LIMITS.doneWhen)
+      : record.doneWhen || "";
+  if (patch.status === "quoted" && !nextDoneWhen) {
+    return { ok: false, error: "not_allowed" };
+  }
 
   const stamp = now.slice(0, 40);
   return {
@@ -269,6 +283,7 @@ export function applyOperatorPatch(
       quoteText: patch.status === "quoted" ? patch.quoteText : record.quoteText,
       amountCents: patch.status === "quoted" ? patch.amountCents : record.amountCents,
       dueAt: patch.status === "quoted" ? patch.dueAt : record.dueAt,
+      doneWhen: nextDoneWhen,
       updateText: patch.updateText ? patch.updateText : record.updateText,
       updateAt: patch.updateText ? stamp : record.updateAt,
       operatorNote: patch.operatorNote ? patch.operatorNote : record.operatorNote || "",

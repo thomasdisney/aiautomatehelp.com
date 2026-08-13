@@ -119,6 +119,7 @@ export async function PATCH(request: Request) {
     dueAt: parsed.dueAt,
     updateText: parsed.updateText,
     operatorNote: parsed.operatorNote,
+    doneWhen: parsed.doneWhen,
   });
   if (!updated.ok) {
     const status =

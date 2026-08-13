@@ -6,7 +6,7 @@
  *   node scripts/inbox.mjs queue
  *   node scripts/inbox.mjs show <uuid>
  *   node scripts/inbox.mjs list   # ids and statuses only
- *   node scripts/inbox.mjs decide <uuid> quoted <dollars> <YYYY-MM-DD> <quote text>
+ *   node scripts/inbox.mjs decide <uuid> quoted <dollars> <YYYY-MM-DD> --done <done when> <quote text>
  *   node scripts/inbox.mjs decide <uuid> declined <reason>
  *   node scripts/inbox.mjs update <uuid> <text>
  *   node scripts/inbox.mjs note <uuid> <text>
@@ -85,6 +85,10 @@ if (cmd === "show" && id) {
   console.log(`company ${item.company}`);
   if (item.amountCents) console.log(`amountCents ${item.amountCents}`);
   if (item.dueAt) console.log(`dueAt ${item.dueAt}`);
+  if (item.doneWhen) {
+    console.log("doneWhen");
+    console.log(item.doneWhen);
+  }
   console.log("message");
   console.log(item.message);
   if (item.quoteText) {
@@ -167,17 +171,34 @@ if (cmd === "decide" && id && status) {
   let amountCents = 0;
   let dueAt = "";
   let updateText = "";
+  let doneWhen = "";
   if (status === "quoted") {
     const dollars = Number(rest[0]);
     dueAt = typeof rest[1] === "string" ? rest[1].trim() : "";
-    if (!Number.isInteger(dollars) || dollars < 1 || !/^\d{4}-\d{2}-\d{2}$/.test(dueAt)) {
+    const tail = rest.slice(2);
+    const quoteParts = [];
+    for (let i = 0; i < tail.length; i += 1) {
+      if (tail[i] === "--done" && tail[i + 1]) {
+        doneWhen = String(tail[i + 1]).trim();
+        i += 1;
+        continue;
+      }
+      quoteParts.push(tail[i]);
+    }
+    quoteText = quoteParts.join(" ").trim();
+    if (
+      !Number.isInteger(dollars) ||
+      dollars < 1 ||
+      !/^\d{4}-\d{2}-\d{2}$/.test(dueAt) ||
+      !doneWhen ||
+      !quoteText
+    ) {
       console.error(
-        "usage: node scripts/inbox.mjs decide <uuid> quoted <dollars> <YYYY-MM-DD> <quote text>",
+        "usage: node scripts/inbox.mjs decide <uuid> quoted <dollars> <YYYY-MM-DD> --done <done when> <quote text>",
       );
       process.exit(2);
     }
     amountCents = dollars * 100;
-    quoteText = rest.slice(2).join(" ").trim();
   }
   if (status === "declined") {
     updateText = rest.join(" ").trim();
@@ -201,6 +222,7 @@ if (cmd === "decide" && id && status) {
     amountCents,
     dueAt,
     updateText,
+    doneWhen,
   });
   if (!json.ok) {
     console.error("decide_failed", http, json.code ?? "error");
@@ -213,13 +235,18 @@ if (cmd === "decide" && id && status) {
   if (typeof json.dueAt === "string" && json.dueAt) {
     console.log(`dueAt ${json.dueAt}`);
   }
+  if (typeof json.doneWhen === "string" && json.doneWhen) {
+    console.log(`doneWhen ${json.doneWhen}`);
+  }
   process.exit(0);
 }
 
 console.error("usage: node scripts/inbox.mjs queue");
 console.error("       node scripts/inbox.mjs show <uuid>");
 console.error("       node scripts/inbox.mjs list");
-console.error("       node scripts/inbox.mjs decide <uuid> quoted <dollars> <YYYY-MM-DD> <quote text>");
+console.error(
+  "       node scripts/inbox.mjs decide <uuid> quoted <dollars> <YYYY-MM-DD> --done <done when> <quote text>",
+);
 console.error("       node scripts/inbox.mjs decide <uuid> declined <reason>");
 console.error("       node scripts/inbox.mjs update <uuid> <text>");
 console.error("       node scripts/inbox.mjs note <uuid> <text>");

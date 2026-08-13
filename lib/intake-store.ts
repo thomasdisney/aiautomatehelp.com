@@ -78,6 +78,7 @@ export async function updateIntake(
     dueAt: string;
     updateText: string;
     operatorNote: string;
+    doneWhen: string;
   },
 ): Promise<UpdateIntakeResult> {
   const current = await getIntake(id);

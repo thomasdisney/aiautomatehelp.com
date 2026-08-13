@@ -14,6 +14,7 @@ type Found = {
   updateText?: string;
   amountCents?: number;
   dueAt?: string;
+  doneWhen?: string;
   thread: ThreadEntry[];
 };
 
@@ -35,7 +36,7 @@ const ERRORS: Record<string, string> = {
 
 const STATUS_COPY: Record<string, string> = {
   received: "I have the brief. I may ask a follow-up here. A yes or no and, if yes, a fixed quote will show here.",
-  quoted: "This is a fixed quote for the scope I understood, with a delivery date. After you accept, you pay that amount here before I start.",
+  quoted: "This is a fixed quote for the scope I understood, with a delivery date and a done-when test. After you accept, you pay that amount here before I start.",
   declined: "I am not taking this job.",
   accepted: "You accepted this quote. The price and delivery date stay as written. You can still turn it down until it is paid. I will not start until it is paid.",
   withdrawn: "You turned those terms down. They stay closed. If I post a new quote here, you can accept that one. Or send a new brief.",
@@ -104,6 +105,7 @@ export function StatusForm({
         updateText?: string;
         amountCents?: number;
         dueAt?: unknown;
+        doneWhen?: unknown;
         thread?: unknown;
       };
       if (json.code === "not_found" || res.status === 404) {
@@ -128,6 +130,7 @@ export function StatusForm({
         updateText: typeof json.updateText === "string" ? json.updateText : undefined,
         amountCents: typeof json.amountCents === "number" ? json.amountCents : undefined,
         dueAt: readDueAt(json.dueAt),
+        doneWhen: typeof json.doneWhen === "string" && json.doneWhen ? json.doneWhen : undefined,
         thread: parseThread(json.thread),
       });
     } catch {
@@ -167,6 +170,7 @@ export function StatusForm({
         updateText?: string;
         amountCents?: number;
         dueAt?: unknown;
+        doneWhen?: unknown;
         thread?: unknown;
       };
       if (!res.ok || !json.ok || !json.id || !json.status || !json.receivedAt) {
@@ -186,6 +190,8 @@ export function StatusForm({
         updateText: typeof json.updateText === "string" ? json.updateText : undefined,
         amountCents: typeof json.amountCents === "number" ? json.amountCents : result.amountCents,
         dueAt: readDueAt(json.dueAt) ?? result.dueAt,
+        doneWhen:
+          typeof json.doneWhen === "string" && json.doneWhen ? json.doneWhen : result.doneWhen,
         thread: parseThread(json.thread),
       });
       return true;
@@ -276,6 +282,11 @@ export function StatusForm({
             {result.dueAt ? (
               <p className="mt-2 text-sm font-medium text-ink">
                 Delivery by {formatDueAt(result.dueAt) || result.dueAt}.
+              </p>
+            ) : null}
+            {result.doneWhen ? (
+              <p className="mt-2 leading-relaxed text-ink">
+                Done when {result.doneWhen}
               </p>
             ) : null}
             {result.quoteText ? (

@@ -7,6 +7,7 @@ export const FIELD_LIMITS = {
   customerReply: 2000,
   updateText: 2000,
   operatorNote: 2000,
+  doneWhen: 500,
 } as const;
 
 export const THREAD_ROLES = ["customer", "operator"] as const;
@@ -133,6 +134,7 @@ export type IntakeRecord = IntakeFields & {
   dueAt: string;
   thread: ThreadEntry[];
   operatorNote: string;
+  doneWhen: string;
 };
 
 export function parseThreadRole(value: unknown): ThreadRole | null {
@@ -233,6 +235,7 @@ export function toIntakeRecord(
     dueAt?: string;
     thread?: ThreadEntry[];
     operatorNote?: string;
+    doneWhen?: string;
   } = {},
 ): IntakeRecord {
   return {
@@ -250,6 +253,7 @@ export function toIntakeRecord(
     dueAt: parseDueAt(extras.dueAt) ?? "",
     thread: parseThread(extras.thread),
     operatorNote: sanitizeText(extras.operatorNote, FIELD_LIMITS.operatorNote),
+    doneWhen: sanitizeText(extras.doneWhen, FIELD_LIMITS.doneWhen),
     name: data.name,
     email: data.email,
     company: data.company,
@@ -296,6 +300,7 @@ export function parseIntakeRecord(raw: string): IntakeRecord | null {
   const dueAt = parseDueAt(row.dueAt) ?? "";
   const thread = parseThread(row.thread);
   const operatorNote = sanitizeText(row.operatorNote, FIELD_LIMITS.operatorNote);
+  const doneWhen = sanitizeText(row.doneWhen, FIELD_LIMITS.doneWhen);
   return toIntakeRecord(
     id,
     { name, email, company, message },
@@ -313,6 +318,7 @@ export function parseIntakeRecord(raw: string): IntakeRecord | null {
       dueAt,
       thread,
       operatorNote,
+      doneWhen,
     },
   );
 }
