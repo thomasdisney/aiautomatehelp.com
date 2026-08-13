@@ -251,12 +251,12 @@ export function applyOperatorPatch(
     if (patch.status && patch.status !== "delivered") return { ok: false, error: "not_allowed" };
   } else if (nextStatus === "delivered") {
     return { ok: false, error: "not_allowed" };
-  } else if (
-    record.status === "accepted" ||
-    record.status === "withdrawn" ||
-    record.status === "declined"
-  ) {
+  } else if (record.status === "accepted") {
     if (patch.status && patch.status !== record.status) {
+      return { ok: false, error: "not_allowed" };
+    }
+  } else if (record.status === "withdrawn" || record.status === "declined") {
+    if (patch.status && patch.status !== "quoted") {
       return { ok: false, error: "not_allowed" };
     }
   }

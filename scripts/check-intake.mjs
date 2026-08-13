@@ -1571,31 +1571,100 @@ assert.equal("email" in acceptedAfterReject, false);
 assert.equal("name" in acceptedAfterReject, false);
 assert.equal("message" in acceptedAfterReject, false);
 
-const withdrawnLock = applyOperatorPatch(
-  { ...quotedForAction, status: "withdrawn" },
+const requoteAfterWithdraw = applyOperatorPatch(
+  { ...quotedForAction, status: "withdrawn", amountCents: 80000, dueAt: dueSoon },
   {
     status: "quoted",
-    quoteText: "Come back at $50",
-    amountCents: 5000,
+    quoteText: "Revised scope. Fixed price $500. Pay before I start.",
+    amountCents: 50000,
     dueAt: laterDue,
     updateText: "",
   },
   later,
 );
-assert.deepEqual(withdrawnLock, { ok: false, error: "not_allowed" });
+assert.equal(requoteAfterWithdraw.ok, true);
+if (requoteAfterWithdraw.ok) {
+  assert.equal(requoteAfterWithdraw.record.status, "quoted");
+  assert.equal(requoteAfterWithdraw.record.amountCents, 50000);
+  assert.equal(requoteAfterWithdraw.record.dueAt, laterDue);
+  assert.equal(
+    requoteAfterWithdraw.record.quoteText,
+    "Revised scope. Fixed price $500. Pay before I start.",
+  );
+  assert.equal(requoteAfterWithdraw.record.email, quotedForAction.email);
+  assert.equal(requoteAfterWithdraw.record.message, quotedForAction.message);
+  assert.equal(checkoutAllowed(requoteAfterWithdraw.record), false);
+}
 
-const declinedLock = applyOperatorPatch(
+const requoteView = toPublicStatus(
+  requoteAfterWithdraw.ok ? requoteAfterWithdraw.record : quotedForAction,
+);
+assert.equal(requoteView.status, "quoted");
+assert.equal(requoteView.amountCents, 50000);
+assert.equal(requoteView.dueAt, laterDue);
+assert.equal("email" in requoteView, false);
+assert.equal("name" in requoteView, false);
+assert.equal("message" in requoteView, false);
+assert.equal(JSON.stringify(requoteView).includes("pat@example.com"), false);
+
+const acceptAfterRequote = applyCustomerAction(
+  requoteAfterWithdraw.ok
+    ? requoteAfterWithdraw.record
+    : { ...quotedForAction, status: "quoted", amountCents: 50000, dueAt: laterDue },
+  { decision: "accept", note: "" },
+  later,
+);
+assert.equal(acceptAfterRequote.ok, true);
+if (acceptAfterRequote.ok) {
+  assert.equal(acceptAfterRequote.record.status, "accepted");
+  assert.equal(acceptAfterRequote.record.amountCents, 50000);
+  assert.equal(acceptAfterRequote.record.dueAt, laterDue);
+  assert.equal(checkoutAllowed(acceptAfterRequote.record), true);
+}
+
+const requoteAfterDeclined = applyOperatorPatch(
   { ...quotedForAction, status: "declined" },
   {
     status: "quoted",
-    quoteText: "I changed my mind",
-    amountCents: 80000,
+    quoteText: "I can take a smaller version. $400.",
+    amountCents: 40000,
     dueAt: laterDue,
     updateText: "",
   },
   later,
 );
-assert.deepEqual(declinedLock, { ok: false, error: "not_allowed" });
+assert.equal(requoteAfterDeclined.ok, true);
+if (requoteAfterDeclined.ok) {
+  assert.equal(requoteAfterDeclined.record.status, "quoted");
+  assert.equal(requoteAfterDeclined.record.amountCents, 40000);
+  assert.equal(requoteAfterDeclined.record.dueAt, laterDue);
+}
+
+const requoteWithdrawnToDeclined = applyOperatorPatch(
+  { ...quotedForAction, status: "withdrawn" },
+  {
+    status: "declined",
+    quoteText: "",
+    amountCents: 0,
+    dueAt: "",
+    updateText: "Still a no.",
+  },
+  later,
+);
+assert.deepEqual(requoteWithdrawnToDeclined, { ok: false, error: "not_allowed" });
+
+const requotePaid = applyOperatorPatch(
+  { ...quotedForAction, status: "paid", amountCents: 80000, dueAt: dueSoon },
+  {
+    status: "quoted",
+    quoteText: "Rewrite after payment",
+    amountCents: 100,
+    dueAt: laterDue,
+    updateText: "",
+  },
+  later,
+);
+assert.deepEqual(requotePaid, { ok: false, error: "not_allowed" });
 
 const reviseBeforeAccept = applyOperatorPatch(
   quotedForAction,
