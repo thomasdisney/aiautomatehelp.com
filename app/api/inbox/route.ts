@@ -4,12 +4,11 @@ import { intakeBlobPath } from "@/lib/intake";
 import {
   deleteIntake,
   getIntake,
-  getOpsLastEvent,
   getOpsQueue,
   listIntake,
   updateIntake,
 } from "@/lib/intake-store";
-import { summarizeQueue } from "@/lib/ops-queue";
+import { parseInboxListView, toInboxIdRows } from "@/lib/ops-queue";
 import { parseInboxId, parseInboxPatch, toPublicStatus } from "@/lib/status";
 
 const WINDOW_MS = 60 * 60 * 1000;
@@ -72,18 +71,25 @@ export async function GET(request: Request) {
       { headers: { "cache-control": "no-store" } },
     );
   }
-  const queueOnly = url.searchParams.get("view") === "queue";
-  if (queueOnly) {
-    const queue = await getOpsQueue();
+
+  const view = parseInboxListView(url.searchParams.get("view"));
+  if (view === "invalid") {
     return NextResponse.json(
-      { ok: true, queue },
+      { ok: false, code: "invalid" },
+      { status: 400, headers: { "cache-control": "no-store" } },
+    );
+  }
+  if (view === "ids") {
+    const ids = toInboxIdRows(await listIntake(20));
+    return NextResponse.json(
+      { ok: true, ids },
       { headers: { "cache-control": "no-store" } },
     );
   }
 
-  const [items, last] = await Promise.all([listIntake(20), getOpsLastEvent()]);
+  const queue = await getOpsQueue();
   return NextResponse.json(
-    { ok: true, queue: summarizeQueue(items, last), items },
+    { ok: true, queue },
     { headers: { "cache-control": "no-store" } },
   );
 }

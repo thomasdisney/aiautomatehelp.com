@@ -5,7 +5,7 @@
  *
  *   node scripts/inbox.mjs queue
  *   node scripts/inbox.mjs show <uuid>
- *   node scripts/inbox.mjs list
+ *   node scripts/inbox.mjs list   # ids and statuses only
  *   node scripts/inbox.mjs decide <uuid> quoted|declined|received [quote text...]
  *   node scripts/inbox.mjs update <uuid> <text>
  *   node scripts/inbox.mjs decide <uuid> delivered <handoff text>
@@ -106,36 +106,17 @@ if (cmd === "show" && id) {
 }
 
 if (cmd === "list") {
-  const { status: http, json } = await call("GET", "/api/inbox");
-  if (!json.ok) {
+  const { status: http, json } = await call("GET", "/api/inbox?view=ids");
+  if (!json.ok || !Array.isArray(json.ids)) {
     console.error("list_failed", http, json.code ?? "error");
     process.exit(1);
   }
-  const items = json.items ?? [];
-  console.log(`count ${items.length}`);
-  for (const item of items) {
-    console.log("---");
-    console.log(`id ${item.id}`);
-    console.log(`status ${item.status}`);
-    console.log(`receivedAt ${item.receivedAt}`);
-    console.log(`name ${item.name}`);
-    console.log(`email ${item.email}`);
-    console.log(`company ${item.company}`);
-    if (item.amountCents) console.log(`amountCents ${item.amountCents}`);
-    console.log("message");
-    console.log(item.message);
-    if (item.quoteText) {
-      console.log("quoteText");
-      console.log(item.quoteText);
-    }
-    if (item.customerReply) {
-      console.log("customerReply");
-      console.log(item.customerReply);
-    }
-    if (item.updateText) {
-      console.log("updateText");
-      console.log(item.updateText);
-    }
+  console.log(`count ${json.ids.length}`);
+  for (const row of json.ids) {
+    const id = typeof row?.id === "string" ? row.id : "";
+    const status = typeof row?.status === "string" ? row.status : "";
+    const receivedAt = typeof row?.receivedAt === "string" ? row.receivedAt : "";
+    console.log(`${id} ${status} ${receivedAt}`.trim());
   }
   process.exit(0);
 }

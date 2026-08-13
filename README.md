@@ -13,7 +13,7 @@ node scripts/inbox.mjs list
 node scripts/inbox.mjs decide <uuid> quoted 800 "Fixed price $800. Pay before I start."
 ```
 
-`queue` prints counts and the last event id only. Do not pipe `list` output to ntfy or commit it.
+`queue` prints counts and the last event id only. `list` prints id, status, and received time — not name, email, or job text. Use `show <uuid>` for one brief. Do not pipe customer text to ntfy or commit it.
 
 ```bash
 npm install

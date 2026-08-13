@@ -204,3 +204,39 @@ export function queueJsonHasCustomerText(json: string): boolean {
     lowered.includes('"thread"')
   );
 }
+
+export const INBOX_LIST_VIEWS = ["queue", "ids"] as const;
+export type InboxListView = (typeof INBOX_LIST_VIEWS)[number];
+
+export type InboxIdRow = {
+  id: string;
+  status: IntakeStatus;
+  receivedAt: string;
+};
+
+export function parseInboxListView(value: unknown): InboxListView | "invalid" {
+  if (value === null || value === undefined || value === "") return "queue";
+  if (typeof value !== "string") return "invalid";
+  const view = value.trim().toLowerCase();
+  if (view === "queue") return "queue";
+  if (view === "ids") return "ids";
+  return "invalid";
+}
+
+export function toInboxIdRow(record: IntakeRecord): InboxIdRow | null {
+  if (!intakeBlobPath(record.id)) return null;
+  return {
+    id: record.id,
+    status: record.status,
+    receivedAt: record.receivedAt.slice(0, 40),
+  };
+}
+
+export function toInboxIdRows(records: IntakeRecord[]): InboxIdRow[] {
+  const rows: InboxIdRow[] = [];
+  for (const record of records) {
+    const row = toInboxIdRow(record);
+    if (row) rows.push(row);
+  }
+  return rows;
+}
