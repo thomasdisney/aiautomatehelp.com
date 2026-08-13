@@ -1,6 +1,7 @@
 import {
   detectIntakeBackend,
   intakeBlobPath,
+  intakeBlobPutOptions,
   parseIntakeRecord,
   toIntakeRecord,
   type IntakeFields,
@@ -10,6 +11,7 @@ import {
 export {
   detectIntakeBackend,
   intakeBlobPath,
+  intakeBlobPutOptions,
   parseIntakeRecord,
   toIntakeRecord,
 } from "@/lib/intake";
@@ -31,38 +33,39 @@ function assertSafeDir(dir: string): string {
 export async function saveIntake(record: IntakeRecord): Promise<boolean> {
   const backend = detectIntakeBackend();
   try {
-    if (backend === "blob") return persistBlob(record);
+    if (backend === "blob") return await persistBlob(record);
     if (backend === "webhook") {
-      return persistWebhook(record, process.env.INTAKE_WEBHOOK_URL ?? "");
+      return await persistWebhook(record, process.env.INTAKE_WEBHOOK_URL ?? "");
     }
-    if (backend === "dir") return persistDir(record, process.env.INTAKE_DIR ?? "");
+    if (backend === "dir") {
+      return await persistDir(record, process.env.INTAKE_DIR ?? "");
+    }
   } catch {
     return false;
   }
   return false;
 }
 
+export type UpdateIntakeResult =
+  | { ok: true; record: IntakeRecord }
+  | { ok: false; error: "not_found" | "store" };
+
 export async function updateIntake(
   id: string,
   patch: { status: IntakeRecord["status"]; quoteText: string },
-): Promise<IntakeRecord | null> {
+): Promise<UpdateIntakeResult> {
   const current = await getIntake(id);
-  if (!current) return null;
+  if (!current) return { ok: false, error: "not_found" };
   const next = { ...current, status: patch.status, quoteText: patch.quoteText };
   const stored = await saveIntake(next);
-  return stored ? next : null;
+  return stored ? { ok: true, record: next } : { ok: false, error: "store" };
 }
 
 async function persistBlob(record: IntakeRecord): Promise<boolean> {
   const path = intakeBlobPath(record.id);
   if (!path) return false;
   const { put } = await import("@vercel/blob");
-  await put(path, JSON.stringify(record), {
-    access: "private",
-    addRandomSuffix: false,
-    contentType: "application/json",
-    cacheControlMaxAge: 60,
-  });
+  await put(path, JSON.stringify(record), intakeBlobPutOptions());
   return true;
 }
 

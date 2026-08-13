@@ -72,14 +72,17 @@ export async function PATCH(request: Request) {
     status: parsed.status,
     quoteText: parsed.quoteText,
   });
-  if (!updated) {
+  if (!updated.ok) {
     return NextResponse.json(
-      { ok: false, code: "not_found" },
-      { status: 404, headers: { "cache-control": "no-store" } },
+      { ok: false, code: updated.error },
+      {
+        status: updated.error === "not_found" ? 404 : 503,
+        headers: { "cache-control": "no-store" },
+      },
     );
   }
   return NextResponse.json(
-    { ok: true, ...toPublicStatus(updated) },
+    { ok: true, ...toPublicStatus(updated.record) },
     { headers: { "cache-control": "no-store" } },
   );
 }

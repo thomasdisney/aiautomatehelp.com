@@ -81,6 +81,16 @@ export function intakeBlobPath(id: string): string | null {
   return `intake/${id}.json`;
 }
 
+export function intakeBlobPutOptions() {
+  return {
+    access: "private" as const,
+    addRandomSuffix: false,
+    allowOverwrite: true,
+    contentType: "application/json",
+    cacheControlMaxAge: 60,
+  };
+}
+
 export function toIntakeRecord(
   id: string,
   data: IntakeFields,

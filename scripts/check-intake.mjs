@@ -3,6 +3,7 @@ import { bearerMatches, timingSafeEqualString } from "../lib/inbox-auth.ts";
 import {
   detectIntakeBackend,
   intakeBlobPath,
+  intakeBlobPutOptions,
   parseIntake,
   parseIntakeRecord,
   sanitizeText,
@@ -63,6 +64,12 @@ const id = "11111111-1111-4111-8111-111111111111";
 assert.equal(intakeBlobPath(id), `intake/${id}.json`);
 assert.equal(intakeBlobPath("../etc/passwd"), null);
 assert.equal(intakeBlobPath("intake/../../secret"), null);
+
+const putOpts = intakeBlobPutOptions();
+assert.equal(putOpts.access, "private");
+assert.equal(putOpts.addRandomSuffix, false);
+assert.equal(putOpts.allowOverwrite, true);
+assert.equal(putOpts.contentType, "application/json");
 
 const record = toIntakeRecord(
   id,
