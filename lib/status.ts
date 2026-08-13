@@ -25,10 +25,11 @@ export type PublicStatus = {
   amountCents?: number;
   dueAt?: string;
   doneWhen?: string;
+  confirmedAt?: string;
   thread?: ThreadEntry[];
 };
 
-export const CUSTOMER_DECISIONS = ["accept", "decline", "question"] as const;
+export const CUSTOMER_DECISIONS = ["accept", "decline", "question", "confirm"] as const;
 export type CustomerDecision = (typeof CUSTOMER_DECISIONS)[number];
 
 export type CustomerActionParse =
@@ -38,8 +39,17 @@ export type CustomerActionParse =
       dropped: false;
       id: string;
       email: string;
-      decision: Exclude<CustomerDecision, "accept">;
+      decision: Exclude<CustomerDecision, "accept" | "confirm">;
       note: string;
+    }
+  | {
+      ok: true;
+      dropped: false;
+      id: string;
+      email: string;
+      decision: "confirm";
+      note: string;
+      doneWhen: string;
     }
   | {
       ok: true;
@@ -117,6 +127,7 @@ export function toPublicStatus(record: IntakeRecord): PublicStatus {
   if (record.amountCents > 0) view.amountCents = record.amountCents;
   if (record.dueAt) view.dueAt = record.dueAt;
   if (record.doneWhen) view.doneWhen = record.doneWhen;
+  if (record.confirmedAt) view.confirmedAt = record.confirmedAt;
   const thread = hydrateThread(record);
   if (thread.length) view.thread = thread;
   return view;
@@ -140,6 +151,18 @@ export function parseCustomerAction(body: unknown): CustomerActionParse {
     return { ok: false, error: "invalid" };
   }
   if (decisionRaw === "question" && !note) return { ok: false, error: "invalid" };
+  if (decisionRaw === "confirm") {
+    if (!doneWhen) return { ok: false, error: "invalid" };
+    return {
+      ok: true,
+      dropped: false,
+      id: idRaw,
+      email,
+      decision: "confirm",
+      note,
+      doneWhen,
+    };
+  }
   if (decisionRaw === "accept") {
     if (!doneWhen) return { ok: false, error: "invalid" };
     const amountCents = parseAmountCents(raw.amountCents);
@@ -164,7 +187,7 @@ export function parseCustomerAction(body: unknown): CustomerActionParse {
     dropped: false,
     id: idRaw,
     email,
-    decision: decisionRaw as Exclude<CustomerDecision, "accept">,
+    decision: decisionRaw as Exclude<CustomerDecision, "accept" | "confirm">,
     note,
   };
 }
@@ -230,6 +253,27 @@ export function applyCustomerAction(
       record: {
         ...record,
         status: "withdrawn",
+        customerReply: action.note || record.customerReply,
+        customerReplyAt: action.note ? stamp : record.customerReplyAt,
+        thread: action.note
+          ? appendThread(thread, { role: "customer", text: action.note, at: stamp })
+          : thread,
+      },
+    };
+  }
+
+  if (action.decision === "confirm") {
+    if (record.status !== "delivered" || record.confirmedAt) {
+      return { ok: false, error: "not_allowed" };
+    }
+    if (!doneWhenMatches(record.doneWhen, action.doneWhen ?? "")) {
+      return { ok: false, error: "not_allowed" };
+    }
+    return {
+      ok: true,
+      record: {
+        ...record,
+        confirmedAt: stamp,
         customerReply: action.note || record.customerReply,
         customerReplyAt: action.note ? stamp : record.customerReplyAt,
         thread: action.note

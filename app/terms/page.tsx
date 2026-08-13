@@ -21,8 +21,9 @@ export default function TermsPage() {
         You can turn the quote down until it is paid. Turning it down closes
         those terms; a later quote on the same brief is a new offer. After
         payment, the job is on. New work is a new quote. Work starts after
-        payment. There is no monthly retainer on this site unless we later
-        agree to one in writing.
+        payment. After I post the handoff, you confirm the stored done-when
+        test on the status page. There is no monthly retainer on this site
+        unless we later agree to one in writing.
       </p>
       <h2 className="mt-10 text-xl font-semibold text-ink">Scope</h2>
       <p className="mt-3 leading-relaxed text-ink/70">

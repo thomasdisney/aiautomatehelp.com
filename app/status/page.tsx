@@ -24,8 +24,8 @@ export default async function StatusPage({
         After you send a brief, you get a reference. Enter that reference and the same email
         to see whether I have it, the yes/no or fixed quote, written scope, delivery date, and
         done-when test, the notes on this brief in order, and to accept the scope, price, date,
-        and test together, decline until it is paid, ask a question, or pay after you accept.
-        There is no personal inbox, phone, or calendar.
+        and test together, decline until it is paid, ask a question, pay after you accept, or
+        confirm the stored test after the handoff. There is no personal inbox, phone, or calendar.
       </p>
       <div className="mt-10">
         <StatusForm initialId={initialId} paymentConnected={paymentConfigured()} />

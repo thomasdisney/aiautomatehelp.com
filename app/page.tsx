@@ -40,7 +40,7 @@ const STEPS = [
   {
     n: "05",
     title: "Handoff",
-    body: "You get the working automation and how to request a change on this site.",
+    body: "You get the working automation and how it runs. Confirm the stored done-when test on the status page, or ask there if something in that scope is broken.",
   },
 ] as const;
 
@@ -223,7 +223,7 @@ export default function Home() {
             <ol className="mt-6 list-decimal space-y-3 pl-5 leading-relaxed text-ink/70">
               <li>Name one workflow: trigger, tools, done-when.</li>
               <li>I reply on the status page with yes or no and a fixed quote. I may ask a follow-up there first.</li>
-              <li>If you accept the written scope, price, date, and done-when test together on the status page, you pay the quoted amount there. Then I build.</li>
+              <li>If you accept the written scope, price, date, and done-when test together on the status page, you pay the quoted amount there. Then I build. After the handoff, confirm that test on the same page.</li>
             </ol>
             <p className="mt-6 leading-relaxed text-ink/70">
               There is no personal email, phone number, or calendar on this site.

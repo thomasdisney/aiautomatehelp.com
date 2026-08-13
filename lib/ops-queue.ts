@@ -16,6 +16,7 @@ export const OPS_EVENTS = [
   "paid",
   "update",
   "delivered",
+  "confirmed",
 ] as const;
 export type OpsEventType = (typeof OPS_EVENTS)[number];
 
@@ -88,10 +89,11 @@ export function parseOpsEvent(raw: string): OpsEvent | null {
 }
 
 export function eventFromCustomerDecision(
-  decision: "accept" | "decline" | "question",
+  decision: "accept" | "decline" | "question" | "confirm",
 ): OpsEventType {
   if (decision === "accept") return "accepted";
   if (decision === "decline") return "withdrawn";
+  if (decision === "confirm") return "confirmed";
   return "question";
 }
 
@@ -154,6 +156,7 @@ export function isWaitingOnCustomer(
   if (hasOpenQuestion(record)) return false;
   if (record.status === "quoted") return true;
   if (record.status === "accepted") return paymentConnected;
+  if (record.status === "delivered") return !record.confirmedAt;
   if (record.status !== "received") return false;
   return hasPublicOperatorUpdate(record);
 }
@@ -195,13 +198,17 @@ export function toWaitingItem(
   const at =
     record.status === "accepted"
       ? record.updateAt || record.customerReplyAt || record.receivedAt
-      : record.updateAt || record.receivedAt;
+      : record.status === "delivered"
+        ? record.updateAt || record.paidAt || record.receivedAt
+        : record.updateAt || record.receivedAt;
   const event =
     record.status === "quoted"
       ? "quoted"
       : record.status === "accepted"
         ? "accepted"
-        : "received";
+        : record.status === "delivered"
+          ? "delivered"
+          : "received";
   return {
     id: record.id,
     status: record.status,

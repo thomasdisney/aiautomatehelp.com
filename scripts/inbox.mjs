@@ -52,6 +52,7 @@ if (cmd === "queue") {
   console.log(`quoted ${queue.quoted}`);
   console.log(`accepted ${queue.accepted}`);
   console.log(`paid ${queue.paid ?? 0}`);
+  console.log(`delivered ${queue.delivered ?? 0}`);
   console.log(`questions ${queue.questions}`);
   console.log(`declined ${queue.declined}`);
   console.log(`withdrawn ${queue.withdrawn}`);
@@ -89,6 +90,7 @@ if (cmd === "show" && id) {
     console.log("doneWhen");
     console.log(item.doneWhen);
   }
+  if (item.confirmedAt) console.log(`confirmedAt ${item.confirmedAt}`);
   console.log("message");
   console.log(item.message);
   if (item.quoteText) {

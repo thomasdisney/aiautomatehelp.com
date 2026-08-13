@@ -15,6 +15,7 @@ type Found = {
   amountCents?: number;
   dueAt?: string;
   doneWhen?: string;
+  confirmedAt?: string;
   thread: ThreadEntry[];
 };
 
@@ -41,7 +42,7 @@ const STATUS_COPY: Record<string, string> = {
   accepted: "You accepted this quote, including the written scope, price, date, and done-when test. Those terms stay as written. You can still turn it down until it is paid. Payment opens here only when checkout is connected. I will not start until it is paid.",
   withdrawn: "You turned those terms down. They stay closed. If I post a new quote here, you can accept that one. Or send a new brief.",
   paid: "Paid. I will start the written scope. Check here for the handoff.",
-  delivered: "Handed off. The note below is how it runs. Ask here if something in that scope is broken.",
+  delivered: "Handed off. Confirm the stored done-when test here when it passes. Ask here if something in that scope is broken.",
 };
 
 function formatUsd(cents: number): string {
@@ -106,6 +107,7 @@ export function StatusForm({
         amountCents?: number;
         dueAt?: unknown;
         doneWhen?: unknown;
+        confirmedAt?: unknown;
         thread?: unknown;
       };
       if (json.code === "not_found" || res.status === 404) {
@@ -131,6 +133,8 @@ export function StatusForm({
         amountCents: typeof json.amountCents === "number" ? json.amountCents : undefined,
         dueAt: readDueAt(json.dueAt),
         doneWhen: typeof json.doneWhen === "string" && json.doneWhen ? json.doneWhen : undefined,
+        confirmedAt:
+          typeof json.confirmedAt === "string" && json.confirmedAt ? json.confirmedAt : undefined,
         thread: parseThread(json.thread),
       });
     } catch {
@@ -142,7 +146,7 @@ export function StatusForm({
   }
 
   async function sendDecision(
-    decision: "accept" | "decline" | "question",
+    decision: "accept" | "decline" | "question" | "confirm",
     note: string,
   ): Promise<boolean> {
     if (result.kind !== "found") return false;
@@ -169,6 +173,7 @@ export function StatusForm({
                 quoteText: result.quoteText,
               }
             : {}),
+          ...(decision === "confirm" && result.doneWhen ? { doneWhen: result.doneWhen } : {}),
         }),
       });
       const json = (await res.json()) as {
@@ -183,6 +188,7 @@ export function StatusForm({
         amountCents?: number;
         dueAt?: unknown;
         doneWhen?: unknown;
+        confirmedAt?: unknown;
         thread?: unknown;
       };
       if (!res.ok || !json.ok || !json.id || !json.status || !json.receivedAt) {
@@ -204,6 +210,10 @@ export function StatusForm({
         dueAt: readDueAt(json.dueAt) ?? result.dueAt,
         doneWhen:
           typeof json.doneWhen === "string" && json.doneWhen ? json.doneWhen : result.doneWhen,
+        confirmedAt:
+          typeof json.confirmedAt === "string" && json.confirmedAt
+            ? json.confirmedAt
+            : result.confirmedAt,
         thread: parseThread(json.thread),
       });
       return true;
@@ -301,6 +311,9 @@ export function StatusForm({
                 Done when {result.doneWhen}
               </p>
             ) : null}
+            {result.confirmedAt ? (
+              <p className="mt-2 text-sm font-medium text-ink">You confirmed that test passed.</p>
+            ) : null}
             {result.quoteText ? (
               <p className="mt-4 leading-relaxed text-ink">{result.quoteText}</p>
             ) : null}
@@ -345,6 +358,8 @@ export function StatusForm({
           <ReplyPanel
             quoted={result.status === "quoted"}
             accepted={result.status === "accepted"}
+            delivered={result.status === "delivered"}
+            confirmed={Boolean(result.confirmedAt)}
             amountCents={result.amountCents}
             dueAt={result.dueAt}
             doneWhen={result.doneWhen}
@@ -441,6 +456,8 @@ function PayPanel({
 function ReplyPanel({
   quoted,
   accepted,
+  delivered,
+  confirmed,
   amountCents,
   dueAt,
   doneWhen,
@@ -451,16 +468,22 @@ function ReplyPanel({
 }: {
   quoted: boolean;
   accepted: boolean;
+  delivered: boolean;
+  confirmed: boolean;
   amountCents?: number;
   dueAt?: string;
   doneWhen?: string;
   quoteText?: string;
   busy: boolean;
   error: string;
-  onSend: (decision: "accept" | "decline" | "question", note: string) => Promise<boolean>;
+  onSend: (
+    decision: "accept" | "decline" | "question" | "confirm",
+    note: string,
+  ) => Promise<boolean>;
 }) {
   const [note, setNote] = useState("");
   const [ackTerms, setAckTerms] = useState(false);
+  const [ackDone, setAckDone] = useState(false);
   const canDecline = quoted || accepted;
   const canAccept =
     quoted &&
@@ -469,12 +492,14 @@ function ReplyPanel({
     Boolean(dueAt) &&
     Boolean(quoteText) &&
     ackTerms;
+  const canConfirm = delivered && !confirmed && Boolean(doneWhen) && ackDone;
 
-  async function submit(decision: "accept" | "decline" | "question") {
+  async function submit(decision: "accept" | "decline" | "question" | "confirm") {
     const saved = await onSend(decision, note);
     if (saved) {
       setNote("");
       setAckTerms(false);
+      setAckDone(false);
     }
   }
 
@@ -486,11 +511,16 @@ function ReplyPanel({
           ? "Accept, turn it down, or ask a question here. Accepting agrees to the stored written scope, price, date, and done-when test together. Notes stay on this page in order. After you accept, payment is the stored amount only. You can still turn it down until it is paid."
           : accepted
             ? "You can still turn this quote down until it is paid. Ask a question here. Notes stay on this page in order. There is no personal inbox."
-            : "Ask a question about this brief here. Notes stay on this page in order. There is no personal inbox."}
+            : delivered && !confirmed
+              ? "The handoff is posted. Confirm the stored done-when test here when it passes, or ask a question. Notes stay on this page in order. There is no personal inbox."
+              : "Ask a question about this brief here. Notes stay on this page in order. There is no personal inbox."}
       </p>
       <div>
         <label htmlFor="note" className="block text-sm font-medium text-ink">
-          Note {canDecline ? <span className="font-normal text-ink/50">(optional to accept or decline)</span> : null}
+          Note{" "}
+          {canDecline || canConfirm ? (
+            <span className="font-normal text-ink/50">(optional to accept, decline, or confirm)</span>
+          ) : null}
         </label>
         <textarea
           id="note"
@@ -517,6 +547,17 @@ function ReplyPanel({
           </span>
         </label>
       ) : null}
+      {delivered && !confirmed && doneWhen ? (
+        <label className="flex items-start gap-3 text-sm leading-relaxed text-ink">
+          <input
+            type="checkbox"
+            className="mt-1"
+            checked={ackDone}
+            onChange={(event) => setAckDone(event.target.checked)}
+          />
+          <span>This job is done. The stored test passed: {doneWhen}</span>
+        </label>
+      ) : null}
       {error ? (
         <p className="text-sm text-red-700" role="alert">
           {error}
@@ -531,6 +572,16 @@ function ReplyPanel({
             className="rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent-hover disabled:opacity-60"
           >
             {busy ? "Saving…" : "Accept quote"}
+          </button>
+        ) : null}
+        {delivered && !confirmed ? (
+          <button
+            type="button"
+            disabled={busy || !canConfirm}
+            onClick={() => void submit("confirm")}
+            className="rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent-hover disabled:opacity-60"
+          >
+            {busy ? "Saving…" : "Confirm done"}
           </button>
         ) : null}
         {canDecline ? (
