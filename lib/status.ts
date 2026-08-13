@@ -8,6 +8,7 @@ import {
   type IntakeRecord,
   type IntakeStatus,
 } from "./intake.ts";
+import { parseAmountCents } from "./payment.ts";
 
 export type PublicStatus = {
   id: string;
@@ -15,6 +16,7 @@ export type PublicStatus = {
   receivedAt: string;
   quoteText?: string;
   customerReply?: string;
+  amountCents?: number;
 };
 
 export const CUSTOMER_DECISIONS = ["accept", "decline", "question"] as const;
@@ -37,7 +39,7 @@ export type ApplyCustomerAction =
   | { ok: false; error: "not_allowed" };
 
 export type InboxPatch =
-  | { ok: true; id: string; status: IntakeStatus; quoteText: string }
+  | { ok: true; id: string; status: IntakeStatus; quoteText: string; amountCents: number }
   | { ok: false; error: "invalid" };
 
 export type StatusLookup =
@@ -71,6 +73,7 @@ export function toPublicStatus(record: IntakeRecord): PublicStatus {
   };
   if (record.quoteText) view.quoteText = record.quoteText;
   if (record.customerReply) view.customerReply = record.customerReply;
+  if (record.amountCents > 0) view.amountCents = record.amountCents;
   return view;
 }
 
@@ -139,8 +142,10 @@ export function parseInboxPatch(body: unknown): InboxPatch {
   const id = typeof raw.id === "string" ? raw.id.trim().toLowerCase() : "";
   if (!intakeBlobPath(id)) return { ok: false, error: "invalid" };
   const status = parseIntakeStatus(raw.status);
-  if (!status) return { ok: false, error: "invalid" };
+  if (!status || status === "paid") return { ok: false, error: "invalid" };
   const quoteText = sanitizeText(raw.quoteText, FIELD_LIMITS.quoteText);
   if (status === "quoted" && !quoteText) return { ok: false, error: "invalid" };
-  return { ok: true, id, status, quoteText };
+  const amountCents = status === "quoted" ? parseAmountCents(raw.amountCents) : 0;
+  if (status === "quoted" && amountCents === null) return { ok: false, error: "invalid" };
+  return { ok: true, id, status, quoteText, amountCents: amountCents ?? 0 };
 }

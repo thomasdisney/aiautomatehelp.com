@@ -13,6 +13,7 @@ export const INTAKE_STATUSES = [
   "declined",
   "accepted",
   "withdrawn",
+  "paid",
 ] as const;
 export type IntakeStatus = (typeof INTAKE_STATUSES)[number];
 
@@ -65,6 +66,9 @@ export type IntakeRecord = IntakeFields & {
   quoteText: string;
   customerReply: string;
   customerReplyAt: string;
+  amountCents: number;
+  paidAt: string;
+  paymentRef: string;
 };
 
 export function parseIntakeStatus(value: unknown): IntakeStatus | null {
@@ -109,6 +113,9 @@ export function toIntakeRecord(
     quoteText?: string;
     customerReply?: string;
     customerReplyAt?: string;
+    amountCents?: number;
+    paidAt?: string;
+    paymentRef?: string;
   } = {},
 ): IntakeRecord {
   return {
@@ -118,6 +125,9 @@ export function toIntakeRecord(
     quoteText: extras.quoteText ?? "",
     customerReply: extras.customerReply ?? "",
     customerReplyAt: extras.customerReplyAt ?? "",
+    amountCents: extras.amountCents ?? 0,
+    paidAt: extras.paidAt ?? "",
+    paymentRef: extras.paymentRef ?? "",
     name: data.name,
     email: data.email,
     company: data.company,
@@ -149,10 +159,20 @@ export function parseIntakeRecord(raw: string): IntakeRecord | null {
   const customerReply = sanitizeText(row.customerReply, FIELD_LIMITS.customerReply);
   const customerReplyAt =
     typeof row.customerReplyAt === "string" ? row.customerReplyAt.slice(0, 40) : "";
+  const amountCents =
+    typeof row.amountCents === "number" &&
+    Number.isInteger(row.amountCents) &&
+    row.amountCents >= 50 &&
+    row.amountCents <= 50_000_000
+      ? row.amountCents
+      : 0;
+  const paidAt = typeof row.paidAt === "string" ? row.paidAt.slice(0, 40) : "";
+  const paymentRef =
+    typeof row.paymentRef === "string" ? row.paymentRef.replace(/[^A-Za-z0-9_]/g, "").slice(0, 200) : "";
   return toIntakeRecord(
     id,
     { name, email, company, message },
     receivedAt.slice(0, 40),
-    { status, quoteText, customerReply, customerReplyAt },
+    { status, quoteText, customerReply, customerReplyAt, amountCents, paidAt, paymentRef },
   );
 }

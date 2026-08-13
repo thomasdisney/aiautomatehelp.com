@@ -82,6 +82,7 @@ export async function PATCH(request: Request) {
   const updated = await updateIntake(parsed.id, {
     status: parsed.status,
     quoteText: parsed.quoteText,
+    amountCents: parsed.amountCents,
   });
   if (!updated.ok) {
     return NextResponse.json(

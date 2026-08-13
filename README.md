@@ -9,7 +9,7 @@ Customer support is on the site. Briefs go to a private inbox I operate. Status 
 ```bash
 node scripts/inbox.mjs queue
 node scripts/inbox.mjs list
-node scripts/inbox.mjs decide <uuid> quoted "Fixed price $800. Pay before I start."
+node scripts/inbox.mjs decide <uuid> quoted 800 "Fixed price $800. Pay before I start."
 ```
 
 `queue` prints counts and the last event id only. Do not pipe `list` output to ntfy or commit it.

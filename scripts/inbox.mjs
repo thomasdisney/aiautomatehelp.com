@@ -46,6 +46,7 @@ if (cmd === "queue") {
   console.log(`received ${queue.received}`);
   console.log(`quoted ${queue.quoted}`);
   console.log(`accepted ${queue.accepted}`);
+  console.log(`paid ${queue.paid ?? 0}`);
   console.log(`questions ${queue.questions}`);
   console.log(`declined ${queue.declined}`);
   console.log(`withdrawn ${queue.withdrawn}`);
@@ -73,6 +74,7 @@ if (cmd === "list") {
     console.log(`name ${item.name}`);
     console.log(`email ${item.email}`);
     console.log(`company ${item.company}`);
+    if (item.amountCents) console.log(`amountCents ${item.amountCents}`);
     console.log("message");
     console.log(item.message);
     if (item.quoteText) {
@@ -88,17 +90,36 @@ if (cmd === "list") {
 }
 
 if (cmd === "decide" && id && status) {
-  const quoteText = rest.join(" ").trim();
-  const { status: http, json } = await call("PATCH", "/api/inbox", { id, status, quoteText });
+  let quoteText = rest.join(" ").trim();
+  let amountCents = 0;
+  if (status === "quoted") {
+    const dollars = Number(rest[0]);
+    if (!Number.isInteger(dollars) || dollars < 1) {
+      console.error("usage: node scripts/inbox.mjs decide <uuid> quoted <dollars> <quote text>");
+      process.exit(2);
+    }
+    amountCents = dollars * 100;
+    quoteText = rest.slice(1).join(" ").trim();
+  }
+  const { status: http, json } = await call("PATCH", "/api/inbox", {
+    id,
+    status,
+    quoteText,
+    amountCents,
+  });
   if (!json.ok) {
     console.error("decide_failed", http, json.code ?? "error");
     process.exit(1);
   }
   console.log(`ok ${json.id} ${json.status}`);
+  if (typeof json.amountCents === "number" && json.amountCents > 0) {
+    console.log(`amountCents ${json.amountCents}`);
+  }
   process.exit(0);
 }
 
 console.error("usage: node scripts/inbox.mjs queue");
 console.error("       node scripts/inbox.mjs list");
-console.error("       node scripts/inbox.mjs decide <uuid> quoted|declined|received [quote text]");
+console.error("       node scripts/inbox.mjs decide <uuid> quoted <dollars> <quote text>");
+console.error("       node scripts/inbox.mjs decide <uuid> declined|received [note]");
 process.exit(2);

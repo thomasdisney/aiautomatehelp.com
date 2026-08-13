@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { StatusForm } from "@/app/components/status-form";
 import { intakeBlobPath } from "@/lib/intake";
+import { paymentConfigured } from "@/lib/payment";
 
 export const metadata: Metadata = {
   title: "Status",
@@ -21,11 +22,11 @@ export default async function StatusPage({
       <h1 className="font-serif text-4xl text-ink">Check a brief</h1>
       <p className="mt-6 leading-relaxed text-ink/70">
         After you send a brief, you get a reference. Enter that reference and the same email
-        to see whether I have it, the yes/no or fixed quote, and to accept, decline, or ask
-        a question. There is no personal inbox, phone, or calendar.
+        to see whether I have it, the yes/no or fixed quote, and to accept, decline, ask
+        a question, or pay after you accept. There is no personal inbox, phone, or calendar.
       </p>
       <div className="mt-10">
-        <StatusForm initialId={initialId} />
+        <StatusForm initialId={initialId} paymentConnected={paymentConfigured()} />
       </div>
     </article>
   );

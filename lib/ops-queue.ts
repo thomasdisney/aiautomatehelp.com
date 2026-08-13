@@ -12,6 +12,7 @@ export const OPS_EVENTS = [
   "accepted",
   "withdrawn",
   "question",
+  "paid",
 ] as const;
 export type OpsEventType = (typeof OPS_EVENTS)[number];
 
@@ -28,6 +29,7 @@ export type OpsQueue = {
   accepted: number;
   declined: number;
   withdrawn: number;
+  paid: number;
   questions: number;
   attention: number;
   last: OpsEvent | null;
@@ -91,6 +93,7 @@ export function emptyQueue(last: OpsEvent | null = null): OpsQueue {
     accepted: 0,
     declined: 0,
     withdrawn: 0,
+    paid: 0,
     questions: 0,
     attention: 0,
     last,
@@ -103,7 +106,7 @@ export function summarizeQueue(records: IntakeRecord[], last: OpsEvent | null): 
     queue[record.status] += 1;
     if (record.customerReply && record.status === "quoted") queue.questions += 1;
   }
-  queue.attention = queue.received + queue.questions + queue.accepted;
+  queue.attention = queue.received + queue.questions + queue.accepted + queue.paid;
   return queue;
 }
 

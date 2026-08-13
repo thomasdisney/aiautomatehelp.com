@@ -19,6 +19,7 @@ import {
   type OpsEvent,
   type OpsQueue,
 } from "@/lib/ops-queue";
+import { applyPaid } from "@/lib/payment";
 import { applyCustomerAction, emailsMatch, type CustomerDecision } from "@/lib/status";
 
 export {
@@ -61,15 +62,23 @@ export async function saveIntake(record: IntakeRecord): Promise<boolean> {
 
 export type UpdateIntakeResult =
   | { ok: true; record: IntakeRecord }
-  | { ok: false; error: "not_found" | "store" };
+  | { ok: false; error: "not_found" | "store" | "not_allowed" };
 
 export async function updateIntake(
   id: string,
-  patch: { status: IntakeRecord["status"]; quoteText: string },
+  patch: { status: IntakeRecord["status"]; quoteText: string; amountCents: number },
 ): Promise<UpdateIntakeResult> {
   const current = await getIntake(id);
   if (!current) return { ok: false, error: "not_found" };
-  const next = { ...current, status: patch.status, quoteText: patch.quoteText };
+  if (patch.status === "paid" || current.status === "paid") {
+    return { ok: false, error: "not_found" };
+  }
+  const next = {
+    ...current,
+    status: patch.status,
+    quoteText: patch.quoteText,
+    amountCents: patch.status === "quoted" ? patch.amountCents : current.amountCents,
+  };
   const stored = await saveIntake(next);
   if (stored) {
     await recordOpsEvent({
@@ -147,6 +156,30 @@ export async function replyToIntake(
       id: applied.record.id,
       status: applied.record.status,
       at: applied.record.customerReplyAt || new Date().toISOString(),
+    });
+  }
+  return stored ? { ok: true, record: applied.record } : { ok: false, error: "store" };
+}
+
+export async function markIntakePaid(
+  notice: { briefId: string; amountTotal: number; paymentRef: string },
+): Promise<UpdateIntakeResult> {
+  const current = await getIntake(notice.briefId);
+  if (!current) return { ok: false, error: "not_found" };
+  const applied = applyPaid(current, {
+    amountTotal: notice.amountTotal,
+    paymentRef: notice.paymentRef,
+    paidAt: new Date().toISOString(),
+  });
+  if (!applied.ok) return { ok: false, error: "not_allowed" };
+  if (current.status === "paid") return { ok: true, record: current };
+  const stored = await saveIntake(applied.record);
+  if (stored) {
+    await recordOpsEvent({
+      event: "paid",
+      id: applied.record.id,
+      status: applied.record.status,
+      at: applied.record.paidAt || new Date().toISOString(),
     });
   }
   return stored ? { ok: true, record: applied.record } : { ok: false, error: "store" };

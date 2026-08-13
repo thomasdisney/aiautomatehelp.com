@@ -11,6 +11,7 @@ type Found = {
   receivedAt: string;
   quoteText?: string;
   customerReply?: string;
+  amountCents?: number;
 };
 
 type Result =
@@ -25,17 +26,32 @@ const ERRORS: Record<string, string> = {
   invalid: "Use the full reference and the same email you sent with the brief.",
   not_allowed: "That action is not available on this brief right now.",
   not_found: "No matching brief.",
+  payment_not_connected: "Checkout is not connected yet. I will not take money until it is.",
+  already_paid: "This quote is already marked paid.",
 };
 
 const STATUS_COPY: Record<string, string> = {
   received: "I have the brief. A yes or no and, if yes, a fixed quote will show here.",
-  quoted: "This is a fixed quote for the scope I understood. Payment is not on this page yet.",
+  quoted: "This is a fixed quote for the scope I understood. After you accept, you pay that amount here before I start.",
   declined: "I am not taking this job.",
-  accepted: "You accepted this quote. Payment is not on this page yet. I will not start until it is paid.",
+  accepted: "You accepted this quote. I will not start until it is paid.",
   withdrawn: "You turned down this quote. Send a new brief if you want a different job.",
+  paid: "Paid. I will start the written scope. Check here for the handoff.",
 };
 
-export function StatusForm({ initialId = "" }: { initialId?: string }) {
+function formatUsd(cents: number): string {
+  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(
+    cents / 100,
+  );
+}
+
+export function StatusForm({
+  initialId = "",
+  paymentConnected = false,
+}: {
+  initialId?: string;
+  paymentConnected?: boolean;
+}) {
   const [result, setResult] = useState<Result>({ kind: "idle" });
   const [replyBusy, setReplyBusy] = useState(false);
   const [replyError, setReplyError] = useState("");
@@ -65,6 +81,7 @@ export function StatusForm({ initialId = "" }: { initialId?: string }) {
         receivedAt?: string;
         quoteText?: string;
         customerReply?: string;
+        amountCents?: number;
       };
       if (json.code === "not_found" || res.status === 404) {
         setResult({ kind: "missing" });
@@ -85,6 +102,7 @@ export function StatusForm({ initialId = "" }: { initialId?: string }) {
         receivedAt: json.receivedAt,
         quoteText: typeof json.quoteText === "string" ? json.quoteText : undefined,
         customerReply: typeof json.customerReply === "string" ? json.customerReply : undefined,
+        amountCents: typeof json.amountCents === "number" ? json.amountCents : undefined,
       });
     } catch {
       setResult({
@@ -120,6 +138,7 @@ export function StatusForm({ initialId = "" }: { initialId?: string }) {
         receivedAt?: string;
         quoteText?: string;
         customerReply?: string;
+        amountCents?: number;
       };
       if (!res.ok || !json.ok || !json.id || !json.status || !json.receivedAt) {
         setReplyError(
@@ -135,6 +154,7 @@ export function StatusForm({ initialId = "" }: { initialId?: string }) {
         receivedAt: json.receivedAt,
         quoteText: typeof json.quoteText === "string" ? json.quoteText : undefined,
         customerReply: typeof json.customerReply === "string" ? json.customerReply : undefined,
+        amountCents: typeof json.amountCents === "number" ? json.amountCents : result.amountCents,
       });
       return true;
     } catch {
@@ -218,6 +238,9 @@ export function StatusForm({ initialId = "" }: { initialId?: string }) {
             <p className="mt-3 leading-relaxed text-ink/70">
               {STATUS_COPY[result.status] ?? "This brief is on file. Check back here for updates."}
             </p>
+            {result.amountCents ? (
+              <p className="mt-4 text-lg font-semibold text-ink">{formatUsd(result.amountCents)}</p>
+            ) : null}
             {result.quoteText ? (
               <p className="mt-4 leading-relaxed text-ink">{result.quoteText}</p>
             ) : null}
@@ -231,6 +254,13 @@ export function StatusForm({ initialId = "" }: { initialId?: string }) {
               Received {result.receivedAt}. Reference {result.id}.
             </p>
           </div>
+          <PayPanel
+            accepted={result.status === "accepted"}
+            amountCents={result.amountCents}
+            paymentConnected={paymentConnected}
+            id={result.id}
+            email={result.email}
+          />
           <ReplyPanel
             quoted={result.status === "quoted"}
             busy={replyBusy}
@@ -238,6 +268,85 @@ export function StatusForm({ initialId = "" }: { initialId?: string }) {
             onSend={sendDecision}
           />
         </div>
+      ) : null}
+    </div>
+  );
+}
+
+function PayPanel({
+  accepted,
+  amountCents,
+  paymentConnected,
+  id,
+  email,
+}: {
+  accepted: boolean;
+  amountCents?: number;
+  paymentConnected: boolean;
+  id: string;
+  email: string;
+}) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+
+  if (!accepted || !amountCents) return null;
+
+  async function startPay() {
+    setBusy(true);
+    setError("");
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ id, email }),
+      });
+      const json = (await res.json()) as { ok?: boolean; code?: string; url?: string };
+      if (!res.ok || !json.ok || !json.url) {
+        setError(
+          ERRORS[json.code ?? ""] ?? "Checkout is not connected yet. I will not take money until it is.",
+        );
+        return;
+      }
+      if (!json.url.startsWith("https://checkout.stripe.com/")) {
+        setError("Checkout is not connected yet. I will not take money until it is.");
+        return;
+      }
+      window.location.assign(json.url);
+    } catch {
+      setError("Checkout could not be started. The network request failed.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="space-y-3 rounded-2xl border border-ink/10 bg-white p-6 sm:p-8">
+      <p className="text-sm font-medium text-ink">Pay this quote</p>
+      {paymentConnected ? (
+        <>
+          <p className="text-sm leading-relaxed text-ink/60">
+            This charges the stored amount ({formatUsd(amountCents)}) only. I do not start until
+            payment clears.
+          </p>
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => void startPay()}
+            className="rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent-hover disabled:opacity-60"
+          >
+            {busy ? "Opening checkout…" : `Pay ${formatUsd(amountCents)}`}
+          </button>
+        </>
+      ) : (
+        <p className="text-sm leading-relaxed text-ink/60">
+          Checkout is not connected yet. I will not take money and I will not start until it is.
+          The quoted amount is {formatUsd(amountCents)}.
+        </p>
+      )}
+      {error ? (
+        <p className="text-sm text-red-700" role="alert">
+          {error}
+        </p>
       ) : null}
     </div>
   );
@@ -266,7 +375,7 @@ function ReplyPanel({
       <p className="text-sm font-medium text-ink">Reply on this brief</p>
       <p className="text-sm leading-relaxed text-ink/60">
         {quoted
-          ? "Accept, turn it down, or ask a question here. A new note replaces the previous one. Payment is not collected on this page."
+          ? "Accept, turn it down, or ask a question here. A new note replaces the previous one. After you accept, payment is the stored amount only."
           : "Ask a question about this brief here. A new note replaces the previous one. There is no personal inbox."}
       </p>
       <div>
