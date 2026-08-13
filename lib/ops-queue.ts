@@ -13,6 +13,8 @@ export const OPS_EVENTS = [
   "withdrawn",
   "question",
   "paid",
+  "update",
+  "delivered",
 ] as const;
 export type OpsEventType = (typeof OPS_EVENTS)[number];
 
@@ -30,6 +32,7 @@ export type OpsQueue = {
   declined: number;
   withdrawn: number;
   paid: number;
+  delivered: number;
   questions: number;
   attention: number;
   last: OpsEvent | null;
@@ -94,6 +97,7 @@ export function emptyQueue(last: OpsEvent | null = null): OpsQueue {
     declined: 0,
     withdrawn: 0,
     paid: 0,
+    delivered: 0,
     questions: 0,
     attention: 0,
     last,
@@ -104,7 +108,13 @@ export function summarizeQueue(records: IntakeRecord[], last: OpsEvent | null): 
   const queue = emptyQueue(last);
   for (const record of records) {
     queue[record.status] += 1;
-    if (record.customerReply && record.status === "quoted") queue.questions += 1;
+    if (
+      record.customerReply &&
+      record.status === "quoted" &&
+      (!record.updateAt || record.updateAt < record.customerReplyAt)
+    ) {
+      queue.questions += 1;
+    }
   }
   queue.attention = queue.received + queue.questions + queue.accepted + queue.paid;
   return queue;
@@ -141,6 +151,7 @@ export function queueJsonHasCustomerText(json: string): boolean {
     lowered.includes("name") ||
     lowered.includes("company") ||
     lowered.includes("quotetext") ||
-    lowered.includes("customerreply")
+    lowered.includes("customerreply") ||
+    lowered.includes("updatetext")
   );
 }

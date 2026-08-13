@@ -11,6 +11,7 @@ type Found = {
   receivedAt: string;
   quoteText?: string;
   customerReply?: string;
+  updateText?: string;
   amountCents?: number;
 };
 
@@ -37,6 +38,7 @@ const STATUS_COPY: Record<string, string> = {
   accepted: "You accepted this quote. I will not start until it is paid.",
   withdrawn: "You turned down this quote. Send a new brief if you want a different job.",
   paid: "Paid. I will start the written scope. Check here for the handoff.",
+  delivered: "Handed off. The note below is how it runs. Ask here if something in that scope is broken.",
 };
 
 function formatUsd(cents: number): string {
@@ -81,6 +83,7 @@ export function StatusForm({
         receivedAt?: string;
         quoteText?: string;
         customerReply?: string;
+        updateText?: string;
         amountCents?: number;
       };
       if (json.code === "not_found" || res.status === 404) {
@@ -102,6 +105,7 @@ export function StatusForm({
         receivedAt: json.receivedAt,
         quoteText: typeof json.quoteText === "string" ? json.quoteText : undefined,
         customerReply: typeof json.customerReply === "string" ? json.customerReply : undefined,
+        updateText: typeof json.updateText === "string" ? json.updateText : undefined,
         amountCents: typeof json.amountCents === "number" ? json.amountCents : undefined,
       });
     } catch {
@@ -138,6 +142,7 @@ export function StatusForm({
         receivedAt?: string;
         quoteText?: string;
         customerReply?: string;
+        updateText?: string;
         amountCents?: number;
       };
       if (!res.ok || !json.ok || !json.id || !json.status || !json.receivedAt) {
@@ -154,6 +159,7 @@ export function StatusForm({
         receivedAt: json.receivedAt,
         quoteText: typeof json.quoteText === "string" ? json.quoteText : undefined,
         customerReply: typeof json.customerReply === "string" ? json.customerReply : undefined,
+        updateText: typeof json.updateText === "string" ? json.updateText : undefined,
         amountCents: typeof json.amountCents === "number" ? json.amountCents : result.amountCents,
       });
       return true;
@@ -243,6 +249,12 @@ export function StatusForm({
             ) : null}
             {result.quoteText ? (
               <p className="mt-4 leading-relaxed text-ink">{result.quoteText}</p>
+            ) : null}
+            {result.updateText ? (
+              <div className="mt-4 rounded-xl bg-paper px-4 py-3">
+                <p className="text-sm font-medium text-ink/60">Latest update</p>
+                <p className="mt-1 leading-relaxed text-ink">{result.updateText}</p>
+              </div>
             ) : null}
             {result.customerReply ? (
               <div className="mt-4 rounded-xl bg-paper px-4 py-3">

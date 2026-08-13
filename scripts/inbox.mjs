@@ -6,6 +6,8 @@
  *   node scripts/inbox.mjs queue
  *   node scripts/inbox.mjs list
  *   node scripts/inbox.mjs decide <uuid> quoted|declined|received [quote text...]
+ *   node scripts/inbox.mjs update <uuid> <text>
+ *   node scripts/inbox.mjs decide <uuid> delivered <handoff text>
  */
 import { readFileSync } from "node:fs";
 import { homedir } from "node:os";
@@ -85,13 +87,33 @@ if (cmd === "list") {
       console.log("customerReply");
       console.log(item.customerReply);
     }
+    if (item.updateText) {
+      console.log("updateText");
+      console.log(item.updateText);
+    }
   }
+  process.exit(0);
+}
+
+if (cmd === "update" && id) {
+  const updateText = [status, ...rest].filter(Boolean).join(" ").trim();
+  if (!updateText) {
+    console.error("usage: node scripts/inbox.mjs update <uuid> <text>");
+    process.exit(2);
+  }
+  const { status: http, json } = await call("PATCH", "/api/inbox", { id, updateText });
+  if (!json.ok) {
+    console.error("update_failed", http, json.code ?? "error");
+    process.exit(1);
+  }
+  console.log(`ok ${json.id} ${json.status}`);
   process.exit(0);
 }
 
 if (cmd === "decide" && id && status) {
   let quoteText = rest.join(" ").trim();
   let amountCents = 0;
+  let updateText = "";
   if (status === "quoted") {
     const dollars = Number(rest[0]);
     if (!Number.isInteger(dollars) || dollars < 1) {
@@ -101,11 +123,19 @@ if (cmd === "decide" && id && status) {
     amountCents = dollars * 100;
     quoteText = rest.slice(1).join(" ").trim();
   }
+  if (status === "delivered") {
+    updateText = rest.join(" ").trim();
+    if (!updateText) {
+      console.error("usage: node scripts/inbox.mjs decide <uuid> delivered <handoff text>");
+      process.exit(2);
+    }
+  }
   const { status: http, json } = await call("PATCH", "/api/inbox", {
     id,
     status,
     quoteText,
     amountCents,
+    updateText,
   });
   if (!json.ok) {
     console.error("decide_failed", http, json.code ?? "error");
@@ -122,4 +152,6 @@ console.error("usage: node scripts/inbox.mjs queue");
 console.error("       node scripts/inbox.mjs list");
 console.error("       node scripts/inbox.mjs decide <uuid> quoted <dollars> <quote text>");
 console.error("       node scripts/inbox.mjs decide <uuid> declined|received [note]");
+console.error("       node scripts/inbox.mjs update <uuid> <text>");
+console.error("       node scripts/inbox.mjs decide <uuid> delivered <handoff text>");
 process.exit(2);

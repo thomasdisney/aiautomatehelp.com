@@ -5,6 +5,7 @@ export const FIELD_LIMITS = {
   message: 4000,
   quoteText: 500,
   customerReply: 2000,
+  updateText: 2000,
 } as const;
 
 export const INTAKE_STATUSES = [
@@ -14,6 +15,7 @@ export const INTAKE_STATUSES = [
   "accepted",
   "withdrawn",
   "paid",
+  "delivered",
 ] as const;
 export type IntakeStatus = (typeof INTAKE_STATUSES)[number];
 
@@ -66,6 +68,8 @@ export type IntakeRecord = IntakeFields & {
   quoteText: string;
   customerReply: string;
   customerReplyAt: string;
+  updateText: string;
+  updateAt: string;
   amountCents: number;
   paidAt: string;
   paymentRef: string;
@@ -113,6 +117,8 @@ export function toIntakeRecord(
     quoteText?: string;
     customerReply?: string;
     customerReplyAt?: string;
+    updateText?: string;
+    updateAt?: string;
     amountCents?: number;
     paidAt?: string;
     paymentRef?: string;
@@ -125,6 +131,8 @@ export function toIntakeRecord(
     quoteText: extras.quoteText ?? "",
     customerReply: extras.customerReply ?? "",
     customerReplyAt: extras.customerReplyAt ?? "",
+    updateText: extras.updateText ?? "",
+    updateAt: extras.updateAt ?? "",
     amountCents: extras.amountCents ?? 0,
     paidAt: extras.paidAt ?? "",
     paymentRef: extras.paymentRef ?? "",
@@ -159,6 +167,8 @@ export function parseIntakeRecord(raw: string): IntakeRecord | null {
   const customerReply = sanitizeText(row.customerReply, FIELD_LIMITS.customerReply);
   const customerReplyAt =
     typeof row.customerReplyAt === "string" ? row.customerReplyAt.slice(0, 40) : "";
+  const updateText = sanitizeText(row.updateText, FIELD_LIMITS.updateText);
+  const updateAt = typeof row.updateAt === "string" ? row.updateAt.slice(0, 40) : "";
   const amountCents =
     typeof row.amountCents === "number" &&
     Number.isInteger(row.amountCents) &&
@@ -173,6 +183,16 @@ export function parseIntakeRecord(raw: string): IntakeRecord | null {
     id,
     { name, email, company, message },
     receivedAt.slice(0, 40),
-    { status, quoteText, customerReply, customerReplyAt, amountCents, paidAt, paymentRef },
+    {
+      status,
+      quoteText,
+      customerReply,
+      customerReplyAt,
+      updateText,
+      updateAt,
+      amountCents,
+      paidAt,
+      paymentRef,
+    },
   );
 }

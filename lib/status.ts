@@ -16,6 +16,7 @@ export type PublicStatus = {
   receivedAt: string;
   quoteText?: string;
   customerReply?: string;
+  updateText?: string;
   amountCents?: number;
 };
 
@@ -39,8 +40,19 @@ export type ApplyCustomerAction =
   | { ok: false; error: "not_allowed" };
 
 export type InboxPatch =
-  | { ok: true; id: string; status: IntakeStatus; quoteText: string; amountCents: number }
+  | {
+      ok: true;
+      id: string;
+      status: IntakeStatus | null;
+      quoteText: string;
+      amountCents: number;
+      updateText: string;
+    }
   | { ok: false; error: "invalid" };
+
+export type ApplyOperatorPatch =
+  | { ok: true; record: IntakeRecord }
+  | { ok: false; error: "not_allowed" };
 
 export type StatusLookup =
   | { ok: true; dropped: true }
@@ -73,6 +85,7 @@ export function toPublicStatus(record: IntakeRecord): PublicStatus {
   };
   if (record.quoteText) view.quoteText = record.quoteText;
   if (record.customerReply) view.customerReply = record.customerReply;
+  if (record.updateText) view.updateText = record.updateText;
   if (record.amountCents > 0) view.amountCents = record.amountCents;
   return view;
 }
@@ -141,11 +154,53 @@ export function parseInboxPatch(body: unknown): InboxPatch {
   const raw = body as Record<string, unknown>;
   const id = typeof raw.id === "string" ? raw.id.trim().toLowerCase() : "";
   if (!intakeBlobPath(id)) return { ok: false, error: "invalid" };
-  const status = parseIntakeStatus(raw.status);
-  if (!status || status === "paid") return { ok: false, error: "invalid" };
+
+  const statusRaw = raw.status;
+  const hasStatus = statusRaw !== undefined && statusRaw !== null && statusRaw !== "";
+  const status = hasStatus ? parseIntakeStatus(statusRaw) : null;
+  if (hasStatus && (!status || status === "paid")) return { ok: false, error: "invalid" };
+
   const quoteText = sanitizeText(raw.quoteText, FIELD_LIMITS.quoteText);
+  const updateText = sanitizeText(raw.updateText, FIELD_LIMITS.updateText);
+  if (!status && !updateText) return { ok: false, error: "invalid" };
   if (status === "quoted" && !quoteText) return { ok: false, error: "invalid" };
+  if (status === "delivered" && !updateText) return { ok: false, error: "invalid" };
   const amountCents = status === "quoted" ? parseAmountCents(raw.amountCents) : 0;
   if (status === "quoted" && amountCents === null) return { ok: false, error: "invalid" };
-  return { ok: true, id, status, quoteText, amountCents: amountCents ?? 0 };
+  return { ok: true, id, status, quoteText, amountCents: amountCents ?? 0, updateText };
+}
+
+export function applyOperatorPatch(
+  record: IntakeRecord,
+  patch: {
+    status: IntakeStatus | null;
+    quoteText: string;
+    amountCents: number;
+    updateText: string;
+  },
+  now: string,
+): ApplyOperatorPatch {
+  if (patch.status === "paid") return { ok: false, error: "not_allowed" };
+
+  const nextStatus = patch.status ?? record.status;
+  if (record.status === "paid") {
+    if (patch.status && patch.status !== "delivered") return { ok: false, error: "not_allowed" };
+  } else if (record.status === "delivered") {
+    if (patch.status && patch.status !== "delivered") return { ok: false, error: "not_allowed" };
+  } else if (nextStatus === "delivered") {
+    return { ok: false, error: "not_allowed" };
+  }
+
+  const stamp = now.slice(0, 40);
+  return {
+    ok: true,
+    record: {
+      ...record,
+      status: nextStatus,
+      quoteText: patch.status ? patch.quoteText : record.quoteText,
+      amountCents: patch.status === "quoted" ? patch.amountCents : record.amountCents,
+      updateText: patch.updateText ? patch.updateText : record.updateText,
+      updateAt: patch.updateText ? stamp : record.updateAt,
+    },
+  };
 }

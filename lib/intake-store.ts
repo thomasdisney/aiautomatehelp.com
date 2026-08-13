@@ -20,7 +20,12 @@ import {
   type OpsQueue,
 } from "@/lib/ops-queue";
 import { applyPaid } from "@/lib/payment";
-import { applyCustomerAction, emailsMatch, type CustomerDecision } from "@/lib/status";
+import {
+  applyCustomerAction,
+  applyOperatorPatch,
+  emailsMatch,
+  type CustomerDecision,
+} from "@/lib/status";
 
 export {
   detectIntakeBackend,
@@ -66,29 +71,33 @@ export type UpdateIntakeResult =
 
 export async function updateIntake(
   id: string,
-  patch: { status: IntakeRecord["status"]; quoteText: string; amountCents: number },
+  patch: {
+    status: IntakeRecord["status"] | null;
+    quoteText: string;
+    amountCents: number;
+    updateText: string;
+  },
 ): Promise<UpdateIntakeResult> {
   const current = await getIntake(id);
   if (!current) return { ok: false, error: "not_found" };
-  if (patch.status === "paid" || current.status === "paid") {
-    return { ok: false, error: "not_found" };
-  }
-  const next = {
-    ...current,
-    status: patch.status,
-    quoteText: patch.quoteText,
-    amountCents: patch.status === "quoted" ? patch.amountCents : current.amountCents,
-  };
-  const stored = await saveIntake(next);
+  const applied = applyOperatorPatch(current, patch, new Date().toISOString());
+  if (!applied.ok) return applied;
+  const stored = await saveIntake(applied.record);
   if (stored) {
+    const event =
+      applied.record.status !== current.status
+        ? eventFromStatus(applied.record.status)
+        : patch.updateText
+          ? "update"
+          : eventFromStatus(applied.record.status);
     await recordOpsEvent({
-      event: eventFromStatus(next.status),
-      id: next.id,
-      status: next.status,
-      at: new Date().toISOString(),
+      event,
+      id: applied.record.id,
+      status: applied.record.status,
+      at: applied.record.updateAt || new Date().toISOString(),
     });
   }
-  return stored ? { ok: true, record: next } : { ok: false, error: "store" };
+  return stored ? { ok: true, record: applied.record } : { ok: false, error: "store" };
 }
 
 async function persistBlob(record: IntakeRecord): Promise<boolean> {

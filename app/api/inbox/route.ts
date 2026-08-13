@@ -83,12 +83,15 @@ export async function PATCH(request: Request) {
     status: parsed.status,
     quoteText: parsed.quoteText,
     amountCents: parsed.amountCents,
+    updateText: parsed.updateText,
   });
   if (!updated.ok) {
+    const status =
+      updated.error === "not_found" ? 404 : updated.error === "not_allowed" ? 409 : 503;
     return NextResponse.json(
       { ok: false, code: updated.error },
       {
-        status: updated.error === "not_found" ? 404 : 503,
+        status,
         headers: { "cache-control": "no-store" },
       },
     );
