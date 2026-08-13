@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { bearerMatches, inboxReadToken } from "@/lib/inbox-auth";
 import { intakeBlobPath } from "@/lib/intake";
-import { deleteIntake, listIntake } from "@/lib/intake-store";
+import { deleteIntake, listIntake, updateIntake } from "@/lib/intake-store";
+import { parseInboxPatch, toPublicStatus } from "@/lib/status";
 
 const WINDOW_MS = 60 * 60 * 1000;
 const MAX_PER_WINDOW = 30;
@@ -45,6 +46,40 @@ export async function GET(request: Request) {
   const items = await listIntake(20);
   return NextResponse.json(
     { ok: true, items },
+    { headers: { "cache-control": "no-store" } },
+  );
+}
+
+export async function PATCH(request: Request) {
+  if (!allowRequest(clientIp(request))) {
+    return NextResponse.json({ ok: false, code: "rate_limited" }, { status: 429 });
+  }
+  if (!authorize(request)) return unauthorized();
+
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ ok: false, code: "invalid" }, { status: 400 });
+  }
+
+  const parsed = parseInboxPatch(body);
+  if (!parsed.ok) {
+    return NextResponse.json({ ok: false, code: parsed.error }, { status: 400 });
+  }
+
+  const updated = await updateIntake(parsed.id, {
+    status: parsed.status,
+    quoteText: parsed.quoteText,
+  });
+  if (!updated) {
+    return NextResponse.json(
+      { ok: false, code: "not_found" },
+      { status: 404, headers: { "cache-control": "no-store" } },
+    );
+  }
+  return NextResponse.json(
+    { ok: true, ...toPublicStatus(updated) },
     { headers: { "cache-control": "no-store" } },
   );
 }

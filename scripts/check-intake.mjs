@@ -10,6 +10,7 @@ import {
 } from "../lib/intake.ts";
 import {
   emailsMatch,
+  parseInboxPatch,
   parseStatusLookup,
   toPublicStatus,
 } from "../lib/status.ts";
@@ -77,6 +78,7 @@ assert.deepEqual(record, {
   id,
   receivedAt: "2026-08-12T00:00:00.000Z",
   status: "received",
+  quoteText: "",
   name: "Pat",
   email: "pat@example.com",
   company: "Co",
@@ -129,5 +131,51 @@ assert.deepEqual(publicView, {
 assert.equal("message" in publicView, false);
 assert.equal("email" in publicView, false);
 assert.equal("name" in publicView, false);
+
+const quotedPatch = parseInboxPatch({
+  id,
+  status: "quoted",
+  quoteText: "Fixed price $800. Pay before I start. Checkout is not on this page yet.",
+});
+assert.deepEqual(quotedPatch, {
+  ok: true,
+  id,
+  status: "quoted",
+  quoteText: "Fixed price $800. Pay before I start. Checkout is not on this page yet.",
+});
+
+const quotedNeedsText = parseInboxPatch({ id, status: "quoted", quoteText: "  " });
+assert.deepEqual(quotedNeedsText, { ok: false, error: "invalid" });
+
+const badStatus = parseInboxPatch({ id, status: "paid", quoteText: "nope" });
+assert.deepEqual(badStatus, { ok: false, error: "invalid" });
+
+const declined = parseInboxPatch({
+  id,
+  status: "declined",
+  quoteText: "This job is out of scope for a single automation.",
+});
+assert.equal(declined.ok, true);
+if (declined.ok) assert.equal(declined.status, "declined");
+
+const quotedRecord = {
+  ...record,
+  status: "quoted",
+  quoteText: "Fixed price $800. Pay before I start. Checkout is not on this page yet.",
+};
+const quotedView = toPublicStatus(quotedRecord);
+assert.deepEqual(quotedView, {
+  id,
+  status: "quoted",
+  receivedAt: "2026-08-12T00:00:00.000Z",
+  quoteText: "Fixed price $800. Pay before I start. Checkout is not on this page yet.",
+});
+assert.equal("message" in quotedView, false);
+assert.equal("email" in quotedView, false);
+
+const roundTrip = parseIntakeRecord(JSON.stringify(quotedRecord));
+assert.equal(roundTrip?.status, "quoted");
+assert.equal(roundTrip?.quoteText, quotedRecord.quoteText);
+assert.equal(roundTrip?.message, record.message);
 
 console.log("intake checks ok");

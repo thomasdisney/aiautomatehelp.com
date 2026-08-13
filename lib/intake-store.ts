@@ -28,6 +28,31 @@ function assertSafeDir(dir: string): string {
   return dir;
 }
 
+export async function saveIntake(record: IntakeRecord): Promise<boolean> {
+  const backend = detectIntakeBackend();
+  try {
+    if (backend === "blob") return persistBlob(record);
+    if (backend === "webhook") {
+      return persistWebhook(record, process.env.INTAKE_WEBHOOK_URL ?? "");
+    }
+    if (backend === "dir") return persistDir(record, process.env.INTAKE_DIR ?? "");
+  } catch {
+    return false;
+  }
+  return false;
+}
+
+export async function updateIntake(
+  id: string,
+  patch: { status: IntakeRecord["status"]; quoteText: string },
+): Promise<IntakeRecord | null> {
+  const current = await getIntake(id);
+  if (!current) return null;
+  const next = { ...current, status: patch.status, quoteText: patch.quoteText };
+  const stored = await saveIntake(next);
+  return stored ? next : null;
+}
+
 async function persistBlob(record: IntakeRecord): Promise<boolean> {
   const path = intakeBlobPath(record.id);
   if (!path) return false;
@@ -82,21 +107,7 @@ export async function persistIntake(
 ): Promise<{ stored: boolean; id: string }> {
   const id = crypto.randomUUID();
   const record = toIntakeRecord(id, data, new Date().toISOString());
-  const backend = detectIntakeBackend();
-  try {
-    if (backend === "blob") {
-      return { stored: await persistBlob(record), id };
-    }
-    if (backend === "webhook") {
-      return { stored: await persistWebhook(record, process.env.INTAKE_WEBHOOK_URL ?? ""), id };
-    }
-    if (backend === "dir") {
-      return { stored: await persistDir(record, process.env.INTAKE_DIR ?? ""), id };
-    }
-  } catch {
-    return { stored: false, id };
-  }
-  return { stored: false, id };
+  return { stored: await saveIntake(record), id };
 }
 
 export async function getIntake(id: string): Promise<IntakeRecord | null> {

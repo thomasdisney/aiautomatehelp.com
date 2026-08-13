@@ -21,8 +21,8 @@ export default async function StatusPage({
       <h1 className="font-serif text-4xl text-ink">Check a brief</h1>
       <p className="mt-6 leading-relaxed text-ink/70">
         After you send a brief, you get a reference. Enter that reference and the same email
-        to see whether I have it. Quotes will appear here. There is no personal inbox, phone,
-        or calendar.
+        to see whether I have it, and later the yes/no or fixed quote. There is no personal
+        inbox, phone, or calendar.
       </p>
       <div className="mt-10">
         <StatusForm initialId={initialId} />

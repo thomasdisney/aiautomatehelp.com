@@ -5,7 +5,13 @@ import { FormEvent, useState } from "react";
 type Result =
   | { kind: "idle" }
   | { kind: "sending" }
-  | { kind: "found"; id: string; status: string; receivedAt: string }
+  | {
+      kind: "found";
+      id: string;
+      status: string;
+      receivedAt: string;
+      quoteText?: string;
+    }
   | { kind: "missing" }
   | { kind: "error"; message: string };
 
@@ -16,6 +22,8 @@ const ERRORS: Record<string, string> = {
 
 const STATUS_COPY: Record<string, string> = {
   received: "I have the brief. A yes or no and, if yes, a fixed quote will show here.",
+  quoted: "This is a fixed quote for the scope I understood. Payment is not on this page yet.",
+  declined: "I am not taking this job.",
 };
 
 export function StatusForm({ initialId = "" }: { initialId?: string }) {
@@ -42,6 +50,7 @@ export function StatusForm({ initialId = "" }: { initialId?: string }) {
         id?: string;
         status?: string;
         receivedAt?: string;
+        quoteText?: string;
       };
       if (json.code === "not_found" || res.status === 404) {
         setResult({ kind: "missing" });
@@ -59,6 +68,7 @@ export function StatusForm({ initialId = "" }: { initialId?: string }) {
         id: json.id,
         status: json.status,
         receivedAt: json.receivedAt,
+        quoteText: typeof json.quoteText === "string" ? json.quoteText : undefined,
       });
     } catch {
       setResult({
@@ -140,6 +150,9 @@ export function StatusForm({ initialId = "" }: { initialId?: string }) {
           <p className="mt-3 leading-relaxed text-ink/70">
             {STATUS_COPY[result.status] ?? "This brief is on file. Check back here for updates."}
           </p>
+          {result.quoteText ? (
+            <p className="mt-4 leading-relaxed text-ink">{result.quoteText}</p>
+          ) : null}
           <p className="mt-4 text-sm text-ink/60">
             Received {result.receivedAt}. Reference {result.id}.
           </p>

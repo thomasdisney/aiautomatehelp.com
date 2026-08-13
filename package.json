@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --experimental-strip-types scripts/check-intake.mjs"
+    "test": "node --experimental-strip-types scripts/check-intake.mjs",
+    "inbox": "node scripts/inbox.mjs"
   },
   "dependencies": {
     "@vercel/blob": "^2.8.0",

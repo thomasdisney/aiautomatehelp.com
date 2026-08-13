@@ -3,7 +3,11 @@ export const FIELD_LIMITS = {
   email: 120,
   company: 120,
   message: 4000,
+  quoteText: 500,
 } as const;
+
+export const INTAKE_STATUSES = ["received", "quoted", "declined"] as const;
+export type IntakeStatus = (typeof INTAKE_STATUSES)[number];
 
 const CONTROL_CHARS = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -50,8 +54,13 @@ export type IntakeBackend = "blob" | "webhook" | "dir" | "none";
 export type IntakeRecord = IntakeFields & {
   id: string;
   receivedAt: string;
-  status: "received";
+  status: IntakeStatus;
+  quoteText: string;
 };
+
+export function parseIntakeStatus(value: unknown): IntakeStatus | null {
+  return INTAKE_STATUSES.includes(value as IntakeStatus) ? (value as IntakeStatus) : null;
+}
 
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -76,11 +85,13 @@ export function toIntakeRecord(
   id: string,
   data: IntakeFields,
   receivedAt: string,
+  extras: { status?: IntakeStatus; quoteText?: string } = {},
 ): IntakeRecord {
   return {
     id,
     receivedAt,
-    status: "received",
+    status: extras.status ?? "received",
+    quoteText: extras.quoteText ?? "",
     name: data.name,
     email: data.email,
     company: data.company,
@@ -107,5 +118,12 @@ export function parseIntakeRecord(raw: string): IntakeRecord | null {
   if (!name || !email || !message || !receivedAt || !isValidEmail(email)) {
     return null;
   }
-  return toIntakeRecord(id, { name, email, company, message }, receivedAt.slice(0, 40));
+  const status = parseIntakeStatus(row.status) ?? "received";
+  const quoteText = sanitizeText(row.quoteText, FIELD_LIMITS.quoteText);
+  return toIntakeRecord(
+    id,
+    { name, email, company, message },
+    receivedAt.slice(0, 40),
+    { status, quoteText },
+  );
 }
