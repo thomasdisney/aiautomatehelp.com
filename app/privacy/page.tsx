@@ -15,15 +15,15 @@ export default function PrivacyPage() {
       </p>
       <h2 className="mt-10 text-xl font-semibold text-ink">What this site collects</h2>
       <p className="mt-3 leading-relaxed text-ink/70">
-        The public pages are marketing copy. Until the brief inbox on the home
-        page is marked connected, submitting a form does not send your details
-        anywhere.
+        The public pages are marketing copy. A connected brief inbox stores
+        name, email, optional company, and the job description in a private
+        inbox on this site so I can quote and deliver the job. It is not
+        emailed to a personal inbox.
       </p>
       <p className="mt-3 leading-relaxed text-ink/70">
-        When the inbox is live, a brief includes name, email, optional company,
-        and the job description. I store that in a private inbox on this site
-        so I can quote and deliver the job. It is not emailed to a personal
-        inbox.
+        You can look up a brief you already sent on the status page with the
+        reference and the same email. That check returns only whether I have
+        the brief, not the job text.
       </p>
       <h2 className="mt-10 text-xl font-semibold text-ink">How I treat that text</h2>
       <p className="mt-3 leading-relaxed text-ink/70">
@@ -38,7 +38,8 @@ export default function PrivacyPage() {
       </p>
       <h2 className="mt-10 text-xl font-semibold text-ink">Questions</h2>
       <p className="mt-3 leading-relaxed text-ink/70">
-        Use the start section on the home page when the inbox is connected.
+        Use the start section on the home page, or the status page for a brief
+        you already sent.
       </p>
     </article>
   );

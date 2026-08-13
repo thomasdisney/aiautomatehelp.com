@@ -99,6 +99,20 @@ export async function persistIntake(
   return { stored: false, id };
 }
 
+export async function getIntake(id: string): Promise<IntakeRecord | null> {
+  const path = intakeBlobPath(id);
+  if (!path || detectIntakeBackend() !== "blob") return null;
+  try {
+    const { get } = await import("@vercel/blob");
+    const file = await get(path, { access: "private", useCache: false });
+    if (!file?.stream) return null;
+    const text = await new Response(file.stream).text();
+    return parseIntakeRecord(text);
+  } catch {
+    return null;
+  }
+}
+
 export async function listIntake(limit = 20): Promise<IntakeRecord[]> {
   if (detectIntakeBackend() !== "blob") return [];
   const { list, get } = await import("@vercel/blob");

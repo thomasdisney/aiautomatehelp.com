@@ -227,7 +227,11 @@ export default function Home() {
             </ol>
             <p className="mt-6 leading-relaxed text-ink/70">
               There is no personal email, phone number, or calendar on this site.
-              Support stays here.
+              Support stays here. After you send a brief, check it on the{" "}
+              <a href="/status" className="font-medium text-ink underline underline-offset-2">
+                status page
+              </a>
+              .
             </p>
           </div>
           <IntakeForm connected={intakeLive} />

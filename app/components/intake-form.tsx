@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
+import Link from "next/link";
 import { FIELD_LIMITS } from "@/lib/intake";
 
 type Status =
@@ -105,9 +106,16 @@ export function IntakeForm({ connected }: { connected: boolean }) {
       <div className="rounded-2xl border border-ink/10 bg-white p-6 sm:p-8" role="status">
         <p className="text-lg font-semibold text-ink">Brief received</p>
         <p className="mt-3 leading-relaxed text-ink/70">
-          I have the job description. I will reply with a yes or no and, if yes, a fixed
-          quote. Reference {status.id.slice(0, 8)}.
+          I have the job description. A yes or no and, if yes, a fixed quote will show on the
+          status page. Save this full reference.
         </p>
+        <p className="mt-4 break-all font-mono text-sm text-ink">{status.id}</p>
+        <Link
+          href={`/status?ref=${encodeURIComponent(status.id)}`}
+          className="mt-5 inline-flex items-center justify-center rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent-hover"
+        >
+          Check status
+        </Link>
       </div>
     );
   }

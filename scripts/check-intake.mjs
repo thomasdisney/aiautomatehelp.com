@@ -8,6 +8,11 @@ import {
   sanitizeText,
   toIntakeRecord,
 } from "../lib/intake.ts";
+import {
+  emailsMatch,
+  parseStatusLookup,
+  toPublicStatus,
+} from "../lib/status.ts";
 
 const dropped = parseIntake({
   name: "x",
@@ -92,5 +97,37 @@ assert.equal(bearerMatches("Bearer secret-token", "secret-token"), true);
 assert.equal(bearerMatches("Bearer nope", "secret-token"), false);
 assert.equal(bearerMatches("secret-token", "secret-token"), false);
 assert.equal(bearerMatches("Bearer secret-token", ""), false);
+
+const statusDropped = parseStatusLookup({
+  id,
+  email: "pat@example.com",
+  website: "https://spam.test",
+});
+assert.deepEqual(statusDropped, { ok: true, dropped: true });
+
+const statusBadId = parseStatusLookup({ id: "../etc/passwd", email: "pat@example.com" });
+assert.deepEqual(statusBadId, { ok: false, error: "invalid" });
+
+const statusBadEmail = parseStatusLookup({ id, email: "not-an-email" });
+assert.deepEqual(statusBadEmail, { ok: false, error: "invalid" });
+
+const statusOk = parseStatusLookup({
+  id: `  ${id.toUpperCase()}  `,
+  email: "  Pat@Example.com  ",
+});
+assert.deepEqual(statusOk, { ok: true, dropped: false, id, email: "pat@example.com" });
+
+assert.equal(emailsMatch("Pat@Example.com", "pat@example.com"), true);
+assert.equal(emailsMatch("pat@example.com", "other@example.com"), false);
+
+const publicView = toPublicStatus(record);
+assert.deepEqual(publicView, {
+  id,
+  status: "received",
+  receivedAt: "2026-08-12T00:00:00.000Z",
+});
+assert.equal("message" in publicView, false);
+assert.equal("email" in publicView, false);
+assert.equal("name" in publicView, false);
 
 console.log("intake checks ok");
