@@ -55,6 +55,7 @@ export async function POST(request: Request) {
     doneWhen: parsed.decision === "accept" ? parsed.doneWhen : undefined,
     amountCents: parsed.decision === "accept" ? parsed.amountCents : undefined,
     dueAt: parsed.decision === "accept" ? parsed.dueAt : undefined,
+    quoteText: parsed.decision === "accept" ? parsed.quoteText : undefined,
   });
   if (!updated.ok) {
     const status =

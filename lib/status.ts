@@ -51,6 +51,7 @@ export type CustomerActionParse =
       doneWhen: string;
       amountCents: number;
       dueAt: string;
+      quoteText: string;
     }
   | { ok: false; error: "invalid" };
 
@@ -143,7 +144,8 @@ export function parseCustomerAction(body: unknown): CustomerActionParse {
     if (!doneWhen) return { ok: false, error: "invalid" };
     const amountCents = parseAmountCents(raw.amountCents);
     const dueAt = parseDueAt(raw.dueAt);
-    if (amountCents === null || !dueAt) return { ok: false, error: "invalid" };
+    const quoteText = sanitizeText(raw.quoteText, FIELD_LIMITS.quoteText);
+    if (amountCents === null || !dueAt || !quoteText) return { ok: false, error: "invalid" };
     return {
       ok: true,
       dropped: false,
@@ -154,6 +156,7 @@ export function parseCustomerAction(body: unknown): CustomerActionParse {
       doneWhen,
       amountCents,
       dueAt,
+      quoteText,
     };
   }
   return {
@@ -172,11 +175,18 @@ export function doneWhenMatches(offered: string, accepted: string): boolean {
   return Boolean(left) && left === right;
 }
 
+export function quoteTextMatches(offered: string, accepted: string): boolean {
+  const left = sanitizeText(offered, FIELD_LIMITS.quoteText);
+  const right = sanitizeText(accepted, FIELD_LIMITS.quoteText);
+  return Boolean(left) && left === right;
+}
+
 export function quoteTermsMatch(
-  record: { amountCents: number; dueAt: string; doneWhen: string },
-  action: { amountCents?: number; dueAt?: string; doneWhen?: string },
+  record: { amountCents: number; dueAt: string; doneWhen: string; quoteText: string },
+  action: { amountCents?: number; dueAt?: string; doneWhen?: string; quoteText?: string },
 ): boolean {
   if (!doneWhenMatches(record.doneWhen, action.doneWhen ?? "")) return false;
+  if (!quoteTextMatches(record.quoteText, action.quoteText ?? "")) return false;
   const amount = parseAmountCents(action.amountCents);
   if (amount === null || amount !== record.amountCents) return false;
   const dueAt = parseDueAt(action.dueAt ?? "");
@@ -192,6 +202,7 @@ export function applyCustomerAction(
     doneWhen?: string;
     amountCents?: number;
     dueAt?: string;
+    quoteText?: string;
   },
   now: string,
 ): ApplyCustomerAction {

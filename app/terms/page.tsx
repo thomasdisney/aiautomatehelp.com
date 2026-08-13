@@ -15,9 +15,9 @@ export default function TermsPage() {
       <h2 className="mt-10 text-xl font-semibold text-ink">The offer</h2>
       <p className="mt-3 leading-relaxed text-ink/70">
         A quote is an offer for one written scope at a fixed price, with a
-        delivery date and a done-when test. You accept the price, date, and
-        test together. After you accept, that price, date, and test stay on
-        the brief.
+        delivery date and a done-when test. You accept the written scope,
+        price, date, and test together. After you accept, that scope, price,
+        date, and test stay on the brief.
         You can turn the quote down until it is paid. Turning it down closes
         those terms; a later quote on the same brief is a new offer. After
         payment, the job is on. New work is a new quote. Work starts after

@@ -157,6 +157,7 @@ export async function replyToIntake(
     doneWhen?: string;
     amountCents?: number;
     dueAt?: string;
+    quoteText?: string;
   },
 ): Promise<
   | { ok: true; record: IntakeRecord }
