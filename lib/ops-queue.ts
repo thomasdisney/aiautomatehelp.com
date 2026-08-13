@@ -145,7 +145,7 @@ export function hasPublicOperatorUpdate(record: IntakeRecord): boolean {
 
 export function isWaitingOnCustomer(record: IntakeRecord): boolean {
   if (hasOpenQuestion(record)) return false;
-  if (record.status === "quoted") return true;
+  if (record.status === "quoted" || record.status === "accepted") return true;
   if (record.status !== "received") return false;
   return hasPublicOperatorUpdate(record);
 }
@@ -153,9 +153,8 @@ export function isWaitingOnCustomer(record: IntakeRecord): boolean {
 export function toWorkItem(record: IntakeRecord): OpsWorkItem | null {
   const open = hasOpenQuestion(record);
   if (isWaitingOnCustomer(record)) return null;
-  const waiting =
-    record.status === "received" || record.status === "accepted" || record.status === "paid";
-  if (!open && !waiting) return null;
+  const needsWork = record.status === "received" || record.status === "paid";
+  if (!open && !needsWork) return null;
 
   const event: OpsEventType = open ? "question" : eventFromStatus(record.status);
   const at =
@@ -176,11 +175,20 @@ export function toWorkItem(record: IntakeRecord): OpsWorkItem | null {
 
 export function toWaitingItem(record: IntakeRecord): OpsWorkItem | null {
   if (!isWaitingOnCustomer(record)) return null;
-  const at = record.updateAt || record.receivedAt;
+  const at =
+    record.status === "accepted"
+      ? record.updateAt || record.customerReplyAt || record.receivedAt
+      : record.updateAt || record.receivedAt;
+  const event =
+    record.status === "quoted"
+      ? "quoted"
+      : record.status === "accepted"
+        ? "accepted"
+        : "received";
   return {
     id: record.id,
     status: record.status,
-    event: record.status === "quoted" ? "quoted" : "received",
+    event,
     at: at.slice(0, 40),
   };
 }
