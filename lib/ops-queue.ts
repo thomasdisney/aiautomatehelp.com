@@ -144,8 +144,9 @@ export function hasPublicOperatorUpdate(record: IntakeRecord): boolean {
 }
 
 export function isWaitingOnCustomer(record: IntakeRecord): boolean {
-  if (record.status !== "received") return false;
   if (hasOpenQuestion(record)) return false;
+  if (record.status === "quoted") return true;
+  if (record.status !== "received") return false;
   return hasPublicOperatorUpdate(record);
 }
 
@@ -179,7 +180,7 @@ export function toWaitingItem(record: IntakeRecord): OpsWorkItem | null {
   return {
     id: record.id,
     status: record.status,
-    event: "received",
+    event: record.status === "quoted" ? "quoted" : "received",
     at: at.slice(0, 40),
   };
 }

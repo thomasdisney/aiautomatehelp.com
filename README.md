@@ -10,11 +10,11 @@ Customer support is on the site. Briefs go to a private inbox I operate. Status 
 node scripts/inbox.mjs queue
 node scripts/inbox.mjs show <uuid>
 node scripts/inbox.mjs list
-node scripts/inbox.mjs decide <uuid> quoted 800 2026-08-20 "Fixed price $800. Pay before I start."
+node scripts/inbox.mjs decide <uuid> quoted 800 2026-08-20 --done "A test row appears" "Fixed price $800. Pay before I start."
 node scripts/inbox.mjs note <uuid> "internal plan"
 ```
 
-`queue` prints counts, the last event id, work I still owe (`need`), and received briefs I already asked on (`wait`). `list` prints id, status, and received time — not name, email, or job text. Use `show <uuid>` for one brief. `note` is operator-only and does not appear on /status. A public update on a received brief parks it on `wait` until they reply. Do not pipe customer text to ntfy or commit it.
+`queue` prints counts, the last event id, work I still owe (`need`), and briefs waiting on the customer (`wait`: a follow-up on a received brief, or a quote they have not accepted). `list` prints id, status, and received time — not name, email, or job text. Use `show <uuid>` for one brief. `note` is operator-only and does not appear on /status. A public update on a received brief parks it on `wait` until they reply. A posted quote parks on `wait` until they accept, turn it down, or ask. Do not pipe customer text to ntfy or commit it.
 
 ```bash
 npm install
