@@ -36,9 +36,9 @@ const ERRORS: Record<string, string> = {
 
 const STATUS_COPY: Record<string, string> = {
   received: "I have the brief. I may ask a follow-up here. A yes or no and, if yes, a fixed quote will show here.",
-  quoted: "This is a fixed quote for the scope I understood, with a delivery date and a done-when test. After you accept, you pay that amount here before I start.",
+  quoted: "This is a fixed quote for the scope I understood, with a delivery date and a done-when test. Accepting agrees to that test, price, and date. After you accept, you pay that amount here before I start.",
   declined: "I am not taking this job.",
-  accepted: "You accepted this quote. The price and delivery date stay as written. You can still turn it down until it is paid. I will not start until it is paid.",
+  accepted: "You accepted this quote, including the done-when test. The price, date, and test stay as written. You can still turn it down until it is paid. I will not start until it is paid.",
   withdrawn: "You turned those terms down. They stay closed. If I post a new quote here, you can accept that one. Or send a new brief.",
   paid: "Paid. I will start the written scope. Check here for the handoff.",
   delivered: "Handed off. The note below is how it runs. Ask here if something in that scope is broken.",
@@ -157,6 +157,7 @@ export function StatusForm({
           email: result.email,
           decision,
           note,
+          ...(decision === "accept" && result.doneWhen ? { doneWhen: result.doneWhen } : {}),
         }),
       });
       const json = (await res.json()) as {
@@ -333,6 +334,7 @@ export function StatusForm({
           <ReplyPanel
             quoted={result.status === "quoted"}
             accepted={result.status === "accepted"}
+            doneWhen={result.doneWhen}
             busy={replyBusy}
             error={replyError}
             onSend={sendDecision}
@@ -425,22 +427,29 @@ function PayPanel({
 function ReplyPanel({
   quoted,
   accepted,
+  doneWhen,
   busy,
   error,
   onSend,
 }: {
   quoted: boolean;
   accepted: boolean;
+  doneWhen?: string;
   busy: boolean;
   error: string;
   onSend: (decision: "accept" | "decline" | "question", note: string) => Promise<boolean>;
 }) {
   const [note, setNote] = useState("");
+  const [ackDoneWhen, setAckDoneWhen] = useState(false);
   const canDecline = quoted || accepted;
+  const canAccept = quoted && Boolean(doneWhen) && ackDoneWhen;
 
   async function submit(decision: "accept" | "decline" | "question") {
     const saved = await onSend(decision, note);
-    if (saved) setNote("");
+    if (saved) {
+      setNote("");
+      setAckDoneWhen(false);
+    }
   }
 
   return (
@@ -448,7 +457,7 @@ function ReplyPanel({
       <p className="text-sm font-medium text-ink">Reply on this brief</p>
       <p className="text-sm leading-relaxed text-ink/60">
         {quoted
-          ? "Accept, turn it down, or ask a question here. Notes stay on this page in order. After you accept, payment is the stored amount only. You can still turn it down until it is paid."
+          ? "Accept, turn it down, or ask a question here. Accepting agrees to the done-when test, price, and date. Notes stay on this page in order. After you accept, payment is the stored amount only. You can still turn it down until it is paid."
           : accepted
             ? "You can still turn this quote down until it is paid. Ask a question here. Notes stay on this page in order. There is no personal inbox."
             : "Ask a question about this brief here. Notes stay on this page in order. There is no personal inbox."}
@@ -468,6 +477,17 @@ function ReplyPanel({
           className="mt-1.5 w-full resize-y rounded-lg border border-ink/15 px-3 py-2.5 outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
         />
       </div>
+      {quoted && doneWhen ? (
+        <label className="flex items-start gap-3 text-sm leading-relaxed text-ink">
+          <input
+            type="checkbox"
+            className="mt-1"
+            checked={ackDoneWhen}
+            onChange={(event) => setAckDoneWhen(event.target.checked)}
+          />
+          <span>I accept that this job is done when {doneWhen}</span>
+        </label>
+      ) : null}
       {error ? (
         <p className="text-sm text-red-700" role="alert">
           {error}
@@ -477,7 +497,7 @@ function ReplyPanel({
         {quoted ? (
           <button
             type="button"
-            disabled={busy}
+            disabled={busy || !canAccept}
             onClick={() => void submit("accept")}
             className="rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent-hover disabled:opacity-60"
           >

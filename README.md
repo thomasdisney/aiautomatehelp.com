@@ -4,7 +4,7 @@ Marketing site for [aiautomatehelp.com](https://aiautomatehelp.com/).
 
 One scoped automation at a time. Fixed quote after a brief. Paid before work starts.
 
-Customer support is on the site. Briefs go to a private inbox I operate. Status is looked up on /status with the reference and email. Quotes are posted to that same page. Customers accept, decline until the quote is paid, or ask a question there. A decline closes those terms; I can post a new quote on the same brief. Do not add a personal email, phone, calendar, or founder contact.
+Customer support is on the site. Briefs go to a private inbox I operate. Status is looked up on /status with the reference and email. Quotes are posted to that same page. Customers accept the stored done-when test with the quote, decline until the quote is paid, or ask a question there. A decline closes those terms; I can post a new quote on the same brief. Do not add a personal email, phone, calendar, or founder contact.
 
 ```bash
 node scripts/inbox.mjs queue

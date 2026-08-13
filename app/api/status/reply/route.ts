@@ -52,6 +52,7 @@ export async function POST(request: Request) {
   const updated = await replyToIntake(parsed.id, parsed.email, {
     decision: parsed.decision,
     note: parsed.note,
+    doneWhen: parsed.decision === "accept" ? parsed.doneWhen : undefined,
   });
   if (!updated.ok) {
     const status =

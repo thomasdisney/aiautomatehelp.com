@@ -38,8 +38,17 @@ export type CustomerActionParse =
       dropped: false;
       id: string;
       email: string;
-      decision: CustomerDecision;
+      decision: Exclude<CustomerDecision, "accept">;
       note: string;
+    }
+  | {
+      ok: true;
+      dropped: false;
+      id: string;
+      email: string;
+      decision: "accept";
+      note: string;
+      doneWhen: string;
     }
   | { ok: false; error: "invalid" };
 
@@ -120,6 +129,7 @@ export function parseCustomerAction(body: unknown): CustomerActionParse {
   const email = sanitizeText(raw.email, FIELD_LIMITS.email).toLowerCase();
   const decisionRaw = typeof raw.decision === "string" ? raw.decision.trim() : "";
   const note = sanitizeText(raw.note, FIELD_LIMITS.customerReply);
+  const doneWhen = sanitizeText(raw.doneWhen, FIELD_LIMITS.doneWhen);
   if (!intakeBlobPath(idRaw) || !isValidEmail(email)) {
     return { ok: false, error: "invalid" };
   }
@@ -127,19 +137,37 @@ export function parseCustomerAction(body: unknown): CustomerActionParse {
     return { ok: false, error: "invalid" };
   }
   if (decisionRaw === "question" && !note) return { ok: false, error: "invalid" };
+  if (decisionRaw === "accept") {
+    if (!doneWhen) return { ok: false, error: "invalid" };
+    return {
+      ok: true,
+      dropped: false,
+      id: idRaw,
+      email,
+      decision: "accept",
+      note,
+      doneWhen,
+    };
+  }
   return {
     ok: true,
     dropped: false,
     id: idRaw,
     email,
-    decision: decisionRaw as CustomerDecision,
+    decision: decisionRaw as Exclude<CustomerDecision, "accept">,
     note,
   };
 }
 
+export function doneWhenMatches(offered: string, accepted: string): boolean {
+  const left = sanitizeText(offered, FIELD_LIMITS.doneWhen);
+  const right = sanitizeText(accepted, FIELD_LIMITS.doneWhen);
+  return Boolean(left) && left === right;
+}
+
 export function applyCustomerAction(
   record: IntakeRecord,
-  action: { decision: CustomerDecision; note: string },
+  action: { decision: CustomerDecision; note: string; doneWhen?: string },
   now: string,
 ): ApplyCustomerAction {
   const stamp = now.slice(0, 40);
@@ -176,6 +204,9 @@ export function applyCustomerAction(
   }
 
   if (record.status !== "quoted") return { ok: false, error: "not_allowed" };
+  if (!doneWhenMatches(record.doneWhen, action.doneWhen ?? "")) {
+    return { ok: false, error: "not_allowed" };
+  }
 
   return {
     ok: true,
