@@ -19,7 +19,7 @@ import {
   type OpsEvent,
   type OpsQueue,
 } from "@/lib/ops-queue";
-import { applyPaid } from "@/lib/payment";
+import { applyPaid, paymentConfigured } from "@/lib/payment";
 import {
   applyCustomerAction,
   applyOperatorPatch,
@@ -256,7 +256,7 @@ export async function getOpsLastEvent(): Promise<OpsEvent | null> {
 
 export async function getOpsQueue(): Promise<OpsQueue> {
   const [items, last] = await Promise.all([listIntake(20), getOpsLastEvent()]);
-  return summarizeQueue(items, last);
+  return summarizeQueue(items, last, { paymentConnected: paymentConfigured() });
 }
 
 async function pingOpsSignal(event: OpsEvent): Promise<void> {

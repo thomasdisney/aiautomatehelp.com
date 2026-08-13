@@ -30,7 +30,7 @@ const STEPS = [
   {
     n: "03",
     title: "Pay",
-    body: "You pay that quoted amount on the status page after you accept. I start only after it clears. Checkout stays off until it is actually connected.",
+    body: "You pay that quoted amount on the status page after you accept, once checkout is connected. I start only after it clears. Checkout stays off until it is actually connected.",
   },
   {
     n: "04",

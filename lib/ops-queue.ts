@@ -143,17 +143,31 @@ export function hasPublicOperatorUpdate(record: IntakeRecord): boolean {
   return Boolean(record.updateText);
 }
 
-export function isWaitingOnCustomer(record: IntakeRecord): boolean {
+export type QueueOptions = {
+  paymentConnected?: boolean;
+};
+
+export function isWaitingOnCustomer(
+  record: IntakeRecord,
+  paymentConnected = false,
+): boolean {
   if (hasOpenQuestion(record)) return false;
-  if (record.status === "quoted" || record.status === "accepted") return true;
+  if (record.status === "quoted") return true;
+  if (record.status === "accepted") return paymentConnected;
   if (record.status !== "received") return false;
   return hasPublicOperatorUpdate(record);
 }
 
-export function toWorkItem(record: IntakeRecord): OpsWorkItem | null {
+export function toWorkItem(
+  record: IntakeRecord,
+  paymentConnected = false,
+): OpsWorkItem | null {
   const open = hasOpenQuestion(record);
-  if (isWaitingOnCustomer(record)) return null;
-  const needsWork = record.status === "received" || record.status === "paid";
+  if (isWaitingOnCustomer(record, paymentConnected)) return null;
+  const needsWork =
+    record.status === "received" ||
+    record.status === "paid" ||
+    (record.status === "accepted" && !paymentConnected);
   if (!open && !needsWork) return null;
 
   const event: OpsEventType = open ? "question" : eventFromStatus(record.status);
@@ -163,7 +177,7 @@ export function toWorkItem(record: IntakeRecord): OpsWorkItem | null {
       : record.status === "paid"
         ? record.paidAt || record.receivedAt
         : record.status === "accepted"
-          ? record.customerReplyAt || record.receivedAt
+          ? record.customerReplyAt || record.updateAt || record.receivedAt
           : record.receivedAt;
   return {
     id: record.id,
@@ -173,8 +187,11 @@ export function toWorkItem(record: IntakeRecord): OpsWorkItem | null {
   };
 }
 
-export function toWaitingItem(record: IntakeRecord): OpsWorkItem | null {
-  if (!isWaitingOnCustomer(record)) return null;
+export function toWaitingItem(
+  record: IntakeRecord,
+  paymentConnected = false,
+): OpsWorkItem | null {
+  if (!isWaitingOnCustomer(record, paymentConnected)) return null;
   const at =
     record.status === "accepted"
       ? record.updateAt || record.customerReplyAt || record.receivedAt
@@ -193,14 +210,19 @@ export function toWaitingItem(record: IntakeRecord): OpsWorkItem | null {
   };
 }
 
-export function summarizeQueue(records: IntakeRecord[], last: OpsEvent | null): OpsQueue {
+export function summarizeQueue(
+  records: IntakeRecord[],
+  last: OpsEvent | null,
+  options: QueueOptions = {},
+): OpsQueue {
+  const paymentConnected = Boolean(options.paymentConnected);
   const queue = emptyQueue(last);
   for (const record of records) {
     queue[record.status] += 1;
     if (hasOpenQuestion(record)) queue.questions += 1;
-    const item = toWorkItem(record);
+    const item = toWorkItem(record, paymentConnected);
     if (item) queue.needs.push(item);
-    const waiting = toWaitingItem(record);
+    const waiting = toWaitingItem(record, paymentConnected);
     if (waiting) queue.waiting.push(waiting);
   }
   queue.attention = queue.needs.length;

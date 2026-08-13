@@ -14,7 +14,7 @@ node scripts/inbox.mjs decide <uuid> quoted 800 2026-08-20 --done "A test row ap
 node scripts/inbox.mjs note <uuid> "internal plan"
 ```
 
-`queue` prints counts, the last event id, work I still owe (`need`), and briefs waiting on the customer (`wait`: a follow-up on a received brief, a quote they have not answered, or an accepted quote I have not been paid for). `list` prints id, status, and received time — not name, email, or job text. Use `show <uuid>` for one brief. `note` is operator-only and does not appear on /status. A public update on a received brief parks it on `wait` until they reply. A posted quote parks on `wait` until they accept, turn it down, or ask. An accepted quote parks on `wait` until they pay, turn it down, or ask. I start after it is paid. Do not pipe customer text to ntfy or commit it.
+`queue` prints counts, the last event id, work I still owe (`need`), and briefs waiting on the customer (`wait`: a follow-up on a received brief, a quote they have not answered, or an accepted quote they can actually pay). `list` prints id, status, and received time — not name, email, or job text. Use `show <uuid>` for one brief. `note` is operator-only and does not appear on /status. A public update on a received brief parks it on `wait` until they reply. A posted quote parks on `wait` until they accept, turn it down, or ask. An accepted quote stays on `need` while checkout is disconnected, because they cannot pay yet. Once checkout is connected, that accepted quote parks on `wait` until they pay, turn it down, or ask. I start after it is paid. Do not pipe customer text to ntfy or commit it.
 
 ```bash
 npm install
