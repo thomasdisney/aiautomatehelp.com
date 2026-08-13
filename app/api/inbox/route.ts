@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { bearerMatches, inboxReadToken } from "@/lib/inbox-auth";
 import { intakeBlobPath } from "@/lib/intake";
-import { deleteIntake, listIntake, updateIntake } from "@/lib/intake-store";
+import { deleteIntake, getOpsLastEvent, getOpsQueue, listIntake, updateIntake } from "@/lib/intake-store";
+import { summarizeQueue } from "@/lib/ops-queue";
 import { parseInboxPatch, toPublicStatus } from "@/lib/status";
 
 const WINDOW_MS = 60 * 60 * 1000;
@@ -43,9 +44,19 @@ export async function GET(request: Request) {
   }
   if (!authorize(request)) return unauthorized();
 
-  const items = await listIntake(20);
+  const url = new URL(request.url);
+  const queueOnly = url.searchParams.get("view") === "queue";
+  if (queueOnly) {
+    const queue = await getOpsQueue();
+    return NextResponse.json(
+      { ok: true, queue },
+      { headers: { "cache-control": "no-store" } },
+    );
+  }
+
+  const [items, last] = await Promise.all([listIntake(20), getOpsLastEvent()]);
   return NextResponse.json(
-    { ok: true, items },
+    { ok: true, queue: summarizeQueue(items, last), items },
     { headers: { "cache-control": "no-store" } },
   );
 }

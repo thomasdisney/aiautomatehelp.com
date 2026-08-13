@@ -3,6 +3,7 @@
  * Operator inbox. Reads INTAKE_READ_TOKEN from ~/.local/credentials/aiautomatehelp.
  * Prints to this terminal only. Do not pipe customer text to ntfy or git.
  *
+ *   node scripts/inbox.mjs queue
  *   node scripts/inbox.mjs list
  *   node scripts/inbox.mjs decide <uuid> quoted|declined|received [quote text...]
  */
@@ -33,6 +34,28 @@ async function call(method, path, body) {
 }
 
 const [cmd, id, status, ...rest] = process.argv.slice(2);
+
+if (cmd === "queue") {
+  const { status: http, json } = await call("GET", "/api/inbox?view=queue");
+  if (!json.ok || !json.queue) {
+    console.error("queue_failed", http, json.code ?? "error");
+    process.exit(1);
+  }
+  const queue = json.queue;
+  console.log(`attention ${queue.attention}`);
+  console.log(`received ${queue.received}`);
+  console.log(`quoted ${queue.quoted}`);
+  console.log(`accepted ${queue.accepted}`);
+  console.log(`questions ${queue.questions}`);
+  console.log(`declined ${queue.declined}`);
+  console.log(`withdrawn ${queue.withdrawn}`);
+  if (queue.last) {
+    console.log(`last ${queue.last.event} ${queue.last.id} ${queue.last.status} ${queue.last.at}`);
+  } else {
+    console.log("last none");
+  }
+  process.exit(0);
+}
 
 if (cmd === "list") {
   const { status: http, json } = await call("GET", "/api/inbox");
@@ -75,6 +98,7 @@ if (cmd === "decide" && id && status) {
   process.exit(0);
 }
 
-console.error("usage: node scripts/inbox.mjs list");
+console.error("usage: node scripts/inbox.mjs queue");
+console.error("       node scripts/inbox.mjs list");
 console.error("       node scripts/inbox.mjs decide <uuid> quoted|declined|received [quote text]");
 process.exit(2);

@@ -7,6 +7,18 @@ import {
   type IntakeFields,
   type IntakeRecord,
 } from "@/lib/intake";
+import {
+  eventFromCustomerDecision,
+  eventFromStatus,
+  opsLastPath,
+  opsSignalPayload,
+  opsSignalUrl,
+  parseOpsEvent,
+  summarizeQueue,
+  toOpsEvent,
+  type OpsEvent,
+  type OpsQueue,
+} from "@/lib/ops-queue";
 import { applyCustomerAction, emailsMatch, type CustomerDecision } from "@/lib/status";
 
 export {
@@ -59,6 +71,14 @@ export async function updateIntake(
   if (!current) return { ok: false, error: "not_found" };
   const next = { ...current, status: patch.status, quoteText: patch.quoteText };
   const stored = await saveIntake(next);
+  if (stored) {
+    await recordOpsEvent({
+      event: eventFromStatus(next.status),
+      id: next.id,
+      status: next.status,
+      at: new Date().toISOString(),
+    });
+  }
   return stored ? { ok: true, record: next } : { ok: false, error: "store" };
 }
 
@@ -121,6 +141,14 @@ export async function replyToIntake(
   const applied = applyCustomerAction(current, action, new Date().toISOString());
   if (!applied.ok) return applied;
   const stored = await saveIntake(applied.record);
+  if (stored) {
+    await recordOpsEvent({
+      event: eventFromCustomerDecision(action.decision),
+      id: applied.record.id,
+      status: applied.record.status,
+      at: applied.record.customerReplyAt || new Date().toISOString(),
+    });
+  }
   return stored ? { ok: true, record: applied.record } : { ok: false, error: "store" };
 }
 
@@ -129,7 +157,72 @@ export async function persistIntake(
 ): Promise<{ stored: boolean; id: string }> {
   const id = crypto.randomUUID();
   const record = toIntakeRecord(id, data, new Date().toISOString());
-  return { stored: await saveIntake(record), id };
+  const stored = await saveIntake(record);
+  if (stored) {
+    await recordOpsEvent({
+      event: "received",
+      id: record.id,
+      status: record.status,
+      at: record.receivedAt,
+    });
+  }
+  return { stored, id };
+}
+
+export async function recordOpsEvent(input: {
+  event: unknown;
+  id: unknown;
+  status: unknown;
+  at: unknown;
+}): Promise<void> {
+  const event = toOpsEvent(input);
+  if (!event) return;
+  try {
+    if (detectIntakeBackend() === "blob") {
+      const { put } = await import("@vercel/blob");
+      await put(opsLastPath(), JSON.stringify(opsSignalPayload(event)), intakeBlobPutOptions());
+    }
+  } catch {
+    // Queue writes must not fail the customer path.
+  }
+  void pingOpsSignal(event);
+}
+
+export async function getOpsLastEvent(): Promise<OpsEvent | null> {
+  if (detectIntakeBackend() !== "blob") return null;
+  try {
+    const { get } = await import("@vercel/blob");
+    const file = await get(opsLastPath(), { access: "private", useCache: false });
+    if (!file?.stream) return null;
+    const text = await new Response(file.stream).text();
+    return parseOpsEvent(text);
+  } catch {
+    return null;
+  }
+}
+
+export async function getOpsQueue(): Promise<OpsQueue> {
+  const [items, last] = await Promise.all([listIntake(20), getOpsLastEvent()]);
+  return summarizeQueue(items, last);
+}
+
+async function pingOpsSignal(event: OpsEvent): Promise<void> {
+  const url = opsSignalUrl();
+  if (!url) return;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 5000);
+  try {
+    await fetch(url, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(opsSignalPayload(event)),
+      signal: controller.signal,
+    });
+  } catch {
+    // Optional outbound ping. Never block or retry-storm.
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 export async function getIntake(id: string): Promise<IntakeRecord | null> {
