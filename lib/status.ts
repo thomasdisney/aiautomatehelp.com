@@ -207,6 +207,7 @@ export function parseInboxPatch(body: unknown): InboxPatch {
   const updateText = sanitizeText(raw.updateText, FIELD_LIMITS.updateText);
   if (!status && !updateText) return { ok: false, error: "invalid" };
   if (status === "quoted" && !quoteText) return { ok: false, error: "invalid" };
+  if (status === "declined" && !updateText) return { ok: false, error: "invalid" };
   if (status === "delivered" && !updateText) return { ok: false, error: "invalid" };
   const amountCents = status === "quoted" ? parseAmountCents(raw.amountCents) : 0;
   if (status === "quoted" && amountCents === null) return { ok: false, error: "invalid" };
@@ -261,7 +262,7 @@ export function applyOperatorPatch(
     record: {
       ...record,
       status: nextStatus,
-      quoteText: patch.status ? patch.quoteText : record.quoteText,
+      quoteText: patch.status === "quoted" ? patch.quoteText : record.quoteText,
       amountCents: patch.status === "quoted" ? patch.amountCents : record.amountCents,
       dueAt: patch.status === "quoted" ? patch.dueAt : record.dueAt,
       updateText: patch.updateText ? patch.updateText : record.updateText,

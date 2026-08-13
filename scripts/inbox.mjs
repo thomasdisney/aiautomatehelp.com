@@ -7,6 +7,7 @@
  *   node scripts/inbox.mjs show <uuid>
  *   node scripts/inbox.mjs list   # ids and statuses only
  *   node scripts/inbox.mjs decide <uuid> quoted <dollars> <YYYY-MM-DD> <quote text>
+ *   node scripts/inbox.mjs decide <uuid> declined <reason>
  *   node scripts/inbox.mjs update <uuid> <text>
  *   node scripts/inbox.mjs decide <uuid> delivered <handoff text>
  */
@@ -154,6 +155,14 @@ if (cmd === "decide" && id && status) {
     amountCents = dollars * 100;
     quoteText = rest.slice(2).join(" ").trim();
   }
+  if (status === "declined") {
+    updateText = rest.join(" ").trim();
+    quoteText = "";
+    if (!updateText) {
+      console.error("usage: node scripts/inbox.mjs decide <uuid> declined <reason>");
+      process.exit(2);
+    }
+  }
   if (status === "delivered") {
     updateText = rest.join(" ").trim();
     if (!updateText) {
@@ -187,7 +196,7 @@ console.error("usage: node scripts/inbox.mjs queue");
 console.error("       node scripts/inbox.mjs show <uuid>");
 console.error("       node scripts/inbox.mjs list");
 console.error("       node scripts/inbox.mjs decide <uuid> quoted <dollars> <YYYY-MM-DD> <quote text>");
-console.error("       node scripts/inbox.mjs decide <uuid> declined|received [note]");
+console.error("       node scripts/inbox.mjs decide <uuid> declined <reason>");
 console.error("       node scripts/inbox.mjs update <uuid> <text>");
 console.error("       node scripts/inbox.mjs decide <uuid> delivered <handoff text>");
 process.exit(2);
