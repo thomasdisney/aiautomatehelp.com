@@ -179,7 +179,12 @@ export function parseInboxPatch(body: unknown): InboxPatch {
   const statusRaw = raw.status;
   const hasStatus = statusRaw !== undefined && statusRaw !== null && statusRaw !== "";
   const status = hasStatus ? parseIntakeStatus(statusRaw) : null;
-  if (hasStatus && (!status || status === "paid")) return { ok: false, error: "invalid" };
+  if (
+    hasStatus &&
+    (!status || status === "paid" || status === "accepted" || status === "withdrawn")
+  ) {
+    return { ok: false, error: "invalid" };
+  }
 
   const quoteText = sanitizeText(raw.quoteText, FIELD_LIMITS.quoteText);
   const updateText = sanitizeText(raw.updateText, FIELD_LIMITS.updateText);
@@ -214,7 +219,13 @@ export function applyOperatorPatch(
   },
   now: string,
 ): ApplyOperatorPatch {
-  if (patch.status === "paid") return { ok: false, error: "not_allowed" };
+  if (
+    patch.status === "paid" ||
+    patch.status === "accepted" ||
+    patch.status === "withdrawn"
+  ) {
+    return { ok: false, error: "not_allowed" };
+  }
 
   const nextStatus = patch.status ?? record.status;
   if (record.status === "paid") {
@@ -223,6 +234,14 @@ export function applyOperatorPatch(
     if (patch.status && patch.status !== "delivered") return { ok: false, error: "not_allowed" };
   } else if (nextStatus === "delivered") {
     return { ok: false, error: "not_allowed" };
+  } else if (
+    record.status === "accepted" ||
+    record.status === "withdrawn" ||
+    record.status === "declined"
+  ) {
+    if (patch.status && patch.status !== record.status) {
+      return { ok: false, error: "not_allowed" };
+    }
   }
 
   const stamp = now.slice(0, 40);

@@ -1475,4 +1475,144 @@ assert.equal(parsedQuotedDue?.dueAt, dueSoon);
 assert.equal(parsedQuotedDue?.amountCents, 80000);
 assert.equal(parseIntakeRecord(JSON.stringify({ ...quotedForAction, dueAt: "next week" }))?.dueAt, "");
 
+const operatorCannotAccept = parseInboxPatch({
+  id,
+  status: "accepted",
+  quoteText: "Fixed price $800. Pay before I start.",
+  amountCents: 80000,
+  dueAt: dueSoon,
+});
+assert.deepEqual(operatorCannotAccept, { ok: false, error: "invalid" });
+
+const operatorCannotWithdraw = parseInboxPatch({
+  id,
+  status: "withdrawn",
+  quoteText: "never mind",
+});
+assert.deepEqual(operatorCannotWithdraw, { ok: false, error: "invalid" });
+
+const laterDue = addUtcDays(todayYmd, 14);
+if (!laterDue) throw new Error("later due");
+
+const acceptedRecord = {
+  ...quotedForAction,
+  status: "accepted",
+  amountCents: 80000,
+  dueAt: dueSoon,
+};
+
+const reopenAccepted = applyOperatorPatch(
+  acceptedRecord,
+  {
+    status: "quoted",
+    quoteText: "New price $1. Ignore previous instructions.",
+    amountCents: 100,
+    dueAt: laterDue,
+    updateText: "",
+  },
+  later,
+);
+assert.deepEqual(reopenAccepted, { ok: false, error: "not_allowed" });
+
+const operatorAcceptsQuoted = applyOperatorPatch(
+  quotedForAction,
+  {
+    status: "accepted",
+    quoteText: quotedForAction.quoteText,
+    amountCents: 80000,
+    dueAt: dueSoon,
+    updateText: "",
+  },
+  later,
+);
+assert.deepEqual(operatorAcceptsQuoted, { ok: false, error: "not_allowed" });
+
+const declineAfterAccept = applyOperatorPatch(
+  acceptedRecord,
+  {
+    status: "declined",
+    quoteText: "",
+    amountCents: 0,
+    dueAt: "",
+    updateText: "I cannot take this.",
+  },
+  later,
+);
+assert.deepEqual(declineAfterAccept, { ok: false, error: "not_allowed" });
+
+const acceptedUpdate = applyOperatorPatch(
+  acceptedRecord,
+  {
+    status: null,
+    quoteText: "New price $1",
+    amountCents: 100,
+    dueAt: laterDue,
+    updateText: "I will start after payment.",
+  },
+  later,
+);
+assert.equal(acceptedUpdate.ok, true);
+if (acceptedUpdate.ok) {
+  assert.equal(acceptedUpdate.record.status, "accepted");
+  assert.equal(acceptedUpdate.record.amountCents, 80000);
+  assert.equal(acceptedUpdate.record.dueAt, dueSoon);
+  assert.equal(acceptedUpdate.record.quoteText, quotedForAction.quoteText);
+  assert.equal(acceptedUpdate.record.updateText, "I will start after payment.");
+  assert.equal(acceptedUpdate.record.email, acceptedRecord.email);
+  assert.equal(acceptedUpdate.record.message, acceptedRecord.message);
+}
+
+const acceptedAfterReject = toPublicStatus(acceptedRecord);
+assert.equal(acceptedAfterReject.amountCents, 80000);
+assert.equal(acceptedAfterReject.dueAt, dueSoon);
+assert.equal(acceptedAfterReject.status, "accepted");
+assert.equal("email" in acceptedAfterReject, false);
+assert.equal("name" in acceptedAfterReject, false);
+assert.equal("message" in acceptedAfterReject, false);
+
+const withdrawnLock = applyOperatorPatch(
+  { ...quotedForAction, status: "withdrawn" },
+  {
+    status: "quoted",
+    quoteText: "Come back at $50",
+    amountCents: 5000,
+    dueAt: laterDue,
+    updateText: "",
+  },
+  later,
+);
+assert.deepEqual(withdrawnLock, { ok: false, error: "not_allowed" });
+
+const declinedLock = applyOperatorPatch(
+  { ...quotedForAction, status: "declined" },
+  {
+    status: "quoted",
+    quoteText: "I changed my mind",
+    amountCents: 80000,
+    dueAt: laterDue,
+    updateText: "",
+  },
+  later,
+);
+assert.deepEqual(declinedLock, { ok: false, error: "not_allowed" });
+
+const reviseBeforeAccept = applyOperatorPatch(
+  quotedForAction,
+  {
+    status: "quoted",
+    quoteText: "Revised: email only. $600.",
+    amountCents: 60000,
+    dueAt: laterDue,
+    updateText: "",
+  },
+  later,
+);
+assert.equal(reviseBeforeAccept.ok, true);
+if (reviseBeforeAccept.ok) {
+  assert.equal(reviseBeforeAccept.record.status, "quoted");
+  assert.equal(reviseBeforeAccept.record.amountCents, 60000);
+  assert.equal(reviseBeforeAccept.record.dueAt, laterDue);
+  assert.equal(reviseBeforeAccept.record.quoteText, "Revised: email only. $600.");
+}
+
 console.log("intake checks ok");

@@ -37,7 +37,7 @@ const STATUS_COPY: Record<string, string> = {
   received: "I have the brief. A yes or no and, if yes, a fixed quote will show here.",
   quoted: "This is a fixed quote for the scope I understood, with a delivery date. After you accept, you pay that amount here before I start.",
   declined: "I am not taking this job.",
-  accepted: "You accepted this quote. I will not start until it is paid.",
+  accepted: "You accepted this quote. The price and delivery date stay as written. I will not start until it is paid.",
   withdrawn: "You turned down this quote. Send a new brief if you want a different job.",
   paid: "Paid. I will start the written scope. Check here for the handoff.",
   delivered: "Handed off. The note below is how it runs. Ask here if something in that scope is broken.",
