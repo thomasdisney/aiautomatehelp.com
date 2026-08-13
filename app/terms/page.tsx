@@ -16,8 +16,9 @@ export default function TermsPage() {
       <p className="mt-3 leading-relaxed text-ink/70">
         A quote is an offer for one written scope at a fixed price, with a
         delivery date. After you accept, that price and date stay on the brief.
-        New work is a new quote. Work starts after payment. There is no monthly
-        retainer on this site unless we later agree to one in writing.
+        You can turn the quote down until it is paid. After payment, the job is
+        on. New work is a new quote. Work starts after payment. There is no
+        monthly retainer on this site unless we later agree to one in writing.
       </p>
       <h2 className="mt-10 text-xl font-semibold text-ink">Scope</h2>
       <p className="mt-3 leading-relaxed text-ink/70">

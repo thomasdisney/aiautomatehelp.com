@@ -153,14 +153,31 @@ export function applyCustomerAction(
     };
   }
 
+  if (action.decision === "decline") {
+    if (record.status !== "quoted" && record.status !== "accepted") {
+      return { ok: false, error: "not_allowed" };
+    }
+    return {
+      ok: true,
+      record: {
+        ...record,
+        status: "withdrawn",
+        customerReply: action.note || record.customerReply,
+        customerReplyAt: action.note ? stamp : record.customerReplyAt,
+        thread: action.note
+          ? appendThread(thread, { role: "customer", text: action.note, at: stamp })
+          : thread,
+      },
+    };
+  }
+
   if (record.status !== "quoted") return { ok: false, error: "not_allowed" };
 
-  const nextStatus = action.decision === "accept" ? "accepted" : "withdrawn";
   return {
     ok: true,
     record: {
       ...record,
-      status: nextStatus,
+      status: "accepted",
       customerReply: action.note || record.customerReply,
       customerReplyAt: action.note ? stamp : record.customerReplyAt,
       thread: action.note

@@ -37,7 +37,7 @@ const STATUS_COPY: Record<string, string> = {
   received: "I have the brief. A yes or no and, if yes, a fixed quote will show here.",
   quoted: "This is a fixed quote for the scope I understood, with a delivery date. After you accept, you pay that amount here before I start.",
   declined: "I am not taking this job.",
-  accepted: "You accepted this quote. The price and delivery date stay as written. I will not start until it is paid.",
+  accepted: "You accepted this quote. The price and delivery date stay as written. You can still turn it down until it is paid. I will not start until it is paid.",
   withdrawn: "You turned down this quote. Send a new brief if you want a different job.",
   paid: "Paid. I will start the written scope. Check here for the handoff.",
   delivered: "Handed off. The note below is how it runs. Ask here if something in that scope is broken.",
@@ -321,6 +321,7 @@ export function StatusForm({
           />
           <ReplyPanel
             quoted={result.status === "quoted"}
+            accepted={result.status === "accepted"}
             busy={replyBusy}
             error={replyError}
             onSend={sendDecision}
@@ -412,16 +413,19 @@ function PayPanel({
 
 function ReplyPanel({
   quoted,
+  accepted,
   busy,
   error,
   onSend,
 }: {
   quoted: boolean;
+  accepted: boolean;
   busy: boolean;
   error: string;
   onSend: (decision: "accept" | "decline" | "question", note: string) => Promise<boolean>;
 }) {
   const [note, setNote] = useState("");
+  const canDecline = quoted || accepted;
 
   async function submit(decision: "accept" | "decline" | "question") {
     const saved = await onSend(decision, note);
@@ -433,12 +437,14 @@ function ReplyPanel({
       <p className="text-sm font-medium text-ink">Reply on this brief</p>
       <p className="text-sm leading-relaxed text-ink/60">
         {quoted
-          ? "Accept, turn it down, or ask a question here. Notes stay on this page in order. After you accept, payment is the stored amount only."
-          : "Ask a question about this brief here. Notes stay on this page in order. There is no personal inbox."}
+          ? "Accept, turn it down, or ask a question here. Notes stay on this page in order. After you accept, payment is the stored amount only. You can still turn it down until it is paid."
+          : accepted
+            ? "You can still turn this quote down until it is paid. Ask a question here. Notes stay on this page in order. There is no personal inbox."
+            : "Ask a question about this brief here. Notes stay on this page in order. There is no personal inbox."}
       </p>
       <div>
         <label htmlFor="note" className="block text-sm font-medium text-ink">
-          Note {quoted ? <span className="font-normal text-ink/50">(optional to accept or decline)</span> : null}
+          Note {canDecline ? <span className="font-normal text-ink/50">(optional to accept or decline)</span> : null}
         </label>
         <textarea
           id="note"
@@ -458,24 +464,24 @@ function ReplyPanel({
       ) : null}
       <div className="flex flex-col gap-3 sm:flex-row">
         {quoted ? (
-          <>
-            <button
-              type="button"
-              disabled={busy}
-              onClick={() => void submit("accept")}
-              className="rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent-hover disabled:opacity-60"
-            >
-              {busy ? "Saving…" : "Accept quote"}
-            </button>
-            <button
-              type="button"
-              disabled={busy}
-              onClick={() => void submit("decline")}
-              className="rounded-full border border-ink/15 px-5 py-2.5 text-sm font-semibold text-ink hover:bg-paper disabled:opacity-60"
-            >
-              Decline
-            </button>
-          </>
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => void submit("accept")}
+            className="rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent-hover disabled:opacity-60"
+          >
+            {busy ? "Saving…" : "Accept quote"}
+          </button>
+        ) : null}
+        {canDecline ? (
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => void submit("decline")}
+            className="rounded-full border border-ink/15 px-5 py-2.5 text-sm font-semibold text-ink hover:bg-paper disabled:opacity-60"
+          >
+            Decline
+          </button>
         ) : null}
         <button
           type="button"
