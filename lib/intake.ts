@@ -8,6 +8,16 @@ export const FIELD_LIMITS = {
   updateText: 2000,
 } as const;
 
+export const THREAD_ROLES = ["customer", "operator"] as const;
+export type ThreadRole = (typeof THREAD_ROLES)[number];
+export const THREAD_MAX_ENTRIES = 20;
+
+export type ThreadEntry = {
+  role: ThreadRole;
+  text: string;
+  at: string;
+};
+
 export const INTAKE_STATUSES = [
   "received",
   "quoted",
@@ -73,7 +83,56 @@ export type IntakeRecord = IntakeFields & {
   amountCents: number;
   paidAt: string;
   paymentRef: string;
+  thread: ThreadEntry[];
 };
+
+export function parseThreadRole(value: unknown): ThreadRole | null {
+  return THREAD_ROLES.includes(value as ThreadRole) ? (value as ThreadRole) : null;
+}
+
+export function parseThreadEntry(value: unknown): ThreadEntry | null {
+  if (!value || typeof value !== "object") return null;
+  const row = value as Record<string, unknown>;
+  const role = parseThreadRole(row.role);
+  const text = sanitizeText(row.text, FIELD_LIMITS.customerReply);
+  const at = typeof row.at === "string" ? row.at.trim().slice(0, 40) : "";
+  if (!role || !text || !at) return null;
+  return { role, text, at };
+}
+
+export function parseThread(value: unknown): ThreadEntry[] {
+  if (!Array.isArray(value)) return [];
+  const entries: ThreadEntry[] = [];
+  for (const item of value) {
+    const parsed = parseThreadEntry(item);
+    if (parsed) entries.push(parsed);
+  }
+  return entries.slice(-THREAD_MAX_ENTRIES);
+}
+
+export function appendThread(thread: ThreadEntry[], entry: ThreadEntry): ThreadEntry[] {
+  if (!entry.text) return thread;
+  return parseThread([...thread, entry]);
+}
+
+export function hydrateThread(record: {
+  thread?: ThreadEntry[];
+  customerReply: string;
+  customerReplyAt: string;
+  updateText: string;
+  updateAt: string;
+}): ThreadEntry[] {
+  if (record.thread && record.thread.length) return parseThread(record.thread);
+  const entries: ThreadEntry[] = [];
+  if (record.updateText && record.updateAt) {
+    entries.push({ role: "operator", text: record.updateText, at: record.updateAt });
+  }
+  if (record.customerReply && record.customerReplyAt) {
+    entries.push({ role: "customer", text: record.customerReply, at: record.customerReplyAt });
+  }
+  entries.sort((a, b) => a.at.localeCompare(b.at));
+  return entries;
+}
 
 export function parseIntakeStatus(value: unknown): IntakeStatus | null {
   return INTAKE_STATUSES.includes(value as IntakeStatus) ? (value as IntakeStatus) : null;
@@ -122,6 +181,7 @@ export function toIntakeRecord(
     amountCents?: number;
     paidAt?: string;
     paymentRef?: string;
+    thread?: ThreadEntry[];
   } = {},
 ): IntakeRecord {
   return {
@@ -136,6 +196,7 @@ export function toIntakeRecord(
     amountCents: extras.amountCents ?? 0,
     paidAt: extras.paidAt ?? "",
     paymentRef: extras.paymentRef ?? "",
+    thread: parseThread(extras.thread),
     name: data.name,
     email: data.email,
     company: data.company,
@@ -179,6 +240,7 @@ export function parseIntakeRecord(raw: string): IntakeRecord | null {
   const paidAt = typeof row.paidAt === "string" ? row.paidAt.slice(0, 40) : "";
   const paymentRef =
     typeof row.paymentRef === "string" ? row.paymentRef.replace(/[^A-Za-z0-9_]/g, "").slice(0, 200) : "";
+  const thread = parseThread(row.thread);
   return toIntakeRecord(
     id,
     { name, email, company, message },
@@ -193,6 +255,7 @@ export function parseIntakeRecord(raw: string): IntakeRecord | null {
       amountCents,
       paidAt,
       paymentRef,
+      thread,
     },
   );
 }

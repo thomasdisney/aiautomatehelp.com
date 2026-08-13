@@ -23,8 +23,8 @@ export default function PrivacyPage() {
       <p className="mt-3 leading-relaxed text-ink/70">
         You can look up a brief you already sent on the status page with the
         reference and the same email. That check returns the public status, any
-        quote I posted, and any update I post — not the job text. Notes you send
-        on that page are stored on the same brief so I can answer here.
+        quote I posted, and the notes on that brief in order — not the job text.
+        A later note does not erase an earlier one.
       </p>
       <h2 className="mt-10 text-xl font-semibold text-ink">How I treat that text</h2>
       <p className="mt-3 leading-relaxed text-ink/70">

@@ -1,4 +1,5 @@
 import {
+  hydrateThread,
   intakeBlobPath,
   parseIntakeStatus,
   type IntakeRecord,
@@ -114,6 +115,18 @@ export function emptyQueue(last: OpsEvent | null = null): OpsQueue {
 }
 
 export function hasOpenQuestion(record: IntakeRecord): boolean {
+  const thread = hydrateThread(record);
+  if (thread.length) {
+    let lastCustomer = "";
+    let lastOperator = "";
+    for (const entry of thread) {
+      if (entry.role === "customer") lastCustomer = entry.at;
+      if (entry.role === "operator") lastOperator = entry.at;
+    }
+    if (!lastCustomer) return false;
+    if (!lastOperator) return true;
+    return lastOperator < lastCustomer;
+  }
   if (!record.customerReply) return false;
   if (!record.updateAt) return true;
   if (!record.customerReplyAt) return true;
@@ -187,6 +200,7 @@ export function queueJsonHasCustomerText(json: string): boolean {
     lowered.includes("company") ||
     lowered.includes("quotetext") ||
     lowered.includes("customerreply") ||
-    lowered.includes("updatetext")
+    lowered.includes("updatetext") ||
+    lowered.includes('"thread"')
   );
 }

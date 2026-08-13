@@ -1,12 +1,15 @@
 import { timingSafeEqualString } from "./inbox-auth.ts";
 import {
   FIELD_LIMITS,
+  appendThread,
+  hydrateThread,
   intakeBlobPath,
   isValidEmail,
   parseIntakeStatus,
   sanitizeText,
   type IntakeRecord,
   type IntakeStatus,
+  type ThreadEntry,
 } from "./intake.ts";
 import { parseAmountCents } from "./payment.ts";
 
@@ -18,6 +21,7 @@ export type PublicStatus = {
   customerReply?: string;
   updateText?: string;
   amountCents?: number;
+  thread?: ThreadEntry[];
 };
 
 export const CUSTOMER_DECISIONS = ["accept", "decline", "question"] as const;
@@ -92,6 +96,8 @@ export function toPublicStatus(record: IntakeRecord): PublicStatus {
   if (record.customerReply) view.customerReply = record.customerReply;
   if (record.updateText) view.updateText = record.updateText;
   if (record.amountCents > 0) view.amountCents = record.amountCents;
+  const thread = hydrateThread(record);
+  if (thread.length) view.thread = thread;
   return view;
 }
 
@@ -128,6 +134,7 @@ export function applyCustomerAction(
   now: string,
 ): ApplyCustomerAction {
   const stamp = now.slice(0, 40);
+  const thread = hydrateThread(record);
   if (action.decision === "question") {
     if (!action.note) return { ok: false, error: "not_allowed" };
     return {
@@ -136,6 +143,7 @@ export function applyCustomerAction(
         ...record,
         customerReply: action.note,
         customerReplyAt: stamp,
+        thread: appendThread(thread, { role: "customer", text: action.note, at: stamp }),
       },
     };
   }
@@ -150,6 +158,9 @@ export function applyCustomerAction(
       status: nextStatus,
       customerReply: action.note || record.customerReply,
       customerReplyAt: action.note ? stamp : record.customerReplyAt,
+      thread: action.note
+        ? appendThread(thread, { role: "customer", text: action.note, at: stamp })
+        : thread,
     },
   };
 }
@@ -206,6 +217,13 @@ export function applyOperatorPatch(
       amountCents: patch.status === "quoted" ? patch.amountCents : record.amountCents,
       updateText: patch.updateText ? patch.updateText : record.updateText,
       updateAt: patch.updateText ? stamp : record.updateAt,
+      thread: patch.updateText
+        ? appendThread(hydrateThread(record), {
+            role: "operator",
+            text: patch.updateText,
+            at: stamp,
+          })
+        : hydrateThread(record),
     },
   };
 }

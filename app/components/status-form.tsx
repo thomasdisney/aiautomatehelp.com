@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { FIELD_LIMITS } from "@/lib/intake";
+import { FIELD_LIMITS, parseThread, type ThreadEntry } from "@/lib/intake";
 
 type Found = {
   kind: "found";
@@ -13,6 +13,7 @@ type Found = {
   customerReply?: string;
   updateText?: string;
   amountCents?: number;
+  thread: ThreadEntry[];
 };
 
 type Result =
@@ -85,6 +86,7 @@ export function StatusForm({
         customerReply?: string;
         updateText?: string;
         amountCents?: number;
+        thread?: unknown;
       };
       if (json.code === "not_found" || res.status === 404) {
         setResult({ kind: "missing" });
@@ -107,6 +109,7 @@ export function StatusForm({
         customerReply: typeof json.customerReply === "string" ? json.customerReply : undefined,
         updateText: typeof json.updateText === "string" ? json.updateText : undefined,
         amountCents: typeof json.amountCents === "number" ? json.amountCents : undefined,
+        thread: parseThread(json.thread),
       });
     } catch {
       setResult({
@@ -144,6 +147,7 @@ export function StatusForm({
         customerReply?: string;
         updateText?: string;
         amountCents?: number;
+        thread?: unknown;
       };
       if (!res.ok || !json.ok || !json.id || !json.status || !json.receivedAt) {
         setReplyError(
@@ -161,6 +165,7 @@ export function StatusForm({
         customerReply: typeof json.customerReply === "string" ? json.customerReply : undefined,
         updateText: typeof json.updateText === "string" ? json.updateText : undefined,
         amountCents: typeof json.amountCents === "number" ? json.amountCents : result.amountCents,
+        thread: parseThread(json.thread),
       });
       return true;
     } catch {
@@ -250,18 +255,33 @@ export function StatusForm({
             {result.quoteText ? (
               <p className="mt-4 leading-relaxed text-ink">{result.quoteText}</p>
             ) : null}
-            {result.updateText ? (
-              <div className="mt-4 rounded-xl bg-paper px-4 py-3">
-                <p className="text-sm font-medium text-ink/60">Latest update</p>
-                <p className="mt-1 leading-relaxed text-ink">{result.updateText}</p>
-              </div>
-            ) : null}
-            {result.customerReply ? (
-              <div className="mt-4 rounded-xl bg-paper px-4 py-3">
-                <p className="text-sm font-medium text-ink/60">Your latest note</p>
-                <p className="mt-1 leading-relaxed text-ink">{result.customerReply}</p>
-              </div>
-            ) : null}
+            {result.thread.length ? (
+              <ol className="mt-4 space-y-3">
+                {result.thread.map((entry, index) => (
+                  <li key={`${entry.at}-${index}`} className="rounded-xl bg-paper px-4 py-3">
+                    <p className="text-sm font-medium text-ink/60">
+                      {entry.role === "customer" ? "You" : "AutomateAI"}
+                    </p>
+                    <p className="mt-1 leading-relaxed text-ink">{entry.text}</p>
+                  </li>
+                ))}
+              </ol>
+            ) : (
+              <>
+                {result.updateText ? (
+                  <div className="mt-4 rounded-xl bg-paper px-4 py-3">
+                    <p className="text-sm font-medium text-ink/60">Latest update</p>
+                    <p className="mt-1 leading-relaxed text-ink">{result.updateText}</p>
+                  </div>
+                ) : null}
+                {result.customerReply ? (
+                  <div className="mt-4 rounded-xl bg-paper px-4 py-3">
+                    <p className="text-sm font-medium text-ink/60">Your latest note</p>
+                    <p className="mt-1 leading-relaxed text-ink">{result.customerReply}</p>
+                  </div>
+                ) : null}
+              </>
+            )}
             <p className="mt-4 text-sm text-ink/60">
               Received {result.receivedAt}. Reference {result.id}.
             </p>
@@ -387,8 +407,8 @@ function ReplyPanel({
       <p className="text-sm font-medium text-ink">Reply on this brief</p>
       <p className="text-sm leading-relaxed text-ink/60">
         {quoted
-          ? "Accept, turn it down, or ask a question here. A new note replaces the previous one. After you accept, payment is the stored amount only."
-          : "Ask a question about this brief here. A new note replaces the previous one. There is no personal inbox."}
+          ? "Accept, turn it down, or ask a question here. Notes stay on this page in order. After you accept, payment is the stored amount only."
+          : "Ask a question about this brief here. Notes stay on this page in order. There is no personal inbox."}
       </p>
       <div>
         <label htmlFor="note" className="block text-sm font-medium text-ink">

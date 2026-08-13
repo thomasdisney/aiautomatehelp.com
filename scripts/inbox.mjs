@@ -92,6 +92,16 @@ if (cmd === "show" && id) {
     console.log("updateText");
     console.log(item.updateText);
   }
+  if (Array.isArray(item.thread) && item.thread.length) {
+    console.log(`thread ${item.thread.length}`);
+    for (const entry of item.thread) {
+      const role = entry?.role === "operator" ? "operator" : "customer";
+      const at = typeof entry?.at === "string" ? entry.at : "";
+      const text = typeof entry?.text === "string" ? entry.text : "";
+      console.log(`${role} ${at}`);
+      console.log(text);
+    }
+  }
   process.exit(0);
 }
 
