@@ -9,6 +9,7 @@
  *   node scripts/inbox.mjs decide <uuid> quoted <dollars> <YYYY-MM-DD> <quote text>
  *   node scripts/inbox.mjs decide <uuid> declined <reason>
  *   node scripts/inbox.mjs update <uuid> <text>
+ *   node scripts/inbox.mjs note <uuid> <text>
  *   node scripts/inbox.mjs decide <uuid> delivered <handoff text>
  */
 import { readFileSync } from "node:fs";
@@ -94,6 +95,10 @@ if (cmd === "show" && id) {
     console.log("updateText");
     console.log(item.updateText);
   }
+  if (item.operatorNote) {
+    console.log("operatorNote");
+    console.log(item.operatorNote);
+  }
   if (Array.isArray(item.thread) && item.thread.length) {
     console.log(`thread ${item.thread.length}`);
     for (const entry of item.thread) {
@@ -132,6 +137,21 @@ if (cmd === "update" && id) {
   const { status: http, json } = await call("PATCH", "/api/inbox", { id, updateText });
   if (!json.ok) {
     console.error("update_failed", http, json.code ?? "error");
+    process.exit(1);
+  }
+  console.log(`ok ${json.id} ${json.status}`);
+  process.exit(0);
+}
+
+if (cmd === "note" && id) {
+  const operatorNote = [status, ...rest].filter(Boolean).join(" ").trim();
+  if (!operatorNote) {
+    console.error("usage: node scripts/inbox.mjs note <uuid> <text>");
+    process.exit(2);
+  }
+  const { status: http, json } = await call("PATCH", "/api/inbox", { id, operatorNote });
+  if (!json.ok) {
+    console.error("note_failed", http, json.code ?? "error");
     process.exit(1);
   }
   console.log(`ok ${json.id} ${json.status}`);
@@ -198,5 +218,6 @@ console.error("       node scripts/inbox.mjs list");
 console.error("       node scripts/inbox.mjs decide <uuid> quoted <dollars> <YYYY-MM-DD> <quote text>");
 console.error("       node scripts/inbox.mjs decide <uuid> declined <reason>");
 console.error("       node scripts/inbox.mjs update <uuid> <text>");
+console.error("       node scripts/inbox.mjs note <uuid> <text>");
 console.error("       node scripts/inbox.mjs decide <uuid> delivered <handoff text>");
 process.exit(2);

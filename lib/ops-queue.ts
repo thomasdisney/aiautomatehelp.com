@@ -201,6 +201,7 @@ export function queueJsonHasCustomerText(json: string): boolean {
     lowered.includes("quotetext") ||
     lowered.includes("customerreply") ||
     lowered.includes("updatetext") ||
+    lowered.includes("operatornote") ||
     lowered.includes('"thread"')
   );
 }

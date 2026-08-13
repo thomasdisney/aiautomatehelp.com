@@ -77,6 +77,7 @@ export async function updateIntake(
     amountCents: number;
     dueAt: string;
     updateText: string;
+    operatorNote: string;
   },
 ): Promise<UpdateIntakeResult> {
   const current = await getIntake(id);
@@ -85,18 +86,19 @@ export async function updateIntake(
   if (!applied.ok) return applied;
   const stored = await saveIntake(applied.record);
   if (stored) {
-    const event =
-      applied.record.status !== current.status
+    const statusChanged = applied.record.status !== current.status;
+    const publicUpdate = Boolean(patch.updateText);
+    if (statusChanged || publicUpdate) {
+      const event = statusChanged
         ? eventFromStatus(applied.record.status)
-        : patch.updateText
-          ? "update"
-          : eventFromStatus(applied.record.status);
-    await recordOpsEvent({
-      event,
-      id: applied.record.id,
-      status: applied.record.status,
-      at: applied.record.updateAt || new Date().toISOString(),
-    });
+        : "update";
+      await recordOpsEvent({
+        event,
+        id: applied.record.id,
+        status: applied.record.status,
+        at: applied.record.updateAt || new Date().toISOString(),
+      });
+    }
   }
   return stored ? { ok: true, record: applied.record } : { ok: false, error: "store" };
 }

@@ -118,6 +118,7 @@ export async function PATCH(request: Request) {
     amountCents: parsed.amountCents,
     dueAt: parsed.dueAt,
     updateText: parsed.updateText,
+    operatorNote: parsed.operatorNote,
   });
   if (!updated.ok) {
     const status =

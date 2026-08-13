@@ -55,6 +55,7 @@ export type InboxPatch =
       amountCents: number;
       dueAt: string;
       updateText: string;
+      operatorNote: string;
     }
   | { ok: false; error: "invalid" };
 
@@ -205,7 +206,8 @@ export function parseInboxPatch(body: unknown): InboxPatch {
 
   const quoteText = sanitizeText(raw.quoteText, FIELD_LIMITS.quoteText);
   const updateText = sanitizeText(raw.updateText, FIELD_LIMITS.updateText);
-  if (!status && !updateText) return { ok: false, error: "invalid" };
+  const operatorNote = sanitizeText(raw.operatorNote, FIELD_LIMITS.operatorNote);
+  if (!status && !updateText && !operatorNote) return { ok: false, error: "invalid" };
   if (status === "quoted" && !quoteText) return { ok: false, error: "invalid" };
   if (status === "declined" && !updateText) return { ok: false, error: "invalid" };
   if (status === "delivered" && !updateText) return { ok: false, error: "invalid" };
@@ -223,6 +225,7 @@ export function parseInboxPatch(body: unknown): InboxPatch {
     amountCents: amountCents ?? 0,
     dueAt: dueAt || "",
     updateText,
+    operatorNote,
   };
 }
 
@@ -247,6 +250,7 @@ export function applyOperatorPatch(
     amountCents: number;
     dueAt: string;
     updateText: string;
+    operatorNote?: string;
   },
   now: string,
 ): ApplyOperatorPatch {
@@ -267,6 +271,7 @@ export function applyOperatorPatch(
       dueAt: patch.status === "quoted" ? patch.dueAt : record.dueAt,
       updateText: patch.updateText ? patch.updateText : record.updateText,
       updateAt: patch.updateText ? stamp : record.updateAt,
+      operatorNote: patch.operatorNote ? patch.operatorNote : record.operatorNote || "",
       thread: patch.updateText
         ? appendThread(hydrateThread(record), {
             role: "operator",

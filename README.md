@@ -11,9 +11,10 @@ node scripts/inbox.mjs queue
 node scripts/inbox.mjs show <uuid>
 node scripts/inbox.mjs list
 node scripts/inbox.mjs decide <uuid> quoted 800 2026-08-20 "Fixed price $800. Pay before I start."
+node scripts/inbox.mjs note <uuid> "internal plan"
 ```
 
-`queue` prints counts and the last event id only. `list` prints id, status, and received time — not name, email, or job text. Use `show <uuid>` for one brief. Do not pipe customer text to ntfy or commit it.
+`queue` prints counts and the last event id only. `list` prints id, status, and received time — not name, email, or job text. Use `show <uuid>` for one brief. `note` is operator-only and does not appear on /status. Do not pipe customer text to ntfy or commit it.
 
 ```bash
 npm install

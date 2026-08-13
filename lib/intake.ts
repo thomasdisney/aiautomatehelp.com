@@ -6,6 +6,7 @@ export const FIELD_LIMITS = {
   quoteText: 500,
   customerReply: 2000,
   updateText: 2000,
+  operatorNote: 2000,
 } as const;
 
 export const THREAD_ROLES = ["customer", "operator"] as const;
@@ -131,6 +132,7 @@ export type IntakeRecord = IntakeFields & {
   paymentRef: string;
   dueAt: string;
   thread: ThreadEntry[];
+  operatorNote: string;
 };
 
 export function parseThreadRole(value: unknown): ThreadRole | null {
@@ -230,6 +232,7 @@ export function toIntakeRecord(
     paymentRef?: string;
     dueAt?: string;
     thread?: ThreadEntry[];
+    operatorNote?: string;
   } = {},
 ): IntakeRecord {
   return {
@@ -246,6 +249,7 @@ export function toIntakeRecord(
     paymentRef: extras.paymentRef ?? "",
     dueAt: parseDueAt(extras.dueAt) ?? "",
     thread: parseThread(extras.thread),
+    operatorNote: sanitizeText(extras.operatorNote, FIELD_LIMITS.operatorNote),
     name: data.name,
     email: data.email,
     company: data.company,
@@ -291,6 +295,7 @@ export function parseIntakeRecord(raw: string): IntakeRecord | null {
     typeof row.paymentRef === "string" ? row.paymentRef.replace(/[^A-Za-z0-9_]/g, "").slice(0, 200) : "";
   const dueAt = parseDueAt(row.dueAt) ?? "";
   const thread = parseThread(row.thread);
+  const operatorNote = sanitizeText(row.operatorNote, FIELD_LIMITS.operatorNote);
   return toIntakeRecord(
     id,
     { name, email, company, message },
@@ -307,6 +312,7 @@ export function parseIntakeRecord(raw: string): IntakeRecord | null {
       paymentRef,
       dueAt,
       thread,
+      operatorNote,
     },
   );
 }
