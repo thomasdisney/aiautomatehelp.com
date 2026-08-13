@@ -225,6 +225,19 @@ export function parseInboxPatch(body: unknown): InboxPatch {
   };
 }
 
+function operatorMayChangeStatus(
+  current: IntakeStatus,
+  next: IntakeStatus | null,
+): boolean {
+  if (next === "paid" || next === "accepted" || next === "withdrawn") return false;
+  if (!next || next === current) return true;
+  if (current === "paid") return next === "delivered";
+  if (current === "delivered") return next === "delivered";
+  if (current === "accepted") return false;
+  if (current === "withdrawn" || current === "declined") return next === "quoted";
+  return next !== "delivered";
+}
+
 export function applyOperatorPatch(
   record: IntakeRecord,
   patch: {
@@ -236,30 +249,11 @@ export function applyOperatorPatch(
   },
   now: string,
 ): ApplyOperatorPatch {
-  if (
-    patch.status === "paid" ||
-    patch.status === "accepted" ||
-    patch.status === "withdrawn"
-  ) {
+  if (!operatorMayChangeStatus(record.status, patch.status)) {
     return { ok: false, error: "not_allowed" };
   }
 
   const nextStatus = patch.status ?? record.status;
-  if (record.status === "paid") {
-    if (patch.status && patch.status !== "delivered") return { ok: false, error: "not_allowed" };
-  } else if (record.status === "delivered") {
-    if (patch.status && patch.status !== "delivered") return { ok: false, error: "not_allowed" };
-  } else if (nextStatus === "delivered") {
-    return { ok: false, error: "not_allowed" };
-  } else if (record.status === "accepted") {
-    if (patch.status && patch.status !== record.status) {
-      return { ok: false, error: "not_allowed" };
-    }
-  } else if (record.status === "withdrawn" || record.status === "declined") {
-    if (patch.status && patch.status !== "quoted") {
-      return { ok: false, error: "not_allowed" };
-    }
-  }
 
   const stamp = now.slice(0, 40);
   return {
