@@ -20,7 +20,8 @@ export default function TermsPage() {
         date, and test stay on the brief.
         You can turn the quote down until it is paid. Turning it down closes
         those terms; a later quote on the same brief is a new offer and shows
-        as a new note on the status page. After
+        as a new note on the status page. If you asked a question before I
+        quote, that quote includes a new note on the status page. After
         payment, the job is on. New work is a new quote. Work starts after
         payment. After I post the handoff, you confirm the stored done-when
         test on the status page. There is no monthly retainer on this site

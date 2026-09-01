@@ -381,8 +381,72 @@ function operatorMayChangeStatus(
   return next !== "delivered";
 }
 
-function quoteNeedsPublicNote(current: IntakeStatus): boolean {
-  return current === "quoted" || current === "declined" || current === "withdrawn";
+function eventStamp(value: unknown): string {
+  return typeof value === "string" ? value.trim().slice(0, 40) : "";
+}
+
+function closedAtStamp(record: IntakeRecord): string {
+  const stamps = [
+    eventStamp(record.confirmedAt),
+    eventStamp(record.withdrawnAt),
+    eventStamp(record.acceptedAt),
+  ].filter(Boolean);
+  if (!stamps.length) return "";
+  return stamps.reduce((latest, at) => (at > latest ? at : latest));
+}
+
+function isAfterClose(at: string, closedAt: string): boolean {
+  if (!closedAt) return true;
+  return at > closedAt;
+}
+
+export function hasOpenQuestion(record: IntakeRecord): boolean {
+  const closedAt = closedAtStamp(record);
+  const thread = hydrateThread(record);
+  if (thread.length) {
+    let lastCustomer = "";
+    let lastOperator = "";
+    for (const entry of thread) {
+      if (!isAfterClose(entry.at, closedAt)) continue;
+      if (entry.role === "customer") lastCustomer = entry.at;
+      if (entry.role === "operator") lastOperator = entry.at;
+    }
+    if (!lastCustomer) return false;
+    if (!lastOperator) return true;
+    return lastOperator < lastCustomer;
+  }
+  if (!record.customerReply) return false;
+  const replyAt =
+    typeof record.customerReplyAt === "string" ? record.customerReplyAt.trim().slice(0, 40) : "";
+  if (closedAt && (!replyAt || !isAfterClose(replyAt, closedAt))) return false;
+  if (!record.updateAt) return true;
+  if (!replyAt) return true;
+  return record.updateAt < replyAt;
+}
+
+export function openQuestionAt(record: IntakeRecord): string | null {
+  if (!hasOpenQuestion(record)) return null;
+  const closedAt = closedAtStamp(record);
+  const thread = hydrateThread(record);
+  if (thread.length) {
+    for (let i = thread.length - 1; i >= 0; i -= 1) {
+      if (thread[i].role !== "customer") continue;
+      if (!isAfterClose(thread[i].at, closedAt)) continue;
+      const at = thread[i].at.trim().slice(0, 40);
+      if (at) return at;
+    }
+  }
+  const replyAt =
+    typeof record.customerReplyAt === "string" ? record.customerReplyAt.trim().slice(0, 40) : "";
+  if (replyAt && isAfterClose(replyAt, closedAt)) return replyAt;
+  return null;
+}
+
+function quoteNeedsPublicNote(record: IntakeRecord): boolean {
+  if (record.status === "quoted" || record.status === "declined" || record.status === "withdrawn") {
+    return true;
+  }
+  return hasOpenQuestion(record);
 }
 
 export function applyOperatorPatch(
@@ -412,7 +476,7 @@ export function applyOperatorPatch(
     return { ok: false, error: "not_allowed" };
   }
   const publicNote = sanitizeText(patch.updateText ?? "", FIELD_LIMITS.updateText);
-  if (patch.status === "quoted" && quoteNeedsPublicNote(record.status) && !publicNote) {
+  if (patch.status === "quoted" && quoteNeedsPublicNote(record) && !publicNote) {
     return { ok: false, error: "not_allowed" };
   }
 
