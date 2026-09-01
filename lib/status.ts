@@ -417,6 +417,12 @@ export function applyOperatorPatch(
 
   const stamp = now.slice(0, 40);
   const quotedNow = patch.status === "quoted";
+  const handedOffNow = patch.status === "delivered" && record.status !== "delivered";
+  const deliveredAt = handedOffNow
+    ? stamp
+    : typeof record.deliveredAt === "string"
+      ? record.deliveredAt.slice(0, 40)
+      : "";
   return {
     ok: true,
     record: {
@@ -429,6 +435,7 @@ export function applyOperatorPatch(
       updateText: patch.updateText ? patch.updateText : record.updateText,
       updateAt: patch.updateText || quotedNow ? stamp : record.updateAt,
       operatorNote: patch.operatorNote ? patch.operatorNote : record.operatorNote || "",
+      deliveredAt,
       thread: patch.updateText
         ? appendThread(hydrateThread(record), {
             role: "operator",

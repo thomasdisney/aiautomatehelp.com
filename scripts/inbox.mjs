@@ -95,6 +95,7 @@ if (cmd === "show" && id) {
   }
   if (item.confirmedAt) console.log(`confirmedAt ${item.confirmedAt}`);
   if (item.acceptedAt) console.log(`acceptedAt ${item.acceptedAt}`);
+  if (item.deliveredAt) console.log(`deliveredAt ${item.deliveredAt}`);
   console.log("message");
   console.log(item.message);
   if (item.quoteText) {
@@ -143,8 +144,9 @@ if (cmd === "list") {
     const questionAt = typeof row?.questionAt === "string" ? row.questionAt : "";
     const updateAt = typeof row?.updateAt === "string" ? row.updateAt : "";
     const acceptedAt = typeof row?.acceptedAt === "string" ? row.acceptedAt : "";
+    const deliveredAt = typeof row?.deliveredAt === "string" ? row.deliveredAt : "";
     console.log(
-      `${id} ${status} ${receivedAt}${amountCents ? ` ${amountCents}` : ""}${dueAt ? ` due ${dueAt}` : ""}${updateAt ? ` update ${updateAt}` : ""}${acceptedAt ? ` accepted ${acceptedAt}` : ""}${confirmedAt ? ` confirmed ${confirmedAt}` : ""}${questionAt ? ` question ${questionAt}` : ""}`.trim(),
+      `${id} ${status} ${receivedAt}${amountCents ? ` ${amountCents}` : ""}${dueAt ? ` due ${dueAt}` : ""}${updateAt ? ` update ${updateAt}` : ""}${acceptedAt ? ` accepted ${acceptedAt}` : ""}${deliveredAt ? ` delivered ${deliveredAt}` : ""}${confirmedAt ? ` confirmed ${confirmedAt}` : ""}${questionAt ? ` question ${questionAt}` : ""}`.trim(),
     );
   }
   process.exit(0);
@@ -167,8 +169,9 @@ if (cmd === "find" && id) {
     const questionAt = typeof row?.questionAt === "string" ? row.questionAt : "";
     const updateAt = typeof row?.updateAt === "string" ? row.updateAt : "";
     const acceptedAt = typeof row?.acceptedAt === "string" ? row.acceptedAt : "";
+    const deliveredAt = typeof row?.deliveredAt === "string" ? row.deliveredAt : "";
     console.log(
-      `${foundId} ${foundStatus} ${receivedAt}${amountCents ? ` ${amountCents}` : ""}${dueAt ? ` due ${dueAt}` : ""}${updateAt ? ` update ${updateAt}` : ""}${acceptedAt ? ` accepted ${acceptedAt}` : ""}${confirmedAt ? ` confirmed ${confirmedAt}` : ""}${questionAt ? ` question ${questionAt}` : ""}`.trim(),
+      `${foundId} ${foundStatus} ${receivedAt}${amountCents ? ` ${amountCents}` : ""}${dueAt ? ` due ${dueAt}` : ""}${updateAt ? ` update ${updateAt}` : ""}${acceptedAt ? ` accepted ${acceptedAt}` : ""}${deliveredAt ? ` delivered ${deliveredAt}` : ""}${confirmedAt ? ` confirmed ${confirmedAt}` : ""}${questionAt ? ` question ${questionAt}` : ""}`.trim(),
     );
   }
   process.exit(0);

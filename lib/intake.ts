@@ -137,6 +137,7 @@ export type IntakeRecord = IntakeFields & {
   doneWhen: string;
   confirmedAt: string;
   acceptedAt: string;
+  deliveredAt: string;
 };
 
 export function parseThreadRole(value: unknown): ThreadRole | null {
@@ -240,6 +241,7 @@ export function toIntakeRecord(
     doneWhen?: string;
     confirmedAt?: string;
     acceptedAt?: string;
+    deliveredAt?: string;
   } = {},
 ): IntakeRecord {
   return {
@@ -260,6 +262,7 @@ export function toIntakeRecord(
     doneWhen: sanitizeText(extras.doneWhen, FIELD_LIMITS.doneWhen),
     confirmedAt: typeof extras.confirmedAt === "string" ? extras.confirmedAt.slice(0, 40) : "",
     acceptedAt: typeof extras.acceptedAt === "string" ? extras.acceptedAt.slice(0, 40) : "",
+    deliveredAt: typeof extras.deliveredAt === "string" ? extras.deliveredAt.slice(0, 40) : "",
     name: data.name,
     email: data.email,
     company: data.company,
@@ -309,6 +312,7 @@ export function parseIntakeRecord(raw: string): IntakeRecord | null {
   const doneWhen = sanitizeText(row.doneWhen, FIELD_LIMITS.doneWhen);
   const confirmedAt = typeof row.confirmedAt === "string" ? row.confirmedAt.slice(0, 40) : "";
   const acceptedAt = typeof row.acceptedAt === "string" ? row.acceptedAt.slice(0, 40) : "";
+  const deliveredAt = typeof row.deliveredAt === "string" ? row.deliveredAt.slice(0, 40) : "";
   return toIntakeRecord(
     id,
     { name, email, company, message },
@@ -329,6 +333,7 @@ export function parseIntakeRecord(raw: string): IntakeRecord | null {
       doneWhen,
       confirmedAt,
       acceptedAt,
+      deliveredAt,
     },
   );
 }
