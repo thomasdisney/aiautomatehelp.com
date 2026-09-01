@@ -283,6 +283,7 @@ export type InboxIdRow = {
   id: string;
   status: IntakeStatus;
   receivedAt: string;
+  confirmedAt?: string;
 };
 
 export function parseInboxListView(value: unknown): InboxListView | "invalid" {
@@ -296,11 +297,15 @@ export function parseInboxListView(value: unknown): InboxListView | "invalid" {
 
 export function toInboxIdRow(record: IntakeRecord): InboxIdRow | null {
   if (!intakeBlobPath(record.id)) return null;
-  return {
+  const row: InboxIdRow = {
     id: record.id,
     status: record.status,
     receivedAt: record.receivedAt.slice(0, 40),
   };
+  const confirmedAt =
+    typeof record.confirmedAt === "string" ? record.confirmedAt.trim().slice(0, 40) : "";
+  if (confirmedAt) row.confirmedAt = confirmedAt;
+  return row;
 }
 
 export function toInboxIdRows(records: IntakeRecord[]): InboxIdRow[] {

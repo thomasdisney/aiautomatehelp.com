@@ -134,7 +134,8 @@ if (cmd === "list") {
     const id = typeof row?.id === "string" ? row.id : "";
     const status = typeof row?.status === "string" ? row.status : "";
     const receivedAt = typeof row?.receivedAt === "string" ? row.receivedAt : "";
-    console.log(`${id} ${status} ${receivedAt}`.trim());
+    const confirmedAt = typeof row?.confirmedAt === "string" ? row.confirmedAt : "";
+    console.log(`${id} ${status} ${receivedAt}${confirmedAt ? ` confirmed ${confirmedAt}` : ""}`.trim());
   }
   process.exit(0);
 }
@@ -150,7 +151,10 @@ if (cmd === "find" && id) {
     const foundId = typeof row?.id === "string" ? row.id : "";
     const foundStatus = typeof row?.status === "string" ? row.status : "";
     const receivedAt = typeof row?.receivedAt === "string" ? row.receivedAt : "";
-    console.log(`${foundId} ${foundStatus} ${receivedAt}`.trim());
+    const confirmedAt = typeof row?.confirmedAt === "string" ? row.confirmedAt : "";
+    console.log(
+      `${foundId} ${foundStatus} ${receivedAt}${confirmedAt ? ` confirmed ${confirmedAt}` : ""}`.trim(),
+    );
   }
   process.exit(0);
 }
