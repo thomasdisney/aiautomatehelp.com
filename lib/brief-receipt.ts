@@ -43,6 +43,24 @@ function toReceipt(value: unknown, nowMs: number): BriefReceipt | null {
   return { id, at };
 }
 
+export function briefReceiptFromPublicPayload(
+  value: unknown,
+  nowMs: number = Date.now(),
+): BriefReceipt | null {
+  if (!value || typeof value !== "object") return null;
+  const row = value as Record<string, unknown>;
+  return toReceipt({ id: row.id, at: row.receivedAt }, Number.isFinite(nowMs) ? nowMs : Date.now());
+}
+
+export function toPublicIntakeCreate(
+  value: unknown,
+  nowMs: number = Date.now(),
+): { ok: true; id: string; receivedAt: string } | null {
+  const receipt = briefReceiptFromPublicPayload(value, nowMs);
+  if (!receipt) return null;
+  return { ok: true, id: receipt.id, receivedAt: receipt.at };
+}
+
 export function parseBriefReceipts(raw: string, nowMs: number = Date.now()): BriefReceipt[] {
   const now = Number.isFinite(nowMs) ? nowMs : Date.now();
   let value: unknown;

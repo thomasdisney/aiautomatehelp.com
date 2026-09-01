@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { BriefReceiptList, CopyReference } from "@/app/components/brief-receipts";
 import {
+  briefReceiptFromPublicPayload,
   browserReceiptStore,
   clearBriefReceipts,
   dropBriefReceipt,
@@ -117,7 +118,12 @@ export function IntakeForm({ connected }: { connected: boolean }) {
           website: data.get("website"),
         }),
       });
-      const json = (await res.json()) as { ok?: boolean; id?: string; code?: string };
+      const json = (await res.json()) as {
+        ok?: boolean;
+        id?: string;
+        code?: string;
+        receivedAt?: string;
+      };
       if (!res.ok || !json.ok) {
         setStatus({
           kind: "error",
@@ -126,9 +132,9 @@ export function IntakeForm({ connected }: { connected: boolean }) {
         return;
       }
       form.reset();
-      const id = typeof json.id === "string" ? json.id : "";
-      persistBriefReceipt(browserReceiptStore(), id, new Date().toISOString());
-      setStatus({ kind: "sent", id: id || "received" });
+      const receipt = briefReceiptFromPublicPayload(json);
+      if (receipt) persistBriefReceipt(browserReceiptStore(), receipt.id, receipt.at);
+      setStatus({ kind: "sent", id: receipt?.id || "received" });
     } catch {
       setStatus({
         kind: "error",
@@ -144,8 +150,8 @@ export function IntakeForm({ connected }: { connected: boolean }) {
           <p className="text-lg font-semibold text-ink">Brief received</p>
           <p className="mt-3 leading-relaxed text-ink/70">
             I have the job description. A yes or no and, if yes, a fixed quote will show on the
-            status page. Save this full reference. This browser keeps it so a refresh does not
-            lose it. I will not email it.
+            status page. Save this full reference. This browser keeps the reference and the
+            received time, not your email or the job text. I will not email it.
           </p>
           <p className="mt-4 break-all font-mono text-sm text-ink">{status.id}</p>
           <div className="mt-5 flex flex-col gap-3 sm:flex-row">

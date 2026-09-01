@@ -226,8 +226,9 @@ export default function Home() {
               <li>If you accept the written scope, price, date, and done-when test together on the status page, you pay the quoted amount there. Then I build. After the handoff, confirm that test on the same page.</li>
             </ol>
             <p className="mt-6 leading-relaxed text-ink/70">
-              After you send a brief, save the full reference. This browser can keep it so a
-              refresh does not lose it. I will not email it.
+              After you send a brief, save the full reference. A matching check on this
+              browser keeps the reference and the received time, not your email. I will not
+              email it.
             </p>
             <p className="mt-6 leading-relaxed text-ink/70">
               There is no personal email, phone number, or calendar on this site.

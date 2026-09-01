@@ -228,7 +228,7 @@ export async function markIntakePaid(
 
 export async function persistIntake(
   data: IntakeFields,
-): Promise<{ stored: boolean; id: string }> {
+): Promise<{ stored: true; id: string; receivedAt: string } | { stored: false; id: string }> {
   const id = crypto.randomUUID();
   const record = toIntakeRecord(id, data, new Date().toISOString());
   const stored = await saveIntake(record);
@@ -239,8 +239,9 @@ export async function persistIntake(
       status: record.status,
       at: record.receivedAt,
     });
+    return { stored: true, id: record.id, receivedAt: record.receivedAt };
   }
-  return { stored, id };
+  return { stored: false, id };
 }
 
 export async function recordOpsEvent(input: {

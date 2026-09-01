@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { toPublicIntakeCreate } from "@/lib/brief-receipt";
 import { parseIntake } from "@/lib/intake";
 import { intakeStoreConfigured, persistIntake } from "@/lib/intake-store";
 import { allowPublicRequest, requestIp } from "@/lib/rate-limit";
@@ -45,5 +46,12 @@ export async function POST(request: Request) {
       { status: 503 },
     );
   }
-  return NextResponse.json({ ok: true, id: result.id });
+  const created = toPublicIntakeCreate({ id: result.id, receivedAt: result.receivedAt });
+  if (!created) {
+    return NextResponse.json(
+      { ok: false, code: "intake_not_connected" },
+      { status: 503 },
+    );
+  }
+  return NextResponse.json(created);
 }

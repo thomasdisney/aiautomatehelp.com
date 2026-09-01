@@ -3,11 +3,13 @@
 import { FormEvent, useState, useSyncExternalStore } from "react";
 import { BriefReceiptList } from "@/app/components/brief-receipts";
 import {
+  briefReceiptFromPublicPayload,
   browserReceiptStore,
   clearBriefReceipts,
   dropBriefReceipt,
   getBriefReceiptServerSnapshot,
   getBriefReceiptSnapshot,
+  persistBriefReceipt,
   subscribeBriefReceipts,
 } from "@/lib/brief-receipt";
 import { FIELD_LIMITS, parseDueAt, parseThread, type ThreadEntry } from "@/lib/intake";
@@ -137,6 +139,8 @@ export function StatusForm({
         });
         return;
       }
+      const receipt = briefReceiptFromPublicPayload(json);
+      if (receipt) persistBriefReceipt(browserReceiptStore(), receipt.id, receipt.at);
       setResult({
         kind: "found",
         id: json.id,
@@ -248,9 +252,9 @@ export function StatusForm({
         className="space-y-5 rounded-2xl border border-ink/10 bg-white p-6 sm:p-8"
       >
         <p className="text-sm text-ink/60">
-          Use the full reference from the confirmation and the email you submitted. This browser
-          can keep that reference so a refresh does not lose it. I will not email a personal
-          inbox.
+          Use the full reference from the confirmation and the email you submitted. A matching
+          check on this browser keeps the reference and the received time, not your email. I
+          will not email a personal inbox.
         </p>
         <div className="absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden="true">
           <label htmlFor="website">Website</label>
