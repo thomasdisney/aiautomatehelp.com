@@ -482,6 +482,7 @@ export function applyOperatorPatch(
 
   const stamp = now.slice(0, 40);
   const quotedNow = patch.status === "quoted";
+  const quotedEnteredNow = quotedNow && record.status !== "quoted";
   const handedOffNow = patch.status === "delivered" && record.status !== "delivered";
   const declinedNow = patch.status === "declined" && record.status !== "declined";
   const deliveredAt = handedOffNow
@@ -493,6 +494,11 @@ export function applyOperatorPatch(
     ? stamp
     : typeof record.declinedAt === "string"
       ? record.declinedAt.slice(0, 40)
+      : "";
+  const quotedAt = quotedEnteredNow
+    ? stamp
+    : typeof record.quotedAt === "string"
+      ? record.quotedAt.slice(0, 40)
       : "";
   return {
     ok: true,
@@ -508,6 +514,7 @@ export function applyOperatorPatch(
       operatorNote: patch.operatorNote ? patch.operatorNote : record.operatorNote || "",
       deliveredAt,
       declinedAt,
+      quotedAt,
       thread: patch.updateText
         ? appendThread(hydrateThread(record), {
             role: "operator",

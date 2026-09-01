@@ -140,6 +140,7 @@ export type IntakeRecord = IntakeFields & {
   deliveredAt: string;
   withdrawnAt: string;
   declinedAt: string;
+  quotedAt: string;
 };
 
 export function parseThreadRole(value: unknown): ThreadRole | null {
@@ -246,6 +247,7 @@ export function toIntakeRecord(
     deliveredAt?: string;
     withdrawnAt?: string;
     declinedAt?: string;
+    quotedAt?: string;
   } = {},
 ): IntakeRecord {
   return {
@@ -269,6 +271,7 @@ export function toIntakeRecord(
     deliveredAt: typeof extras.deliveredAt === "string" ? extras.deliveredAt.slice(0, 40) : "",
     withdrawnAt: typeof extras.withdrawnAt === "string" ? extras.withdrawnAt.slice(0, 40) : "",
     declinedAt: typeof extras.declinedAt === "string" ? extras.declinedAt.slice(0, 40) : "",
+    quotedAt: typeof extras.quotedAt === "string" ? extras.quotedAt.slice(0, 40) : "",
     name: data.name,
     email: data.email,
     company: data.company,
@@ -321,6 +324,7 @@ export function parseIntakeRecord(raw: string): IntakeRecord | null {
   const deliveredAt = typeof row.deliveredAt === "string" ? row.deliveredAt.slice(0, 40) : "";
   const withdrawnAt = typeof row.withdrawnAt === "string" ? row.withdrawnAt.slice(0, 40) : "";
   const declinedAt = typeof row.declinedAt === "string" ? row.declinedAt.slice(0, 40) : "";
+  const quotedAt = typeof row.quotedAt === "string" ? row.quotedAt.slice(0, 40) : "";
   return toIntakeRecord(
     id,
     { name, email, company, message },
@@ -344,6 +348,7 @@ export function parseIntakeRecord(raw: string): IntakeRecord | null {
       deliveredAt,
       withdrawnAt,
       declinedAt,
+      quotedAt,
     },
   );
 }
