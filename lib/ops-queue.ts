@@ -6,6 +6,7 @@ import {
   type IntakeRecord,
   type IntakeStatus,
 } from "./intake.ts";
+import { parseAmountCents } from "./payment.ts";
 import { emailsMatch } from "./status.ts";
 
 export const OPS_EVENTS = [
@@ -286,6 +287,7 @@ export type InboxIdRow = {
   receivedAt: string;
   confirmedAt?: string;
   dueAt?: string;
+  amountCents?: number;
 };
 
 export function parseInboxListView(value: unknown): InboxListView | "invalid" {
@@ -309,6 +311,8 @@ export function toInboxIdRow(record: IntakeRecord): InboxIdRow | null {
   if (confirmedAt) row.confirmedAt = confirmedAt;
   const dueAt = parseDueAt(record.dueAt);
   if (dueAt) row.dueAt = dueAt;
+  const amountCents = parseAmountCents(record.amountCents);
+  if (amountCents !== null) row.amountCents = amountCents;
   return row;
 }
 
