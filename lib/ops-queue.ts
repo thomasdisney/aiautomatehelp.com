@@ -5,6 +5,7 @@ import {
   type IntakeRecord,
   type IntakeStatus,
 } from "./intake.ts";
+import { emailsMatch } from "./status.ts";
 
 export const OPS_EVENTS = [
   "received",
@@ -305,6 +306,16 @@ export function toInboxIdRow(record: IntakeRecord): InboxIdRow | null {
 export function toInboxIdRows(records: IntakeRecord[]): InboxIdRow[] {
   const rows: InboxIdRow[] = [];
   for (const record of records) {
+    const row = toInboxIdRow(record);
+    if (row) rows.push(row);
+  }
+  return rows;
+}
+
+export function toInboxIdRowsForEmail(records: IntakeRecord[], email: string): InboxIdRow[] {
+  const rows: InboxIdRow[] = [];
+  for (const record of records) {
+    if (!emailsMatch(record.email, email)) continue;
     const row = toInboxIdRow(record);
     if (row) rows.push(row);
   }

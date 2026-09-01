@@ -97,6 +97,18 @@ export function parseInboxId(value: unknown): string | null {
   return intakeBlobPath(id) ? id : null;
 }
 
+export type InboxFind =
+  | { ok: true; email: string }
+  | { ok: false; error: "invalid" };
+
+export function parseInboxFind(body: unknown): InboxFind {
+  if (!body || typeof body !== "object") return { ok: false, error: "invalid" };
+  const raw = body as Record<string, unknown>;
+  const email = sanitizeText(raw.email, FIELD_LIMITS.email).toLowerCase();
+  if (!isValidEmail(email)) return { ok: false, error: "invalid" };
+  return { ok: true, email };
+}
+
 export function parseStatusLookup(body: unknown): StatusLookup {
   if (!body || typeof body !== "object") return { ok: false, error: "invalid" };
   const raw = body as Record<string, unknown>;

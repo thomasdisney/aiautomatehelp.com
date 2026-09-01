@@ -8,8 +8,8 @@ import {
   listIntake,
   updateIntake,
 } from "@/lib/intake-store";
-import { parseInboxListView, toInboxIdRows } from "@/lib/ops-queue";
-import { parseInboxId, parseInboxPatch, toPublicStatus } from "@/lib/status";
+import { parseInboxListView, toInboxIdRows, toInboxIdRowsForEmail } from "@/lib/ops-queue";
+import { parseInboxFind, parseInboxId, parseInboxPatch, toPublicStatus } from "@/lib/status";
 
 const WINDOW_MS = 60 * 60 * 1000;
 const MAX_PER_WINDOW = 30;
@@ -90,6 +90,34 @@ export async function GET(request: Request) {
   const queue = await getOpsQueue();
   return NextResponse.json(
     { ok: true, queue },
+    { headers: { "cache-control": "no-store" } },
+  );
+}
+
+export async function POST(request: Request) {
+  if (!allowRequest(clientIp(request))) {
+    return NextResponse.json({ ok: false, code: "rate_limited" }, { status: 429 });
+  }
+  if (!authorize(request)) return unauthorized();
+
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ ok: false, code: "invalid" }, { status: 400 });
+  }
+
+  const parsed = parseInboxFind(body);
+  if (!parsed.ok) {
+    return NextResponse.json(
+      { ok: false, code: parsed.error },
+      { status: 400, headers: { "cache-control": "no-store" } },
+    );
+  }
+
+  const ids = toInboxIdRowsForEmail(await listIntake(50), parsed.email);
+  return NextResponse.json(
+    { ok: true, ids },
     { headers: { "cache-control": "no-store" } },
   );
 }

@@ -6,6 +6,7 @@
  *   node scripts/inbox.mjs queue
  *   node scripts/inbox.mjs show <uuid>
  *   node scripts/inbox.mjs list   # ids and statuses only
+ *   node scripts/inbox.mjs find <email>  # ids for that email only; prints no email
  *   node scripts/inbox.mjs decide <uuid> quoted <dollars> <YYYY-MM-DD> --done <done when> <quote text>
  *   node scripts/inbox.mjs decide <uuid> declined <reason>
  *   node scripts/inbox.mjs update <uuid> <text>
@@ -138,6 +139,22 @@ if (cmd === "list") {
   process.exit(0);
 }
 
+if (cmd === "find" && id) {
+  const { status: http, json } = await call("POST", "/api/inbox", { email: id });
+  if (!json.ok || !Array.isArray(json.ids)) {
+    console.error("find_failed", http, json.code ?? "error");
+    process.exit(1);
+  }
+  console.log(`count ${json.ids.length}`);
+  for (const row of json.ids) {
+    const foundId = typeof row?.id === "string" ? row.id : "";
+    const foundStatus = typeof row?.status === "string" ? row.status : "";
+    const receivedAt = typeof row?.receivedAt === "string" ? row.receivedAt : "";
+    console.log(`${foundId} ${foundStatus} ${receivedAt}`.trim());
+  }
+  process.exit(0);
+}
+
 if (cmd === "update" && id) {
   const updateText = [status, ...rest].filter(Boolean).join(" ").trim();
   if (!updateText) {
@@ -246,6 +263,7 @@ if (cmd === "decide" && id && status) {
 console.error("usage: node scripts/inbox.mjs queue");
 console.error("       node scripts/inbox.mjs show <uuid>");
 console.error("       node scripts/inbox.mjs list");
+console.error("       node scripts/inbox.mjs find <email>");
 console.error(
   "       node scripts/inbox.mjs decide <uuid> quoted <dollars> <YYYY-MM-DD> --done <done when> <quote text>",
 );
