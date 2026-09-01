@@ -1,6 +1,7 @@
 import {
   hydrateThread,
   intakeBlobPath,
+  parseDueAt,
   parseIntakeStatus,
   type IntakeRecord,
   type IntakeStatus,
@@ -284,6 +285,7 @@ export type InboxIdRow = {
   status: IntakeStatus;
   receivedAt: string;
   confirmedAt?: string;
+  dueAt?: string;
 };
 
 export function parseInboxListView(value: unknown): InboxListView | "invalid" {
@@ -305,6 +307,8 @@ export function toInboxIdRow(record: IntakeRecord): InboxIdRow | null {
   const confirmedAt =
     typeof record.confirmedAt === "string" ? record.confirmedAt.trim().slice(0, 40) : "";
   if (confirmedAt) row.confirmedAt = confirmedAt;
+  const dueAt = parseDueAt(record.dueAt);
+  if (dueAt) row.dueAt = dueAt;
   return row;
 }
 
