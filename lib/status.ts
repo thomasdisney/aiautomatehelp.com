@@ -305,6 +305,7 @@ export function applyCustomerAction(
     record: {
       ...record,
       status: "accepted",
+      acceptedAt: stamp,
       customerReply: action.note || record.customerReply,
       customerReplyAt: action.note ? stamp : record.customerReplyAt,
       thread: action.note

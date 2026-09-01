@@ -238,7 +238,7 @@ export function toWorkItem(
       : record.status === "paid"
         ? record.paidAt || record.receivedAt
         : record.status === "accepted"
-          ? record.customerReplyAt || record.updateAt || record.receivedAt
+          ? record.acceptedAt || record.customerReplyAt || record.updateAt || record.receivedAt
           : record.receivedAt;
   return {
     id: record.id,
@@ -265,7 +265,7 @@ export function toWaitingItem(
   if (!isWaitingOnCustomer(record, paymentConnected)) return null;
   const at =
     record.status === "accepted"
-      ? record.updateAt || record.customerReplyAt || record.receivedAt
+      ? record.acceptedAt || record.updateAt || record.customerReplyAt || record.receivedAt
       : record.status === "delivered"
         ? record.updateAt || record.paidAt || record.receivedAt
         : record.updateAt || record.receivedAt;
@@ -357,6 +357,7 @@ export type InboxIdRow = {
   amountCents?: number;
   questionAt?: string;
   updateAt?: string;
+  acceptedAt?: string;
 };
 
 export function parseInboxListView(value: unknown): InboxListView | "invalid" {
@@ -387,6 +388,9 @@ export function toInboxIdRow(record: IntakeRecord): InboxIdRow | null {
   const updateAt =
     typeof record.updateAt === "string" ? record.updateAt.trim().slice(0, 40) : "";
   if (updateAt) row.updateAt = updateAt;
+  const acceptedAt =
+    typeof record.acceptedAt === "string" ? record.acceptedAt.trim().slice(0, 40) : "";
+  if (acceptedAt) row.acceptedAt = acceptedAt;
   return row;
 }
 

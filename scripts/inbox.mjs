@@ -94,6 +94,7 @@ if (cmd === "show" && id) {
     console.log(item.doneWhen);
   }
   if (item.confirmedAt) console.log(`confirmedAt ${item.confirmedAt}`);
+  if (item.acceptedAt) console.log(`acceptedAt ${item.acceptedAt}`);
   console.log("message");
   console.log(item.message);
   if (item.quoteText) {
@@ -141,8 +142,9 @@ if (cmd === "list") {
     const amountCents = typeof row?.amountCents === "number" ? row.amountCents : 0;
     const questionAt = typeof row?.questionAt === "string" ? row.questionAt : "";
     const updateAt = typeof row?.updateAt === "string" ? row.updateAt : "";
+    const acceptedAt = typeof row?.acceptedAt === "string" ? row.acceptedAt : "";
     console.log(
-      `${id} ${status} ${receivedAt}${amountCents ? ` ${amountCents}` : ""}${dueAt ? ` due ${dueAt}` : ""}${updateAt ? ` update ${updateAt}` : ""}${confirmedAt ? ` confirmed ${confirmedAt}` : ""}${questionAt ? ` question ${questionAt}` : ""}`.trim(),
+      `${id} ${status} ${receivedAt}${amountCents ? ` ${amountCents}` : ""}${dueAt ? ` due ${dueAt}` : ""}${updateAt ? ` update ${updateAt}` : ""}${acceptedAt ? ` accepted ${acceptedAt}` : ""}${confirmedAt ? ` confirmed ${confirmedAt}` : ""}${questionAt ? ` question ${questionAt}` : ""}`.trim(),
     );
   }
   process.exit(0);
@@ -164,8 +166,9 @@ if (cmd === "find" && id) {
     const amountCents = typeof row?.amountCents === "number" ? row.amountCents : 0;
     const questionAt = typeof row?.questionAt === "string" ? row.questionAt : "";
     const updateAt = typeof row?.updateAt === "string" ? row.updateAt : "";
+    const acceptedAt = typeof row?.acceptedAt === "string" ? row.acceptedAt : "";
     console.log(
-      `${foundId} ${foundStatus} ${receivedAt}${amountCents ? ` ${amountCents}` : ""}${dueAt ? ` due ${dueAt}` : ""}${updateAt ? ` update ${updateAt}` : ""}${confirmedAt ? ` confirmed ${confirmedAt}` : ""}${questionAt ? ` question ${questionAt}` : ""}`.trim(),
+      `${foundId} ${foundStatus} ${receivedAt}${amountCents ? ` ${amountCents}` : ""}${dueAt ? ` due ${dueAt}` : ""}${updateAt ? ` update ${updateAt}` : ""}${acceptedAt ? ` accepted ${acceptedAt}` : ""}${confirmedAt ? ` confirmed ${confirmedAt}` : ""}${questionAt ? ` question ${questionAt}` : ""}`.trim(),
     );
   }
   process.exit(0);
