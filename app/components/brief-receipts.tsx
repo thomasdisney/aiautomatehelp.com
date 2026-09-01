@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import type { BriefReceipt } from "@/lib/brief-receipt";
+import { briefReceiptDisplay, type BriefReceipt } from "@/lib/brief-receipt";
 
 export function BriefReceiptList({
   receipts,
@@ -29,39 +29,46 @@ export function BriefReceiptList({
         not email them.
       </p>
       <ul className="mt-4 space-y-4">
-        {receipts.map((receipt) => (
-          <li
-            key={receipt.id}
-            className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"
-          >
-            <p className="break-all font-mono text-sm text-ink">{receipt.id}</p>
-            <div className="flex flex-wrap gap-2">
-              {mode === "links" ? (
-                <Link
-                  href={`/status?ref=${encodeURIComponent(receipt.id)}`}
-                  className="inline-flex items-center justify-center rounded-full bg-accent px-4 py-1.5 text-sm font-semibold text-white hover:bg-accent-hover"
-                >
-                  Check status
-                </Link>
-              ) : (
+        {receipts.map((receipt) => {
+          const view = briefReceiptDisplay(receipt);
+          if (!view) return null;
+          return (
+            <li
+              key={view.id}
+              className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"
+            >
+              <div>
+                <p className="break-all font-mono text-sm text-ink">{view.id}</p>
+                <p className="mt-1 text-sm text-ink/60">Received {view.receivedAt}.</p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {mode === "links" ? (
+                  <Link
+                    href={`/status?ref=${encodeURIComponent(view.id)}`}
+                    className="inline-flex items-center justify-center rounded-full bg-accent px-4 py-1.5 text-sm font-semibold text-white hover:bg-accent-hover"
+                  >
+                    Check status
+                  </Link>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => onUse?.(view.id)}
+                    className="rounded-full bg-accent px-4 py-1.5 text-sm font-semibold text-white hover:bg-accent-hover"
+                  >
+                    Use this reference
+                  </button>
+                )}
                 <button
                   type="button"
-                  onClick={() => onUse?.(receipt.id)}
-                  className="rounded-full bg-accent px-4 py-1.5 text-sm font-semibold text-white hover:bg-accent-hover"
+                  onClick={() => onRemove(view.id)}
+                  className="rounded-full border border-ink/15 px-4 py-1.5 text-sm font-semibold text-ink hover:bg-paper"
                 >
-                  Use this reference
+                  Remove
                 </button>
-              )}
-              <button
-                type="button"
-                onClick={() => onRemove(receipt.id)}
-                className="rounded-full border border-ink/15 px-4 py-1.5 text-sm font-semibold text-ink hover:bg-paper"
-              >
-                Remove
-              </button>
-            </div>
-          </li>
-        ))}
+              </div>
+            </li>
+          );
+        })}
       </ul>
       <button
         type="button"

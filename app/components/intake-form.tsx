@@ -4,21 +4,21 @@ import { FormEvent, useEffect, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { BriefReceiptList, CopyReference } from "@/app/components/brief-receipts";
 import {
-  briefReceiptFromPublicPayload,
   browserReceiptStore,
   clearBriefReceipts,
   dropBriefReceipt,
   getBriefReceiptServerSnapshot,
   getBriefReceiptSnapshot,
-  persistBriefReceipt,
+  persistBriefReceiptFromPublicPayload,
   subscribeBriefReceipts,
+  toPublicIntakeCreate,
 } from "@/lib/brief-receipt";
 import { FIELD_LIMITS } from "@/lib/intake";
 
 type Status =
   | { kind: "idle" }
   | { kind: "sending" }
-  | { kind: "sent"; id: string }
+  | { kind: "sent"; id: string; receivedAt?: string }
   | { kind: "error"; message: string };
 
 const ERRORS: Record<string, string> = {
@@ -132,9 +132,13 @@ export function IntakeForm({ connected }: { connected: boolean }) {
         return;
       }
       form.reset();
-      const receipt = briefReceiptFromPublicPayload(json);
-      if (receipt) persistBriefReceipt(browserReceiptStore(), receipt.id, receipt.at);
-      setStatus({ kind: "sent", id: receipt?.id || "received" });
+      persistBriefReceiptFromPublicPayload(browserReceiptStore(), json);
+      const created = toPublicIntakeCreate(json);
+      setStatus(
+        created
+          ? { kind: "sent", id: created.id, receivedAt: created.receivedAt }
+          : { kind: "sent", id: "received" },
+      );
     } catch {
       setStatus({
         kind: "error",
@@ -154,6 +158,9 @@ export function IntakeForm({ connected }: { connected: boolean }) {
             received time, not your email or the job text. I will not email it.
           </p>
           <p className="mt-4 break-all font-mono text-sm text-ink">{status.id}</p>
+          {status.receivedAt ? (
+            <p className="mt-2 text-sm text-ink/60">Received {status.receivedAt}.</p>
+          ) : null}
           <div className="mt-5 flex flex-col gap-3 sm:flex-row">
             <Link
               href={`/status?ref=${encodeURIComponent(status.id)}`}

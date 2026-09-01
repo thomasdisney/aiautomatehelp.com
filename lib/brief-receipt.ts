@@ -61,6 +61,17 @@ export function toPublicIntakeCreate(
   return { ok: true, id: receipt.id, receivedAt: receipt.at };
 }
 
+export function briefReceiptDisplay(
+  value: unknown,
+  nowMs: number = Date.now(),
+): { id: string; receivedAt: string } | null {
+  if (!value || typeof value !== "object") return null;
+  const row = value as Record<string, unknown>;
+  const receipt = toReceipt({ id: row.id, at: row.at }, Number.isFinite(nowMs) ? nowMs : Date.now());
+  if (!receipt) return null;
+  return { id: receipt.id, receivedAt: receipt.at };
+}
+
 export function parseBriefReceipts(raw: string, nowMs: number = Date.now()): BriefReceipt[] {
   const now = Number.isFinite(nowMs) ? nowMs : Date.now();
   let value: unknown;
@@ -158,6 +169,18 @@ export function persistBriefReceipt(
   const next = briefReceiptsAfterAdd(loadBriefReceipts(store, nowMs), id, at, nowMs);
   writeStore(store, next);
   return next;
+}
+
+export function persistBriefReceiptFromPublicPayload(
+  store: BriefReceiptStore | null,
+  value: unknown,
+  nowMs: number = Date.now(),
+): BriefReceipt[] {
+  const now = Number.isFinite(nowMs) ? nowMs : Date.now();
+  const current = loadBriefReceipts(store, now);
+  const receipt = briefReceiptFromPublicPayload(value, now);
+  if (!receipt) return current;
+  return persistBriefReceipt(store, receipt.id, receipt.at, now);
 }
 
 export function dropBriefReceipt(

@@ -3,13 +3,12 @@
 import { FormEvent, useState, useSyncExternalStore } from "react";
 import { BriefReceiptList } from "@/app/components/brief-receipts";
 import {
-  briefReceiptFromPublicPayload,
   browserReceiptStore,
   clearBriefReceipts,
   dropBriefReceipt,
   getBriefReceiptServerSnapshot,
   getBriefReceiptSnapshot,
-  persistBriefReceipt,
+  persistBriefReceiptFromPublicPayload,
   subscribeBriefReceipts,
 } from "@/lib/brief-receipt";
 import { FIELD_LIMITS, parseDueAt, parseThread, type ThreadEntry } from "@/lib/intake";
@@ -139,8 +138,7 @@ export function StatusForm({
         });
         return;
       }
-      const receipt = briefReceiptFromPublicPayload(json);
-      if (receipt) persistBriefReceipt(browserReceiptStore(), receipt.id, receipt.at);
+      persistBriefReceiptFromPublicPayload(browserReceiptStore(), json);
       setResult({
         kind: "found",
         id: json.id,
@@ -217,6 +215,7 @@ export function StatusForm({
         );
         return false;
       }
+      persistBriefReceiptFromPublicPayload(browserReceiptStore(), json);
       setResult({
         kind: "found",
         id: json.id,
@@ -253,8 +252,8 @@ export function StatusForm({
       >
         <p className="text-sm text-ink/60">
           Use the full reference from the confirmation and the email you submitted. A matching
-          check on this browser keeps the reference and the received time, not your email. I
-          will not email a personal inbox.
+          check or reply on this browser keeps the reference and the received time, not your
+          email. I will not email a personal inbox.
         </p>
         <div className="absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden="true">
           <label htmlFor="website">Website</label>
