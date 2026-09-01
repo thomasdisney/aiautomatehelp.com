@@ -379,6 +379,10 @@ function operatorMayChangeStatus(
   return next !== "delivered";
 }
 
+function quoteNeedsPublicNote(current: IntakeStatus): boolean {
+  return current === "quoted" || current === "declined" || current === "withdrawn";
+}
+
 export function applyOperatorPatch(
   record: IntakeRecord,
   patch: {
@@ -403,6 +407,10 @@ export function applyOperatorPatch(
       ? sanitizeText(patch.doneWhen ?? "", FIELD_LIMITS.doneWhen)
       : record.doneWhen || "";
   if (patch.status === "quoted" && !nextDoneWhen) {
+    return { ok: false, error: "not_allowed" };
+  }
+  const publicNote = sanitizeText(patch.updateText ?? "", FIELD_LIMITS.updateText);
+  if (patch.status === "quoted" && quoteNeedsPublicNote(record.status) && !publicNote) {
     return { ok: false, error: "not_allowed" };
   }
 

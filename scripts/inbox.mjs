@@ -7,7 +7,7 @@
  *   node scripts/inbox.mjs show <uuid>
  *   node scripts/inbox.mjs list   # ids and statuses only
  *   node scripts/inbox.mjs find <email>  # ids for that email only; prints no email
- *   node scripts/inbox.mjs decide <uuid> quoted <dollars> <YYYY-MM-DD> --done <done when> <quote text>
+ *   node scripts/inbox.mjs decide <uuid> quoted <dollars> <YYYY-MM-DD> --done <done when> [--note <text>] <quote text>
  *   node scripts/inbox.mjs decide <uuid> declined <reason>
  *   node scripts/inbox.mjs update <uuid> <text>
  *   node scripts/inbox.mjs note <uuid> <text>
@@ -223,6 +223,11 @@ if (cmd === "decide" && id && status) {
         i += 1;
         continue;
       }
+      if (tail[i] === "--note" && tail[i + 1]) {
+        updateText = String(tail[i + 1]).trim();
+        i += 1;
+        continue;
+      }
       quoteParts.push(tail[i]);
     }
     quoteText = quoteParts.join(" ").trim();
@@ -234,7 +239,7 @@ if (cmd === "decide" && id && status) {
       !quoteText
     ) {
       console.error(
-        "usage: node scripts/inbox.mjs decide <uuid> quoted <dollars> <YYYY-MM-DD> --done <done when> <quote text>",
+        "usage: node scripts/inbox.mjs decide <uuid> quoted <dollars> <YYYY-MM-DD> --done <done when> [--note <text>] <quote text>",
       );
       process.exit(2);
     }
@@ -286,7 +291,7 @@ console.error("       node scripts/inbox.mjs show <uuid>");
 console.error("       node scripts/inbox.mjs list");
 console.error("       node scripts/inbox.mjs find <email>");
 console.error(
-  "       node scripts/inbox.mjs decide <uuid> quoted <dollars> <YYYY-MM-DD> --done <done when> <quote text>",
+  "       node scripts/inbox.mjs decide <uuid> quoted <dollars> <YYYY-MM-DD> --done <done when> [--note <text>] <quote text>",
 );
 console.error("       node scripts/inbox.mjs decide <uuid> declined <reason>");
 console.error("       node scripts/inbox.mjs update <uuid> <text>");

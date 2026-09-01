@@ -38,9 +38,9 @@ const ERRORS: Record<string, string> = {
 const STATUS_COPY: Record<string, string> = {
   received: "I have the brief. I may ask a follow-up here. A yes or no and, if yes, a fixed quote will show here.",
   quoted: "This is a fixed quote for the written scope, with a delivery date and a done-when test. Accepting agrees to that scope, price, date, and test together. After you accept, you pay that amount here before I start — only once checkout is connected.",
-  declined: "I am not taking this job.",
+  declined: "I am not taking this job. If I post a new quote here, it will include a new note.",
   accepted: "You accepted this quote, including the written scope, price, date, and done-when test. Those terms stay as written. You can still turn it down until it is paid. I may also close it from my side if I cannot take the job. Payment opens here only when checkout is connected. Until then I will not take money here. After I post the handoff, confirm the stored done-when test here.",
-  withdrawn: "You turned those terms down. They stay closed. If I post a new quote here, you can accept that one. Or send a new brief.",
+  withdrawn: "You turned those terms down. They stay closed. If I post a new quote here, it will include a new note. You can accept that one. Or send a new brief.",
   paid: "Paid. I will start the written scope. Check here for the handoff.",
   delivered: "Handed off. Confirm the stored done-when test here when it passes. Ask here if something in that scope is broken.",
 };
