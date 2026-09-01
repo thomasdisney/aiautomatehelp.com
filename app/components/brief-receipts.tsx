@@ -24,9 +24,9 @@ export function BriefReceiptList({
         Saved on this browser
       </p>
       <p className="mt-2 text-sm leading-relaxed text-ink/70">
-        These are references and original received times only. They stay on this device so a
-        refresh does not lose them. They are not your email or the job text. I will
-        not email them.
+        These are references and original received times only. A matching check or reply
+        still shows that stored time from this device. They are not your email or the job
+        text. I will not email them.
       </p>
       <ul className="mt-4 space-y-4">
         {receipts.map((receipt) => {

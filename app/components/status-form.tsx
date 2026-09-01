@@ -9,6 +9,7 @@ import {
   getBriefReceiptServerSnapshot,
   getBriefReceiptSnapshot,
   persistBriefReceiptFromPublicPayload,
+  receivedAtFromStoredReceipt,
   subscribeBriefReceipts,
 } from "@/lib/brief-receipt";
 import { FIELD_LIMITS, parseDueAt, parseThread, type ThreadEntry } from "@/lib/intake";
@@ -138,13 +139,21 @@ export function StatusForm({
         });
         return;
       }
-      persistBriefReceiptFromPublicPayload(browserReceiptStore(), json);
+      const receiptsAfter = persistBriefReceiptFromPublicPayload(browserReceiptStore(), json);
+      const receivedAt = receivedAtFromStoredReceipt(receiptsAfter, json.id, json.receivedAt);
+      if (!receivedAt) {
+        setResult({
+          kind: "error",
+          message: ERRORS[json.code ?? ""] ?? "Status could not be loaded. Try again later.",
+        });
+        return;
+      }
       setResult({
         kind: "found",
         id: json.id,
         email,
         status: json.status,
-        receivedAt: json.receivedAt,
+        receivedAt,
         quoteText: typeof json.quoteText === "string" ? json.quoteText : undefined,
         customerReply: typeof json.customerReply === "string" ? json.customerReply : undefined,
         updateText: typeof json.updateText === "string" ? json.updateText : undefined,
@@ -215,13 +224,20 @@ export function StatusForm({
         );
         return false;
       }
-      persistBriefReceiptFromPublicPayload(browserReceiptStore(), json);
+      const receiptsAfter = persistBriefReceiptFromPublicPayload(browserReceiptStore(), json);
+      const receivedAt = receivedAtFromStoredReceipt(receiptsAfter, json.id, json.receivedAt);
+      if (!receivedAt) {
+        setReplyError(
+          ERRORS[json.code ?? ""] ?? "That reply was not stored. Try again later.",
+        );
+        return false;
+      }
       setResult({
         kind: "found",
         id: json.id,
         email: result.email,
         status: json.status,
-        receivedAt: json.receivedAt,
+        receivedAt,
         quoteText: typeof json.quoteText === "string" ? json.quoteText : undefined,
         customerReply: typeof json.customerReply === "string" ? json.customerReply : undefined,
         updateText: typeof json.updateText === "string" ? json.updateText : undefined,
@@ -252,8 +268,8 @@ export function StatusForm({
       >
         <p className="text-sm text-ink/60">
           Use the full reference from the confirmation and the email you submitted. A matching
-          check or reply on this browser keeps the reference and the original received time, not your
-          email. I will not email a personal inbox.
+          check or reply on this browser keeps the reference and shows the original received time
+          from this device, not your email. I will not email a personal inbox.
         </p>
         <div className="absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden="true">
           <label htmlFor="website">Website</label>

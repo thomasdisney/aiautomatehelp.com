@@ -72,6 +72,33 @@ export function briefReceiptDisplay(
   return { id: receipt.id, receivedAt: receipt.at };
 }
 
+export function briefReceiptForId(
+  list: BriefReceipt[],
+  id: unknown,
+  nowMs: number = Date.now(),
+): { id: string; receivedAt: string } | null {
+  const wanted = parseReceiptId(id);
+  if (!wanted) return null;
+  const current = parseBriefReceipts(
+    JSON.stringify(list),
+    Number.isFinite(nowMs) ? nowMs : Date.now(),
+  );
+  const stored = current.find((item) => item.id === wanted);
+  return stored ? briefReceiptDisplay(stored, nowMs) : null;
+}
+
+export function receivedAtFromStoredReceipt(
+  list: BriefReceipt[],
+  id: unknown,
+  fallbackReceivedAt: unknown,
+  nowMs: number = Date.now(),
+): string | null {
+  const stored = briefReceiptForId(list, id, nowMs);
+  if (stored) return stored.receivedAt;
+  if (!parseReceiptId(id)) return null;
+  return parseAt(fallbackReceivedAt);
+}
+
 export function parseBriefReceipts(raw: string, nowMs: number = Date.now()): BriefReceipt[] {
   const now = Number.isFinite(nowMs) ? nowMs : Date.now();
   let value: unknown;

@@ -11,6 +11,7 @@ import {
   getBriefReceiptSnapshot,
   persistBriefReceiptFromPublicPayload,
   subscribeBriefReceipts,
+  receivedAtFromStoredReceipt,
   toPublicIntakeCreate,
 } from "@/lib/brief-receipt";
 import { FIELD_LIMITS } from "@/lib/intake";
@@ -132,11 +133,14 @@ export function IntakeForm({ connected }: { connected: boolean }) {
         return;
       }
       form.reset();
-      persistBriefReceiptFromPublicPayload(browserReceiptStore(), json);
+      const receiptsAfter = persistBriefReceiptFromPublicPayload(browserReceiptStore(), json);
       const created = toPublicIntakeCreate(json);
+      const receivedAt = created
+        ? receivedAtFromStoredReceipt(receiptsAfter, created.id, created.receivedAt)
+        : null;
       setStatus(
         created
-          ? { kind: "sent", id: created.id, receivedAt: created.receivedAt }
+          ? { kind: "sent", id: created.id, receivedAt: receivedAt ?? created.receivedAt }
           : { kind: "sent", id: "received" },
       );
     } catch {
@@ -154,8 +158,9 @@ export function IntakeForm({ connected }: { connected: boolean }) {
           <p className="text-lg font-semibold text-ink">Brief received</p>
           <p className="mt-3 leading-relaxed text-ink/70">
             I have the job description. A yes or no and, if yes, a fixed quote will show on the
-            status page. Save this full reference. This browser keeps the reference and the
-            original received time, not your email or the job text. I will not email it.
+            status page. Save this full reference. This browser keeps the reference and shows
+            the original received time from this device, not your email or the job text. I will
+            not email it.
           </p>
           <p className="mt-4 break-all font-mono text-sm text-ink">{status.id}</p>
           {status.receivedAt ? (
