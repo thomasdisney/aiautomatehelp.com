@@ -23,7 +23,7 @@ import {
   parseEmailIndex,
   parseOpsEvent,
   rankIntakeBlobs,
-  selectIntakeByEmail,
+  mergeIntakeForEmail,
   selectIntakeForInbox,
   summarizeQueue,
   toOpsEvent,
@@ -122,6 +122,7 @@ async function persistBlob(record: IntakeRecord): Promise<boolean> {
   if (!path) return false;
   const { put } = await import("@vercel/blob");
   await put(path, JSON.stringify(record), intakeBlobPutOptions());
+  await rememberIntakeEmail(record.email, record.id);
   return true;
 }
 
@@ -231,7 +232,6 @@ export async function persistIntake(
       status: record.status,
       at: record.receivedAt,
     });
-    await rememberIntakeEmail(record.email, record.id);
   }
   return { stored, id };
 }
@@ -359,11 +359,7 @@ export async function listIntakeByEmail(
     loadIndexedIntakeForEmail(email),
     listIntake(INTAKE_LIST_GET_LIMIT),
   ]);
-  const byId = new Map<string, IntakeRecord>();
-  for (const record of [...indexed, ...recent]) {
-    byId.set(record.id, record);
-  }
-  return selectIntakeByEmail([...byId.values()], email, limit);
+  return mergeIntakeForEmail(indexed, recent, email, limit);
 }
 
 async function loadIndexedIntakeForEmail(email: string): Promise<IntakeRecord[]> {
@@ -372,7 +368,7 @@ async function loadIndexedIntakeForEmail(email: string): Promise<IntakeRecord[]>
   const records: IntakeRecord[] = [];
   for (const id of ids) {
     const record = await getIntake(id);
-    if (record) records.push(record);
+    if (record && emailsMatch(record.email, email)) records.push(record);
   }
   return records;
 }

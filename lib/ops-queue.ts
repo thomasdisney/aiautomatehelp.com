@@ -437,12 +437,23 @@ export function selectIntakeByEmail(
   email: string,
   limit: number,
 ): IntakeRecord[] {
+  return mergeIntakeForEmail([], records, email, limit);
+}
+
+export function mergeIntakeForEmail(
+  indexed: IntakeRecord[],
+  recent: IntakeRecord[],
+  email: string,
+  limit: number,
+): IntakeRecord[] {
   const normalized = sanitizeText(email, FIELD_LIMITS.email).toLowerCase();
   if (!isValidEmail(normalized)) return [];
-  return selectIntakeForInbox(
-    records.filter((record) => emailsMatch(record.email, normalized)),
-    limit,
-  );
+  const byId = new Map<string, IntakeRecord>();
+  for (const record of [...indexed, ...recent]) {
+    if (!emailsMatch(record.email, normalized)) continue;
+    byId.set(record.id, record);
+  }
+  return selectIntakeForInbox([...byId.values()], limit);
 }
 
 export type IntakeBlobMeta = {
