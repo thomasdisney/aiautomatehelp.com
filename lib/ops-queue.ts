@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import {
   hydrateThread,
   intakeBlobPath,
+  intakeIdFromBlobPath,
   isValidEmail,
   parseDueAt,
   parseIntakeStatus,
@@ -617,11 +618,8 @@ export function inboxActivityAt(record: IntakeRecord): string {
 }
 
 function intakePathFromBlob(pathname: unknown): string | null {
-  if (typeof pathname !== "string") return null;
-  const raw = pathname.trim();
-  if (!raw.startsWith("intake/") || !raw.endsWith(".json")) return null;
-  const id = raw.slice("intake/".length, -".json".length);
-  return intakeBlobPath(id);
+  const id = intakeIdFromBlobPath(pathname);
+  return id ? intakeBlobPath(id) : null;
 }
 
 function uploadedAtMs(value: unknown): number {

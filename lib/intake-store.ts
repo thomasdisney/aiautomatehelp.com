@@ -2,7 +2,7 @@ import {
   detectIntakeBackend,
   intakeBlobPath,
   intakeBlobPutOptions,
-  parseIntakeRecord,
+  parseIntakeRecordAtPath,
   toIntakeRecord,
   type IntakeFields,
   type IntakeRecord,
@@ -49,6 +49,7 @@ export {
   intakeBlobPath,
   intakeBlobPutOptions,
   parseIntakeRecord,
+  parseIntakeRecordAtPath,
   toIntakeRecord,
 } from "@/lib/intake";
 export type { IntakeBackend, IntakeRecord } from "@/lib/intake";
@@ -316,7 +317,7 @@ export async function getIntake(id: string): Promise<IntakeRecord | null> {
     const file = await get(path, { access: "private", useCache: false });
     if (!file?.stream) return null;
     const text = await new Response(file.stream).text();
-    return parseIntakeRecord(text);
+    return parseIntakeRecordAtPath(text, path);
   } catch {
     return null;
   }
@@ -350,7 +351,7 @@ async function loadIntakeRecords(getLimit: number): Promise<IntakeRecord[]> {
       const file = await get(path, { access: "private", useCache: false });
       if (!file?.stream) continue;
       const text = await new Response(file.stream).text();
-      const parsed = parseIntakeRecord(text);
+      const parsed = parseIntakeRecordAtPath(text, path);
       if (parsed) records.push(parsed);
     }
     return records;

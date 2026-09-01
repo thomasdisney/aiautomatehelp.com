@@ -215,6 +215,25 @@ export function intakeBlobPath(id: string): string | null {
   return `intake/${id}.json`;
 }
 
+export function intakeIdFromBlobPath(pathname: unknown): string | null {
+  if (typeof pathname !== "string") return null;
+  const raw = pathname.trim();
+  if (!raw.startsWith("intake/") || !raw.endsWith(".json")) return null;
+  if (raw.includes("\0") || raw.includes("\\") || raw.includes("..")) return null;
+  const id = raw.slice("intake/".length, -".json".length).trim().toLowerCase();
+  if (!id || id.includes("/") || id.includes("\\") || id.includes("..")) return null;
+  return intakeBlobPath(id) ? id : null;
+}
+
+export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeRecord | null {
+  const expected = intakeIdFromBlobPath(pathname);
+  if (!expected) return null;
+  const parsed = parseIntakeRecord(raw);
+  if (!parsed || parsed.id.toLowerCase() !== expected) return null;
+  if (parsed.id === expected) return parsed;
+  return { ...parsed, id: expected };
+}
+
 export function intakeBlobPutOptions() {
   return {
     access: "private" as const,
