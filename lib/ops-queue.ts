@@ -170,23 +170,25 @@ export function emptyQueue(last: OpsEvent | null = null): OpsQueue {
   };
 }
 
-function confirmedAtStamp(record: IntakeRecord): string {
-  return typeof record.confirmedAt === "string" ? record.confirmedAt.trim().slice(0, 40) : "";
+function closedAtStamp(record: IntakeRecord): string {
+  const stamps = [eventStamp(record.confirmedAt), eventStamp(record.withdrawnAt)].filter(Boolean);
+  if (!stamps.length) return "";
+  return stamps.reduce((latest, at) => (at > latest ? at : latest));
 }
 
-function isAfterConfirm(at: string, confirmedAt: string): boolean {
-  if (!confirmedAt) return true;
-  return at > confirmedAt;
+function isAfterClose(at: string, closedAt: string): boolean {
+  if (!closedAt) return true;
+  return at > closedAt;
 }
 
 export function hasOpenQuestion(record: IntakeRecord): boolean {
-  const confirmedAt = confirmedAtStamp(record);
+  const closedAt = closedAtStamp(record);
   const thread = hydrateThread(record);
   if (thread.length) {
     let lastCustomer = "";
     let lastOperator = "";
     for (const entry of thread) {
-      if (!isAfterConfirm(entry.at, confirmedAt)) continue;
+      if (!isAfterClose(entry.at, closedAt)) continue;
       if (entry.role === "customer") lastCustomer = entry.at;
       if (entry.role === "operator") lastOperator = entry.at;
     }
@@ -197,7 +199,7 @@ export function hasOpenQuestion(record: IntakeRecord): boolean {
   if (!record.customerReply) return false;
   const replyAt =
     typeof record.customerReplyAt === "string" ? record.customerReplyAt.trim().slice(0, 40) : "";
-  if (confirmedAt && (!replyAt || !isAfterConfirm(replyAt, confirmedAt))) return false;
+  if (closedAt && (!replyAt || !isAfterClose(replyAt, closedAt))) return false;
   if (!record.updateAt) return true;
   if (!replyAt) return true;
   return record.updateAt < replyAt;
@@ -205,19 +207,19 @@ export function hasOpenQuestion(record: IntakeRecord): boolean {
 
 export function openQuestionAt(record: IntakeRecord): string | null {
   if (!hasOpenQuestion(record)) return null;
-  const confirmedAt = confirmedAtStamp(record);
+  const closedAt = closedAtStamp(record);
   const thread = hydrateThread(record);
   if (thread.length) {
     for (let i = thread.length - 1; i >= 0; i -= 1) {
       if (thread[i].role !== "customer") continue;
-      if (!isAfterConfirm(thread[i].at, confirmedAt)) continue;
+      if (!isAfterClose(thread[i].at, closedAt)) continue;
       const at = thread[i].at.trim().slice(0, 40);
       if (at) return at;
     }
   }
   const replyAt =
     typeof record.customerReplyAt === "string" ? record.customerReplyAt.trim().slice(0, 40) : "";
-  if (replyAt && isAfterConfirm(replyAt, confirmedAt)) return replyAt;
+  if (replyAt && isAfterClose(replyAt, closedAt)) return replyAt;
   return null;
 }
 
