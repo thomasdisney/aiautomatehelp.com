@@ -144,12 +144,23 @@ export function emptyQueue(last: OpsEvent | null = null): OpsQueue {
   };
 }
 
+function confirmedAtStamp(record: IntakeRecord): string {
+  return typeof record.confirmedAt === "string" ? record.confirmedAt.trim().slice(0, 40) : "";
+}
+
+function isAfterConfirm(at: string, confirmedAt: string): boolean {
+  if (!confirmedAt) return true;
+  return at > confirmedAt;
+}
+
 export function hasOpenQuestion(record: IntakeRecord): boolean {
+  const confirmedAt = confirmedAtStamp(record);
   const thread = hydrateThread(record);
   if (thread.length) {
     let lastCustomer = "";
     let lastOperator = "";
     for (const entry of thread) {
+      if (!isAfterConfirm(entry.at, confirmedAt)) continue;
       if (entry.role === "customer") lastCustomer = entry.at;
       if (entry.role === "operator") lastOperator = entry.at;
     }
@@ -158,24 +169,30 @@ export function hasOpenQuestion(record: IntakeRecord): boolean {
     return lastOperator < lastCustomer;
   }
   if (!record.customerReply) return false;
+  const replyAt =
+    typeof record.customerReplyAt === "string" ? record.customerReplyAt.trim().slice(0, 40) : "";
+  if (confirmedAt && (!replyAt || !isAfterConfirm(replyAt, confirmedAt))) return false;
   if (!record.updateAt) return true;
-  if (!record.customerReplyAt) return true;
-  return record.updateAt < record.customerReplyAt;
+  if (!replyAt) return true;
+  return record.updateAt < replyAt;
 }
 
 export function openQuestionAt(record: IntakeRecord): string | null {
   if (!hasOpenQuestion(record)) return null;
+  const confirmedAt = confirmedAtStamp(record);
   const thread = hydrateThread(record);
   if (thread.length) {
     for (let i = thread.length - 1; i >= 0; i -= 1) {
       if (thread[i].role !== "customer") continue;
+      if (!isAfterConfirm(thread[i].at, confirmedAt)) continue;
       const at = thread[i].at.trim().slice(0, 40);
       if (at) return at;
     }
   }
   const replyAt =
     typeof record.customerReplyAt === "string" ? record.customerReplyAt.trim().slice(0, 40) : "";
-  return replyAt || null;
+  if (replyAt && isAfterConfirm(replyAt, confirmedAt)) return replyAt;
+  return null;
 }
 
 export function hasPublicOperatorUpdate(record: IntakeRecord): boolean {
