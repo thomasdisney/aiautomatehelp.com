@@ -231,6 +231,16 @@ export function toWorkItem(
   };
 }
 
+export function compareWorkItems(a: OpsWorkItem, b: OpsWorkItem): number {
+  const byAt = b.at.localeCompare(a.at);
+  if (byAt !== 0) return byAt;
+  return a.id.localeCompare(b.id);
+}
+
+export function sortWorkItems(items: OpsWorkItem[]): OpsWorkItem[] {
+  return [...items].sort(compareWorkItems);
+}
+
 export function toWaitingItem(
   record: IntakeRecord,
   paymentConnected = false,
@@ -273,6 +283,8 @@ export function summarizeQueue(
     const waiting = toWaitingItem(record, paymentConnected);
     if (waiting) queue.waiting.push(waiting);
   }
+  queue.needs = sortWorkItems(queue.needs);
+  queue.waiting = sortWorkItems(queue.waiting);
   queue.attention = queue.needs.length;
   return queue;
 }
