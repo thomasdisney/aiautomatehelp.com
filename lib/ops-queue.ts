@@ -410,21 +410,39 @@ export function toInboxIdRow(record: IntakeRecord): InboxIdRow | null {
   return row;
 }
 
-export function toInboxIdRows(records: IntakeRecord[]): InboxIdRow[] {
-  const rows: InboxIdRow[] = [];
+function inboxActivityAt(record: IntakeRecord): string {
+  return latestStamp(
+    record.receivedAt,
+    record.updateAt,
+    record.customerReplyAt,
+    record.acceptedAt,
+    record.deliveredAt,
+    record.withdrawnAt,
+    record.declinedAt,
+    record.quotedAt,
+    record.confirmedAt,
+    record.paidAt,
+  );
+}
+
+function toSortedInboxIdRows(records: IntakeRecord[]): InboxIdRow[] {
+  const rows: { row: InboxIdRow; at: string }[] = [];
   for (const record of records) {
     const row = toInboxIdRow(record);
-    if (row) rows.push(row);
+    if (row) rows.push({ row, at: inboxActivityAt(record) });
   }
-  return rows;
+  rows.sort((a, b) => {
+    const byAt = b.at.localeCompare(a.at);
+    if (byAt !== 0) return byAt;
+    return a.row.id.localeCompare(b.row.id);
+  });
+  return rows.map((item) => item.row);
+}
+
+export function toInboxIdRows(records: IntakeRecord[]): InboxIdRow[] {
+  return toSortedInboxIdRows(records);
 }
 
 export function toInboxIdRowsForEmail(records: IntakeRecord[], email: string): InboxIdRow[] {
-  const rows: InboxIdRow[] = [];
-  for (const record of records) {
-    if (!emailsMatch(record.email, email)) continue;
-    const row = toInboxIdRow(record);
-    if (row) rows.push(row);
-  }
-  return rows;
+  return toSortedInboxIdRows(records.filter((record) => emailsMatch(record.email, email)));
 }
