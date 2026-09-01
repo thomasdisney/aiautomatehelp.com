@@ -22,9 +22,10 @@ import {
   opsSignalPayload,
   opsSignalUrl,
   opsWorkPath,
-  parseEmailIndex,
+  parseEmailIndexAtPath,
   parseOpsEvent,
   parseWorkIndex,
+  toEmailIndexPayload,
   rankIntakeBlobs,
   mergeIntakeForEmail,
   selectIntakeForInbox,
@@ -418,7 +419,7 @@ async function readEmailIndex(email: string): Promise<string[]> {
     const file = await get(path, { access: "private", useCache: false });
     if (!file?.stream) return [];
     const text = await new Response(file.stream).text();
-    return parseEmailIndex(text);
+    return parseEmailIndexAtPath(text, path, email);
   } catch {
     return [];
   }
@@ -432,7 +433,9 @@ async function writeEmailIndex(email: string, ids: string[]): Promise<void> {
     await del(path);
     return;
   }
-  await put(path, JSON.stringify({ ids }), intakeBlobPutOptions());
+  const payload = toEmailIndexPayload(ids, email);
+  if (!payload) return;
+  await put(path, JSON.stringify(payload), intakeBlobPutOptions());
 }
 
 async function rememberIntakeEmail(email: string, id: string): Promise<void> {

@@ -384,12 +384,28 @@ export const WORK_INDEX_MAX_IDS = 50;
 
 const EMAIL_INDEX_DIGEST_RE = /^[0-9a-f]{64}$/;
 
-export function emailIndexPath(email: string): string | null {
+export function emailIndexDigest(email: string): string | null {
   const normalized = sanitizeText(email, FIELD_LIMITS.email).toLowerCase();
   if (!isValidEmail(normalized)) return null;
   const digest = createHash("sha256").update(normalized).digest("hex");
-  if (!EMAIL_INDEX_DIGEST_RE.test(digest)) return null;
-  return `ops/xref/${digest}.json`;
+  return EMAIL_INDEX_DIGEST_RE.test(digest) ? digest : null;
+}
+
+export function emailIndexPath(email: string): string | null {
+  const digest = emailIndexDigest(email);
+  return digest ? `ops/xref/${digest}.json` : null;
+}
+
+export function emailIndexDigestFromPath(pathname: unknown): string | null {
+  if (typeof pathname !== "string") return null;
+  const raw = pathname.trim();
+  if (!raw.startsWith("ops/xref/") || !raw.endsWith(".json")) return null;
+  if (raw.includes("\0") || raw.includes("\\") || raw.includes("..")) return null;
+  const digest = raw.slice("ops/xref/".length, -".json".length).trim().toLowerCase();
+  if (!digest || digest.includes("/") || digest.includes("\\") || digest.includes("..")) {
+    return null;
+  }
+  return EMAIL_INDEX_DIGEST_RE.test(digest) ? digest : null;
 }
 
 function parseIndexId(value: unknown): string | null {
@@ -425,6 +441,46 @@ export function parseIdIndex(raw: string, max = EMAIL_INDEX_MAX_IDS): string[] {
 }
 
 export function parseEmailIndex(raw: string): string[] {
+  return parseIdIndex(raw, EMAIL_INDEX_MAX_IDS);
+}
+
+export function toEmailIndexPayload(
+  ids: string[],
+  email: string,
+): { ids: string[]; digest: string } | null {
+  const digest = emailIndexDigest(email);
+  if (!digest) return null;
+  return { ids: parseIdIndex(JSON.stringify({ ids }), EMAIL_INDEX_MAX_IDS), digest };
+}
+
+export function parseEmailIndexAtPath(
+  raw: string,
+  pathname: unknown,
+  email?: string,
+): string[] {
+  const expected = emailIndexDigestFromPath(pathname);
+  if (!expected) return [];
+  if (email !== undefined) {
+    const digest = emailIndexDigest(email);
+    if (digest !== expected) return [];
+  }
+  let value: unknown;
+  try {
+    value = JSON.parse(raw);
+  } catch {
+    return [];
+  }
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    const row = value as Record<string, unknown>;
+    if ("email" in row) {
+      const digest = emailIndexDigest(typeof row.email === "string" ? row.email : "");
+      if (digest !== expected) return [];
+    }
+    if ("digest" in row) {
+      const digest = typeof row.digest === "string" ? row.digest.trim().toLowerCase() : "";
+      if (digest !== expected) return [];
+    }
+  }
   return parseIdIndex(raw, EMAIL_INDEX_MAX_IDS);
 }
 
