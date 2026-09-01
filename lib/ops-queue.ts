@@ -514,6 +514,10 @@ export function mergeIntakeForQueue(
   return [...byId.values()];
 }
 
+function isOpenWork(record: IntakeRecord, paymentConnected = false): boolean {
+  return Boolean(toWorkItem(record, paymentConnected) || toWaitingItem(record, paymentConnected));
+}
+
 export function selectIntakeForList(
   indexed: IntakeRecord[],
   recent: IntakeRecord[],
@@ -528,7 +532,7 @@ export function selectIntakeForList(
   const open: IntakeRecord[] = [];
   const closed: IntakeRecord[] = [];
   for (const record of merged) {
-    if (toWorkItem(record, paymentConnected) || toWaitingItem(record, paymentConnected)) {
+    if (isOpenWork(record, paymentConnected)) {
       open.push(record);
     } else {
       closed.push(record);
@@ -537,7 +541,7 @@ export function selectIntakeForList(
   const openSorted = selectIntakeForInbox(open, cap);
   const remaining = cap - openSorted.length;
   const closedSorted = remaining > 0 ? selectIntakeForInbox(closed, remaining) : [];
-  return selectIntakeForInbox([...openSorted, ...closedSorted], cap);
+  return [...openSorted, ...closedSorted];
 }
 
 export type IntakeBlobMeta = {
@@ -674,12 +678,19 @@ export function selectIntakeForInbox(records: IntakeRecord[], limit: number): In
 }
 
 function toSortedInboxIdRows(records: IntakeRecord[]): InboxIdRow[] {
-  const rows: { row: InboxIdRow; at: string }[] = [];
+  const rows: { row: InboxIdRow; at: string; open: boolean }[] = [];
   for (const record of records) {
     const row = toInboxIdRow(record);
-    if (row) rows.push({ row, at: inboxActivityAt(record) });
+    if (row) {
+      rows.push({
+        row,
+        at: inboxActivityAt(record),
+        open: isOpenWork(record),
+      });
+    }
   }
   rows.sort((a, b) => {
+    if (a.open !== b.open) return a.open ? -1 : 1;
     const byAt = b.at.localeCompare(a.at);
     if (byAt !== 0) return byAt;
     return a.row.id.localeCompare(b.row.id);
