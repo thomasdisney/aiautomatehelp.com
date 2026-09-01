@@ -1,28 +1,9 @@
 import { NextResponse } from "next/server";
 import { parseIntake } from "@/lib/intake";
 import { intakeStoreConfigured, persistIntake } from "@/lib/intake-store";
+import { allowPublicRequest, requestIp } from "@/lib/rate-limit";
 
-const WINDOW_MS = 60 * 60 * 1000;
-const MAX_PER_WINDOW = 5;
 const hits = new Map<string, number[]>();
-
-function clientIp(request: Request): string {
-  const forwarded = request.headers.get("x-forwarded-for");
-  const first = forwarded?.split(",")[0]?.trim();
-  return first || request.headers.get("x-real-ip") || "unknown";
-}
-
-function allowRequest(ip: string): boolean {
-  const now = Date.now();
-  const prior = (hits.get(ip) ?? []).filter((ts) => now - ts < WINDOW_MS);
-  if (prior.length >= MAX_PER_WINDOW) {
-    hits.set(ip, prior);
-    return false;
-  }
-  prior.push(now);
-  hits.set(ip, prior);
-  return true;
-}
 
 export function GET() {
   return NextResponse.json(
@@ -32,7 +13,7 @@ export function GET() {
 }
 
 export async function POST(request: Request) {
-  if (!allowRequest(clientIp(request))) {
+  if (!allowPublicRequest(hits, { ip: requestIp(request.headers), bucket: "intake" })) {
     return NextResponse.json({ ok: false, code: "rate_limited" }, { status: 429 });
   }
 

@@ -9,15 +9,13 @@ import {
   updateIntake,
 } from "@/lib/intake-store";
 import { parseInboxListView, toInboxIdRows, toInboxIdRowsForEmail } from "@/lib/ops-queue";
-import { allowInboxRequest } from "@/lib/rate-limit";
+import { allowInboxRequest, requestIp } from "@/lib/rate-limit";
 import { parseInboxFind, parseInboxId, parseInboxPatch, toPublicStatus } from "@/lib/status";
 
 const hits = new Map<string, number[]>();
 
 function clientIp(request: Request): string {
-  const forwarded = request.headers.get("x-forwarded-for");
-  const first = forwarded?.split(",")[0]?.trim();
-  return first || request.headers.get("x-real-ip") || "unknown";
+  return requestIp(request.headers);
 }
 
 function allowRequest(request: Request, authorized: boolean): boolean {
