@@ -356,6 +356,7 @@ export type InboxIdRow = {
   dueAt?: string;
   amountCents?: number;
   questionAt?: string;
+  updateAt?: string;
 };
 
 export function parseInboxListView(value: unknown): InboxListView | "invalid" {
@@ -383,6 +384,9 @@ export function toInboxIdRow(record: IntakeRecord): InboxIdRow | null {
   if (amountCents !== null) row.amountCents = amountCents;
   const questionAt = openQuestionAt(record);
   if (questionAt) row.questionAt = questionAt;
+  const updateAt =
+    typeof record.updateAt === "string" ? record.updateAt.trim().slice(0, 40) : "";
+  if (updateAt) row.updateAt = updateAt;
   return row;
 }
 

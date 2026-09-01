@@ -415,17 +415,18 @@ export function applyOperatorPatch(
   }
 
   const stamp = now.slice(0, 40);
+  const quotedNow = patch.status === "quoted";
   return {
     ok: true,
     record: {
       ...record,
       status: nextStatus,
-      quoteText: patch.status === "quoted" ? patch.quoteText : record.quoteText,
-      amountCents: patch.status === "quoted" ? patch.amountCents : record.amountCents,
-      dueAt: patch.status === "quoted" ? patch.dueAt : record.dueAt,
+      quoteText: quotedNow ? patch.quoteText : record.quoteText,
+      amountCents: quotedNow ? patch.amountCents : record.amountCents,
+      dueAt: quotedNow ? patch.dueAt : record.dueAt,
       doneWhen: nextDoneWhen,
       updateText: patch.updateText ? patch.updateText : record.updateText,
-      updateAt: patch.updateText ? stamp : record.updateAt,
+      updateAt: patch.updateText || quotedNow ? stamp : record.updateAt,
       operatorNote: patch.operatorNote ? patch.operatorNote : record.operatorNote || "",
       thread: patch.updateText
         ? appendThread(hydrateThread(record), {

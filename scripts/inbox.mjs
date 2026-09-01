@@ -88,6 +88,7 @@ if (cmd === "show" && id) {
   console.log(`company ${item.company}`);
   if (item.amountCents) console.log(`amountCents ${item.amountCents}`);
   if (item.dueAt) console.log(`dueAt ${item.dueAt}`);
+  if (item.updateAt) console.log(`updateAt ${item.updateAt}`);
   if (item.doneWhen) {
     console.log("doneWhen");
     console.log(item.doneWhen);
@@ -139,8 +140,9 @@ if (cmd === "list") {
     const dueAt = typeof row?.dueAt === "string" ? row.dueAt : "";
     const amountCents = typeof row?.amountCents === "number" ? row.amountCents : 0;
     const questionAt = typeof row?.questionAt === "string" ? row.questionAt : "";
+    const updateAt = typeof row?.updateAt === "string" ? row.updateAt : "";
     console.log(
-      `${id} ${status} ${receivedAt}${amountCents ? ` ${amountCents}` : ""}${dueAt ? ` due ${dueAt}` : ""}${confirmedAt ? ` confirmed ${confirmedAt}` : ""}${questionAt ? ` question ${questionAt}` : ""}`.trim(),
+      `${id} ${status} ${receivedAt}${amountCents ? ` ${amountCents}` : ""}${dueAt ? ` due ${dueAt}` : ""}${updateAt ? ` update ${updateAt}` : ""}${confirmedAt ? ` confirmed ${confirmedAt}` : ""}${questionAt ? ` question ${questionAt}` : ""}`.trim(),
     );
   }
   process.exit(0);
@@ -161,8 +163,9 @@ if (cmd === "find" && id) {
     const dueAt = typeof row?.dueAt === "string" ? row.dueAt : "";
     const amountCents = typeof row?.amountCents === "number" ? row.amountCents : 0;
     const questionAt = typeof row?.questionAt === "string" ? row.questionAt : "";
+    const updateAt = typeof row?.updateAt === "string" ? row.updateAt : "";
     console.log(
-      `${foundId} ${foundStatus} ${receivedAt}${amountCents ? ` ${amountCents}` : ""}${dueAt ? ` due ${dueAt}` : ""}${confirmedAt ? ` confirmed ${confirmedAt}` : ""}${questionAt ? ` question ${questionAt}` : ""}`.trim(),
+      `${foundId} ${foundStatus} ${receivedAt}${amountCents ? ` ${amountCents}` : ""}${dueAt ? ` due ${dueAt}` : ""}${updateAt ? ` update ${updateAt}` : ""}${confirmedAt ? ` confirmed ${confirmedAt}` : ""}${questionAt ? ` question ${questionAt}` : ""}`.trim(),
     );
   }
   process.exit(0);
