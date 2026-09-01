@@ -222,7 +222,12 @@ export function toWorkItem(
     event === "question"
       ? record.customerReplyAt || record.receivedAt
       : record.status === "paid"
-        ? record.paidAt || record.receivedAt
+        ? latestStamp(
+            record.paidAt,
+            record.updateAt,
+            record.customerReplyAt,
+            record.receivedAt,
+          )
         : record.status === "accepted"
           ? latestStamp(
               record.acceptedAt,
