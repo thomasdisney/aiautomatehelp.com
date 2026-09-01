@@ -26,7 +26,7 @@ export default async function StatusPage({
         done-when test, the notes on this brief in order, and to accept the scope, price, date,
         and test together, decline until it is paid, ask a question, pay after you accept, or
         confirm the stored test after the handoff. A matching check or reply on this browser
-        keeps the reference and the received time, not your email. I will not email it. There
+        keeps the reference and the original received time, not your email. I will not email it. There
         is no personal inbox, phone, or calendar.
       </p>
       <div className="mt-10">

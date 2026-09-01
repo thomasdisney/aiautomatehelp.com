@@ -155,7 +155,7 @@ export function IntakeForm({ connected }: { connected: boolean }) {
           <p className="mt-3 leading-relaxed text-ink/70">
             I have the job description. A yes or no and, if yes, a fixed quote will show on the
             status page. Save this full reference. This browser keeps the reference and the
-            received time, not your email or the job text. I will not email it.
+            original received time, not your email or the job text. I will not email it.
           </p>
           <p className="mt-4 break-all font-mono text-sm text-ink">{status.id}</p>
           {status.receivedAt ? (

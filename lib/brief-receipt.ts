@@ -106,7 +106,12 @@ export function briefReceiptsAfterAdd(
   const receipt = toReceipt({ id, at }, Number.isFinite(nowMs) ? nowMs : Date.now());
   const current = parseBriefReceipts(JSON.stringify(list), nowMs);
   if (!receipt) return current;
-  return parseBriefReceipts(JSON.stringify([receipt, ...current]), nowMs);
+  const existing = current.find((item) => item.id === receipt.id);
+  const kept = existing ?? receipt;
+  return parseBriefReceipts(
+    JSON.stringify([kept, ...current.filter((item) => item.id !== kept.id)]),
+    nowMs,
+  );
 }
 
 export function briefReceiptsAfterRemove(list: BriefReceipt[], id: string): BriefReceipt[] {

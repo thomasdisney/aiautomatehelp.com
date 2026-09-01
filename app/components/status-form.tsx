@@ -252,7 +252,7 @@ export function StatusForm({
       >
         <p className="text-sm text-ink/60">
           Use the full reference from the confirmation and the email you submitted. A matching
-          check or reply on this browser keeps the reference and the received time, not your
+          check or reply on this browser keeps the reference and the original received time, not your
           email. I will not email a personal inbox.
         </p>
         <div className="absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden="true">

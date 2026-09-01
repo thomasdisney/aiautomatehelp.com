@@ -227,7 +227,7 @@ export default function Home() {
             </ol>
             <p className="mt-6 leading-relaxed text-ink/70">
               After you send a brief, save the full reference. A matching check or reply on
-              this browser keeps the reference and the received time, not your email. I will
+              this browser keeps the reference and the original received time, not your email. I will
               not email it.
             </p>
             <p className="mt-6 leading-relaxed text-ink/70">
