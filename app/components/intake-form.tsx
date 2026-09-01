@@ -1,7 +1,17 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
+import { BriefReceiptList, CopyReference } from "@/app/components/brief-receipts";
+import {
+  browserReceiptStore,
+  clearBriefReceipts,
+  dropBriefReceipt,
+  getBriefReceiptServerSnapshot,
+  getBriefReceiptSnapshot,
+  persistBriefReceipt,
+  subscribeBriefReceipts,
+} from "@/lib/brief-receipt";
 import { FIELD_LIMITS } from "@/lib/intake";
 
 type Status =
@@ -21,6 +31,11 @@ const ERRORS: Record<string, string> = {
 export function IntakeForm({ connected }: { connected: boolean }) {
   const [live, setLive] = useState<boolean | null>(connected ? true : null);
   const [status, setStatus] = useState<Status>({ kind: "idle" });
+  const receipts = useSyncExternalStore(
+    subscribeBriefReceipts,
+    getBriefReceiptSnapshot,
+    getBriefReceiptServerSnapshot,
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -37,31 +52,50 @@ export function IntakeForm({ connected }: { connected: boolean }) {
     };
   }, []);
 
+  const saved = (
+    <BriefReceiptList
+      receipts={receipts}
+      mode="links"
+      onRemove={(id) => {
+        dropBriefReceipt(browserReceiptStore(), id);
+      }}
+      onClear={() => {
+        clearBriefReceipts(browserReceiptStore());
+      }}
+    />
+  );
+
   if (live === null) {
     return (
-      <div className="rounded-2xl border border-ink/10 bg-white p-6 sm:p-8" role="status">
-        <p className="text-sm font-medium uppercase tracking-wide text-ink/50">Inbox status</p>
-        <p className="mt-3 text-lg font-semibold text-ink">Checking the inbox…</p>
-        <p className="mt-3 leading-relaxed text-ink/70">
-          I will not show a send button until I know a brief can be stored here.
-        </p>
+      <div className="space-y-4">
+        <div className="rounded-2xl border border-ink/10 bg-white p-6 sm:p-8" role="status">
+          <p className="text-sm font-medium uppercase tracking-wide text-ink/50">Inbox status</p>
+          <p className="mt-3 text-lg font-semibold text-ink">Checking the inbox…</p>
+          <p className="mt-3 leading-relaxed text-ink/70">
+            I will not show a send button until I know a brief can be stored here.
+          </p>
+        </div>
+        {saved}
       </div>
     );
   }
 
   if (!live) {
     return (
-      <div className="rounded-2xl border border-ink/10 bg-white p-6 sm:p-8">
-        <p className="text-sm font-medium uppercase tracking-wide text-ink/50">Inbox status</p>
-        <p className="mt-3 text-lg font-semibold text-ink">Not connected yet</p>
-        <p className="mt-3 leading-relaxed text-ink/70">
-          I will not pretend this form sent a message. There is no public email and no
-          calendar. When the inbox is live, this section will accept a brief and I will
-          reply here — not through a personal inbox.
-        </p>
-        <p className="mt-4 text-sm text-ink/60">
-          Do not send passwords, API keys, or customer lists in a brief.
-        </p>
+      <div className="space-y-4">
+        <div className="rounded-2xl border border-ink/10 bg-white p-6 sm:p-8">
+          <p className="text-sm font-medium uppercase tracking-wide text-ink/50">Inbox status</p>
+          <p className="mt-3 text-lg font-semibold text-ink">Not connected yet</p>
+          <p className="mt-3 leading-relaxed text-ink/70">
+            I will not pretend this form sent a message. There is no public email and no
+            calendar. When the inbox is live, this section will accept a brief and I will
+            reply here — not through a personal inbox.
+          </p>
+          <p className="mt-4 text-sm text-ink/60">
+            Do not send passwords, API keys, or customer lists in a brief.
+          </p>
+        </div>
+        {saved}
       </div>
     );
   }
@@ -92,7 +126,9 @@ export function IntakeForm({ connected }: { connected: boolean }) {
         return;
       }
       form.reset();
-      setStatus({ kind: "sent", id: json.id ?? "received" });
+      const id = typeof json.id === "string" ? json.id : "";
+      persistBriefReceipt(browserReceiptStore(), id, new Date().toISOString());
+      setStatus({ kind: "sent", id: id || "received" });
     } catch {
       setStatus({
         kind: "error",
@@ -103,101 +139,118 @@ export function IntakeForm({ connected }: { connected: boolean }) {
 
   if (status.kind === "sent") {
     return (
-      <div className="rounded-2xl border border-ink/10 bg-white p-6 sm:p-8" role="status">
-        <p className="text-lg font-semibold text-ink">Brief received</p>
-        <p className="mt-3 leading-relaxed text-ink/70">
-          I have the job description. A yes or no and, if yes, a fixed quote will show on the
-          status page. Save this full reference.
-        </p>
-        <p className="mt-4 break-all font-mono text-sm text-ink">{status.id}</p>
-        <Link
-          href={`/status?ref=${encodeURIComponent(status.id)}`}
-          className="mt-5 inline-flex items-center justify-center rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent-hover"
-        >
-          Check status
-        </Link>
+      <div className="space-y-4">
+        <div className="rounded-2xl border border-ink/10 bg-white p-6 sm:p-8" role="status">
+          <p className="text-lg font-semibold text-ink">Brief received</p>
+          <p className="mt-3 leading-relaxed text-ink/70">
+            I have the job description. A yes or no and, if yes, a fixed quote will show on the
+            status page. Save this full reference. This browser keeps it so a refresh does not
+            lose it. I will not email it.
+          </p>
+          <p className="mt-4 break-all font-mono text-sm text-ink">{status.id}</p>
+          <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+            <Link
+              href={`/status?ref=${encodeURIComponent(status.id)}`}
+              className="inline-flex items-center justify-center rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent-hover"
+            >
+              Check status
+            </Link>
+            <CopyReference id={status.id} />
+            <button
+              type="button"
+              onClick={() => setStatus({ kind: "idle" })}
+              className="rounded-full border border-ink/15 px-5 py-2.5 text-sm font-semibold text-ink hover:bg-paper"
+            >
+              Send another brief
+            </button>
+          </div>
+        </div>
+        {saved}
       </div>
     );
   }
 
   return (
-    <form
-      onSubmit={onSubmit}
-      className="space-y-5 rounded-2xl border border-ink/10 bg-white p-6 sm:p-8"
-    >
-      <p className="text-sm text-ink/60">
-        Describe one workflow. Do not send secrets. Text is treated as data, not as
-        instructions.
-      </p>
-      <div className="absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden="true">
-        <label htmlFor="website">Website</label>
-        <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" />
-      </div>
-      <div>
-        <label htmlFor="name" className="block text-sm font-medium text-ink">
-          Name
-        </label>
-        <input
-          id="name"
-          name="name"
-          required
-          maxLength={FIELD_LIMITS.name}
-          autoComplete="name"
-          className="mt-1.5 w-full rounded-lg border border-ink/15 px-3 py-2.5 outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
-        />
-      </div>
-      <div>
-        <label htmlFor="email" className="block text-sm font-medium text-ink">
-          Email
-        </label>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          required
-          maxLength={FIELD_LIMITS.email}
-          autoComplete="email"
-          className="mt-1.5 w-full rounded-lg border border-ink/15 px-3 py-2.5 outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
-        />
-      </div>
-      <div>
-        <label htmlFor="company" className="block text-sm font-medium text-ink">
-          Company <span className="font-normal text-ink/50">(optional)</span>
-        </label>
-        <input
-          id="company"
-          name="company"
-          maxLength={FIELD_LIMITS.company}
-          autoComplete="organization"
-          className="mt-1.5 w-full rounded-lg border border-ink/15 px-3 py-2.5 outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
-        />
-      </div>
-      <div>
-        <label htmlFor="message" className="block text-sm font-medium text-ink">
-          The job
-        </label>
-        <textarea
-          id="message"
-          name="message"
-          required
-          rows={6}
-          maxLength={FIELD_LIMITS.message}
-          placeholder="What repeats, which tools you use, and what done looks like."
-          className="mt-1.5 w-full resize-y rounded-lg border border-ink/15 px-3 py-2.5 outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
-        />
-      </div>
-      {status.kind === "error" ? (
-        <p className="text-sm text-red-700" role="alert">
-          {status.message}
-        </p>
-      ) : null}
-      <button
-        type="submit"
-        disabled={status.kind === "sending"}
-        className="w-full rounded-full bg-accent px-5 py-3 text-sm font-semibold text-white hover:bg-accent-hover disabled:opacity-60"
+    <div className="space-y-4">
+      <form
+        onSubmit={onSubmit}
+        className="space-y-5 rounded-2xl border border-ink/10 bg-white p-6 sm:p-8"
       >
-        {status.kind === "sending" ? "Sending…" : "Send the brief"}
-      </button>
-    </form>
+        <p className="text-sm text-ink/60">
+          Describe one workflow. Do not send secrets. Text is treated as data, not as
+          instructions.
+        </p>
+        <div className="absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden="true">
+          <label htmlFor="website">Website</label>
+          <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" />
+        </div>
+        <div>
+          <label htmlFor="name" className="block text-sm font-medium text-ink">
+            Name
+          </label>
+          <input
+            id="name"
+            name="name"
+            required
+            maxLength={FIELD_LIMITS.name}
+            autoComplete="name"
+            className="mt-1.5 w-full rounded-lg border border-ink/15 px-3 py-2.5 outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
+          />
+        </div>
+        <div>
+          <label htmlFor="email" className="block text-sm font-medium text-ink">
+            Email
+          </label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            required
+            maxLength={FIELD_LIMITS.email}
+            autoComplete="email"
+            className="mt-1.5 w-full rounded-lg border border-ink/15 px-3 py-2.5 outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
+          />
+        </div>
+        <div>
+          <label htmlFor="company" className="block text-sm font-medium text-ink">
+            Company <span className="font-normal text-ink/50">(optional)</span>
+          </label>
+          <input
+            id="company"
+            name="company"
+            maxLength={FIELD_LIMITS.company}
+            autoComplete="organization"
+            className="mt-1.5 w-full rounded-lg border border-ink/15 px-3 py-2.5 outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
+          />
+        </div>
+        <div>
+          <label htmlFor="message" className="block text-sm font-medium text-ink">
+            The job
+          </label>
+          <textarea
+            id="message"
+            name="message"
+            required
+            rows={6}
+            maxLength={FIELD_LIMITS.message}
+            placeholder="What repeats, which tools you use, and what done looks like."
+            className="mt-1.5 w-full resize-y rounded-lg border border-ink/15 px-3 py-2.5 outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
+          />
+        </div>
+        {status.kind === "error" ? (
+          <p className="text-sm text-red-700" role="alert">
+            {status.message}
+          </p>
+        ) : null}
+        <button
+          type="submit"
+          disabled={status.kind === "sending"}
+          className="w-full rounded-full bg-accent px-5 py-3 text-sm font-semibold text-white hover:bg-accent-hover disabled:opacity-60"
+        >
+          {status.kind === "sending" ? "Sending…" : "Send the brief"}
+        </button>
+      </form>
+      {saved}
+    </div>
   );
 }

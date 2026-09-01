@@ -1,6 +1,15 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, useSyncExternalStore } from "react";
+import { BriefReceiptList } from "@/app/components/brief-receipts";
+import {
+  browserReceiptStore,
+  clearBriefReceipts,
+  dropBriefReceipt,
+  getBriefReceiptServerSnapshot,
+  getBriefReceiptSnapshot,
+  subscribeBriefReceipts,
+} from "@/lib/brief-receipt";
 import { FIELD_LIMITS, parseDueAt, parseThread, type ThreadEntry } from "@/lib/intake";
 
 type Found = {
@@ -77,6 +86,13 @@ export function StatusForm({
   const [result, setResult] = useState<Result>({ kind: "idle" });
   const [replyBusy, setReplyBusy] = useState(false);
   const [replyError, setReplyError] = useState("");
+  const [typedId, setTypedId] = useState<string | null>(null);
+  const idValue = typedId ?? initialId;
+  const receipts = useSyncExternalStore(
+    subscribeBriefReceipts,
+    getBriefReceiptSnapshot,
+    getBriefReceiptServerSnapshot,
+  );
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -232,8 +248,9 @@ export function StatusForm({
         className="space-y-5 rounded-2xl border border-ink/10 bg-white p-6 sm:p-8"
       >
         <p className="text-sm text-ink/60">
-          Use the full reference from the confirmation and the email you submitted. I will not
-          email a personal inbox.
+          Use the full reference from the confirmation and the email you submitted. This browser
+          can keep that reference so a refresh does not lose it. I will not email a personal
+          inbox.
         </p>
         <div className="absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden="true">
           <label htmlFor="website">Website</label>
@@ -247,7 +264,8 @@ export function StatusForm({
             id="id"
             name="id"
             required
-            defaultValue={initialId}
+            value={idValue}
+            onChange={(event) => setTypedId(event.target.value)}
             autoComplete="off"
             spellCheck={false}
             className="mt-1.5 w-full rounded-lg border border-ink/15 px-3 py-2.5 font-mono text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
@@ -280,6 +298,17 @@ export function StatusForm({
           {result.kind === "sending" ? "Checking…" : "Check status"}
         </button>
       </form>
+      <BriefReceiptList
+        receipts={receipts}
+        mode="fill"
+        onUse={(id) => setTypedId(id)}
+        onRemove={(id) => {
+          dropBriefReceipt(browserReceiptStore(), id);
+        }}
+        onClear={() => {
+          clearBriefReceipts(browserReceiptStore());
+        }}
+      />
 
       {result.kind === "missing" ? (
         <div className="rounded-2xl border border-ink/10 bg-white p-6" role="status">
