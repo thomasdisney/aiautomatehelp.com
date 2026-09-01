@@ -365,6 +365,7 @@ export type InboxIdRow = {
   quotedAt?: string;
   replyAt?: string;
   paidAt?: string;
+  notedAt?: string;
 };
 
 export function parseInboxListView(value: unknown): InboxListView | "invalid" {
@@ -416,6 +417,9 @@ export function toInboxIdRow(record: IntakeRecord): InboxIdRow | null {
   const paidAt =
     typeof record.paidAt === "string" ? record.paidAt.trim().slice(0, 40) : "";
   if (paidAt) row.paidAt = paidAt;
+  const notedAt =
+    typeof record.notedAt === "string" ? record.notedAt.trim().slice(0, 40) : "";
+  if (notedAt) row.notedAt = notedAt;
   return row;
 }
 
@@ -431,6 +435,7 @@ function inboxActivityAt(record: IntakeRecord): string {
     record.quotedAt,
     record.confirmedAt,
     record.paidAt,
+    record.notedAt,
   );
 }
 

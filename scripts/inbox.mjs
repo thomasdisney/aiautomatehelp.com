@@ -101,6 +101,7 @@ if (cmd === "show" && id) {
   if (item.deliveredAt) console.log(`deliveredAt ${item.deliveredAt}`);
   if (item.withdrawnAt) console.log(`withdrawnAt ${item.withdrawnAt}`);
   if (item.declinedAt) console.log(`declinedAt ${item.declinedAt}`);
+  if (item.notedAt) console.log(`notedAt ${item.notedAt}`);
   console.log("message");
   console.log(item.message);
   if (item.quoteText) {
@@ -155,8 +156,9 @@ if (cmd === "list") {
     const withdrawnAt = typeof row?.withdrawnAt === "string" ? row.withdrawnAt : "";
     const declinedAt = typeof row?.declinedAt === "string" ? row.declinedAt : "";
     const replyAt = typeof row?.replyAt === "string" ? row.replyAt : "";
+    const notedAt = typeof row?.notedAt === "string" ? row.notedAt : "";
     console.log(
-      `${id} ${status} ${receivedAt}${amountCents ? ` ${amountCents}` : ""}${dueAt ? ` due ${dueAt}` : ""}${quotedAt ? ` quoted ${quotedAt}` : ""}${updateAt ? ` update ${updateAt}` : ""}${acceptedAt ? ` accepted ${acceptedAt}` : ""}${paidAt ? ` paid ${paidAt}` : ""}${withdrawnAt ? ` withdrawn ${withdrawnAt}` : ""}${declinedAt ? ` declined ${declinedAt}` : ""}${deliveredAt ? ` delivered ${deliveredAt}` : ""}${confirmedAt ? ` confirmed ${confirmedAt}` : ""}${replyAt ? ` reply ${replyAt}` : ""}${questionAt ? ` question ${questionAt}` : ""}`.trim(),
+      `${id} ${status} ${receivedAt}${amountCents ? ` ${amountCents}` : ""}${dueAt ? ` due ${dueAt}` : ""}${quotedAt ? ` quoted ${quotedAt}` : ""}${updateAt ? ` update ${updateAt}` : ""}${acceptedAt ? ` accepted ${acceptedAt}` : ""}${paidAt ? ` paid ${paidAt}` : ""}${withdrawnAt ? ` withdrawn ${withdrawnAt}` : ""}${declinedAt ? ` declined ${declinedAt}` : ""}${deliveredAt ? ` delivered ${deliveredAt}` : ""}${confirmedAt ? ` confirmed ${confirmedAt}` : ""}${replyAt ? ` reply ${replyAt}` : ""}${questionAt ? ` question ${questionAt}` : ""}${notedAt ? ` noted ${notedAt}` : ""}`.trim(),
     );
   }
   process.exit(0);
@@ -185,8 +187,9 @@ if (cmd === "find" && id) {
     const withdrawnAt = typeof row?.withdrawnAt === "string" ? row.withdrawnAt : "";
     const declinedAt = typeof row?.declinedAt === "string" ? row.declinedAt : "";
     const replyAt = typeof row?.replyAt === "string" ? row.replyAt : "";
+    const notedAt = typeof row?.notedAt === "string" ? row.notedAt : "";
     console.log(
-      `${foundId} ${foundStatus} ${receivedAt}${amountCents ? ` ${amountCents}` : ""}${dueAt ? ` due ${dueAt}` : ""}${quotedAt ? ` quoted ${quotedAt}` : ""}${updateAt ? ` update ${updateAt}` : ""}${acceptedAt ? ` accepted ${acceptedAt}` : ""}${paidAt ? ` paid ${paidAt}` : ""}${withdrawnAt ? ` withdrawn ${withdrawnAt}` : ""}${declinedAt ? ` declined ${declinedAt}` : ""}${deliveredAt ? ` delivered ${deliveredAt}` : ""}${confirmedAt ? ` confirmed ${confirmedAt}` : ""}${replyAt ? ` reply ${replyAt}` : ""}${questionAt ? ` question ${questionAt}` : ""}`.trim(),
+      `${foundId} ${foundStatus} ${receivedAt}${amountCents ? ` ${amountCents}` : ""}${dueAt ? ` due ${dueAt}` : ""}${quotedAt ? ` quoted ${quotedAt}` : ""}${updateAt ? ` update ${updateAt}` : ""}${acceptedAt ? ` accepted ${acceptedAt}` : ""}${paidAt ? ` paid ${paidAt}` : ""}${withdrawnAt ? ` withdrawn ${withdrawnAt}` : ""}${declinedAt ? ` declined ${declinedAt}` : ""}${deliveredAt ? ` delivered ${deliveredAt}` : ""}${confirmedAt ? ` confirmed ${confirmedAt}` : ""}${replyAt ? ` reply ${replyAt}` : ""}${questionAt ? ` question ${questionAt}` : ""}${notedAt ? ` noted ${notedAt}` : ""}`.trim(),
     );
   }
   process.exit(0);

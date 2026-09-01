@@ -500,6 +500,12 @@ export function applyOperatorPatch(
     : typeof record.quotedAt === "string"
       ? record.quotedAt.slice(0, 40)
       : "";
+  const notedNow = Boolean(patch.operatorNote);
+  const notedAt = notedNow
+    ? stamp
+    : typeof record.notedAt === "string"
+      ? record.notedAt.slice(0, 40)
+      : "";
   return {
     ok: true,
     record: {
@@ -515,6 +521,7 @@ export function applyOperatorPatch(
       deliveredAt,
       declinedAt,
       quotedAt,
+      notedAt,
       thread: patch.updateText
         ? appendThread(hydrateThread(record), {
             role: "operator",
