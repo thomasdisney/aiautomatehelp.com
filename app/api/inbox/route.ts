@@ -8,10 +8,9 @@ import {
   updateIntake,
 } from "@/lib/intake-store";
 import { parseInboxListView, toInboxIdRows, toInboxIdRowsForEmail } from "@/lib/ops-queue";
+import { allowInboxRequest } from "@/lib/rate-limit";
 import { parseInboxFind, parseInboxId, parseInboxPatch, toPublicStatus } from "@/lib/status";
 
-const WINDOW_MS = 60 * 60 * 1000;
-const MAX_PER_WINDOW = 30;
 const hits = new Map<string, number[]>();
 
 function clientIp(request: Request): string {
@@ -20,16 +19,8 @@ function clientIp(request: Request): string {
   return first || request.headers.get("x-real-ip") || "unknown";
 }
 
-function allowRequest(ip: string): boolean {
-  const now = Date.now();
-  const prior = (hits.get(ip) ?? []).filter((ts) => now - ts < WINDOW_MS);
-  if (prior.length >= MAX_PER_WINDOW) {
-    hits.set(ip, prior);
-    return false;
-  }
-  prior.push(now);
-  hits.set(ip, prior);
-  return true;
+function allowRequest(request: Request, authorized: boolean): boolean {
+  return allowInboxRequest(hits, { ip: clientIp(request), authorized });
 }
 
 function unauthorized() {
@@ -44,10 +35,11 @@ function authorize(request: Request): boolean {
 }
 
 export async function GET(request: Request) {
-  if (!allowRequest(clientIp(request))) {
+  const authorized = authorize(request);
+  if (!allowRequest(request, authorized)) {
     return NextResponse.json({ ok: false, code: "rate_limited" }, { status: 429 });
   }
-  if (!authorize(request)) return unauthorized();
+  if (!authorized) return unauthorized();
 
   const url = new URL(request.url);
   const requestedId = parseInboxId(url.searchParams.get("id"));
@@ -94,10 +86,11 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  if (!allowRequest(clientIp(request))) {
+  const authorized = authorize(request);
+  if (!allowRequest(request, authorized)) {
     return NextResponse.json({ ok: false, code: "rate_limited" }, { status: 429 });
   }
-  if (!authorize(request)) return unauthorized();
+  if (!authorized) return unauthorized();
 
   let body: unknown;
   try {
@@ -122,10 +115,11 @@ export async function POST(request: Request) {
 }
 
 export async function PATCH(request: Request) {
-  if (!allowRequest(clientIp(request))) {
+  const authorized = authorize(request);
+  if (!allowRequest(request, authorized)) {
     return NextResponse.json({ ok: false, code: "rate_limited" }, { status: 429 });
   }
-  if (!authorize(request)) return unauthorized();
+  if (!authorized) return unauthorized();
 
   let body: unknown;
   try {
@@ -166,10 +160,11 @@ export async function PATCH(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-  if (!allowRequest(clientIp(request))) {
+  const authorized = authorize(request);
+  if (!allowRequest(request, authorized)) {
     return NextResponse.json({ ok: false, code: "rate_limited" }, { status: 429 });
   }
-  if (!authorize(request)) return unauthorized();
+  if (!authorized) return unauthorized();
 
   let body: unknown;
   try {
