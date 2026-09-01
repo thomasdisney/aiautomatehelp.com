@@ -379,11 +379,16 @@ export async function listIntakeByEmail(
   email: string,
   limit = INTAKE_LIST_GET_LIMIT,
 ): Promise<IntakeRecord[]> {
-  const [indexed, recent] = await Promise.all([
+  const [indexed, recent, workIds] = await Promise.all([
     loadIndexedIntakeForEmail(email),
     listIntake(INTAKE_LIST_GET_LIMIT),
+    readWorkIndex(),
   ]);
-  return mergeIntakeForEmail(indexed, recent, email, limit);
+  const known = new Set(indexed.map((item) => item.id));
+  for (const item of recent) known.add(item.id);
+  const missing = workIds.filter((id) => !known.has(id));
+  const fromWork = missing.length ? await loadIntakeByIds(missing) : [];
+  return mergeIntakeForEmail([...indexed, ...fromWork], recent, email, limit);
 }
 
 async function loadIntakeByIds(ids: string[]): Promise<IntakeRecord[]> {

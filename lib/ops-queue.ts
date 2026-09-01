@@ -494,12 +494,8 @@ export function mergeIntakeForEmail(
 ): IntakeRecord[] {
   const normalized = sanitizeText(email, FIELD_LIMITS.email).toLowerCase();
   if (!isValidEmail(normalized)) return [];
-  const byId = new Map<string, IntakeRecord>();
-  for (const record of [...indexed, ...recent]) {
-    if (!emailsMatch(record.email, normalized)) continue;
-    byId.set(record.id, record);
-  }
-  return selectIntakeForInbox([...byId.values()], limit);
+  const match = (record: IntakeRecord) => emailsMatch(record.email, normalized);
+  return selectIntakeForList(indexed.filter(match), recent.filter(match), limit);
 }
 
 export function mergeIntakeForQueue(

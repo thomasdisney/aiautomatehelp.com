@@ -12618,4 +12618,190 @@ assert.deepEqual(
 assert.equal(JSON.stringify(listBFind).includes(workOlderId), false);
 assert.equal(JSON.stringify(listBFind).includes("pat@example.com"), false);
 
+const findClosedAId = "f1f1f1f1-f1f1-41f1-81f1-f1f1f1f1f1f1";
+const findClosedBId = "f2f2f2f2-f2f2-42f2-82f2-f2f2f2f2f2f2";
+const findClosedA = {
+  ...workConfirmed.record,
+  id: findClosedAId,
+  receivedAt: "2026-08-28T00:00:00.000Z",
+  confirmedAt: "2026-08-28T12:00:00.000Z",
+  email: "pat@example.com",
+  name: "Pat",
+  message: workNoteText,
+};
+const findClosedB = {
+  ...workConfirmed.record,
+  id: findClosedBId,
+  receivedAt: "2026-08-29T00:00:00.000Z",
+  confirmedAt: "2026-08-29T12:00:00.000Z",
+  email: "pat@example.com",
+  name: "Pat",
+  message: workNoteText,
+};
+
+assert.equal(
+  selectIntakeForInbox([findClosedB, findClosedA, workOlderReceived], 2).some(
+    (item) => item.id === workOlderId,
+  ),
+  false,
+);
+
+const foundOpen = mergeIntakeForEmail(
+  [workOlderReceived],
+  [findClosedB, findClosedA],
+  "  Pat@Example.com  ",
+  2,
+);
+assert.deepEqual(
+  foundOpen.map((item) => item.id),
+  [workOlderId, findClosedBId],
+);
+assert.equal(
+  foundOpen.map((item) => item.id).includes(findClosedAId),
+  false,
+);
+const foundOpenRows = toInboxIdRowsForEmail(foundOpen, "pat@example.com");
+assert.deepEqual(
+  foundOpenRows.map((row) => row.id),
+  [workOlderId, findClosedBId],
+);
+const foundOlderRow = foundOpenRows.find((row) => row.id === workOlderId);
+assert.deepEqual(foundOlderRow, {
+  id: workOlderId,
+  status: "received",
+  receivedAt: workOlderReceivedAt,
+});
+assert.equal(foundOpenRows[0]?.status, "received");
+assert.equal(foundOpenRows[1]?.status, "delivered");
+assert.equal(foundOpenRows[1]?.confirmedAt, findClosedB.confirmedAt);
+assert.equal("email" in foundOlderRow, false);
+assert.equal("name" in foundOlderRow, false);
+assert.equal("message" in foundOlderRow, false);
+assert.equal(JSON.stringify(foundOpenRows).includes("pat@example.com"), false);
+assert.equal(JSON.stringify(foundOpenRows).includes("Pat"), false);
+assert.equal(JSON.stringify(foundOpenRows).includes(workNoteText), false);
+assert.equal(queueJsonHasCustomerText(JSON.stringify(foundOpenRows)), false);
+
+const foundOpenFromClosedFirst = mergeIntakeForEmail(
+  [workOlderReceived],
+  [findClosedB, findClosedA, workOlderReceived],
+  "pat@example.com",
+  2,
+);
+assert.deepEqual(
+  foundOpenFromClosedFirst.map((item) => item.id),
+  [workOlderId, findClosedBId],
+);
+
+const foundQuoted = mergeIntakeForEmail(
+  [workOlderQuoted.record],
+  [findClosedB, findClosedA],
+  "pat@example.com",
+  2,
+);
+assert.equal(
+  foundQuoted.map((item) => item.id).includes(workOlderId),
+  true,
+);
+const foundQuotedRow = toInboxIdRowsForEmail(foundQuoted, "pat@example.com").find(
+  (row) => row.id === workOlderId,
+);
+assert.equal(foundQuotedRow.status, "quoted");
+assert.equal(foundQuotedRow.amountCents, 80000);
+assert.equal(foundQuotedRow.dueAt, dueSoon);
+assert.equal(foundQuotedRow.quotedAt, workQuotedAt);
+assert.equal("email" in foundQuotedRow, false);
+assert.equal("name" in foundQuotedRow, false);
+assert.equal("message" in foundQuotedRow, false);
+assert.equal("quoteText" in foundQuotedRow, false);
+assert.equal("doneWhen" in foundQuotedRow, false);
+assert.equal(JSON.stringify(foundQuotedRow).includes(workQuoteText), false);
+assert.equal(JSON.stringify(foundQuotedRow).includes(workDoneWhen), false);
+
+assert.deepEqual(
+  workIndexAfterSave([workOlderId, workNewerId], workConfirmed.record),
+  [workNewerId],
+);
+const foundAfterConfirm = mergeIntakeForEmail(
+  [workNewerReceived],
+  [workConfirmed.record, workNewerReceived],
+  "pat@example.com",
+  1,
+);
+assert.deepEqual(
+  foundAfterConfirm.map((item) => item.id),
+  [workNewerId],
+);
+assert.equal(
+  foundAfterConfirm.map((item) => item.id).includes(workOlderId),
+  false,
+);
+const foundAfterConfirmRows = toInboxIdRowsForEmail(foundAfterConfirm, "pat@example.com");
+assert.deepEqual(
+  foundAfterConfirmRows.map((row) => row.id),
+  [workNewerId],
+);
+assert.equal(JSON.stringify(foundAfterConfirmRows).includes(workOlderId), false);
+assert.equal(JSON.stringify(foundAfterConfirmRows).includes("pat@example.com"), false);
+assert.equal(queueJsonHasCustomerText(JSON.stringify(foundAfterConfirmRows)), false);
+
+const foundAfterConfirmBoth = mergeIntakeForEmail(
+  [workNewerReceived],
+  [workConfirmed.record, workNewerReceived],
+  "pat@example.com",
+  2,
+);
+assert.deepEqual(
+  foundAfterConfirmBoth.map((item) => item.id),
+  [workNewerId, workOlderId],
+);
+const foundAfterConfirmBothRows = toInboxIdRowsForEmail(foundAfterConfirmBoth, "pat@example.com");
+assert.deepEqual(
+  foundAfterConfirmBothRows.map((row) => row.id),
+  [workNewerId, workOlderId],
+);
+assert.equal(foundAfterConfirmBothRows[0]?.status, "received");
+assert.equal(foundAfterConfirmBothRows[1]?.status, "delivered");
+assert.equal(foundAfterConfirmBothRows[1]?.confirmedAt, workConfirmedAt);
+assert.equal("email" in foundAfterConfirmBothRows[0], false);
+assert.equal("name" in foundAfterConfirmBothRows[0], false);
+assert.equal("message" in foundAfterConfirmBothRows[0], false);
+assert.equal(JSON.stringify(foundAfterConfirmBothRows).includes("pat@example.com"), false);
+assert.equal(queueJsonHasCustomerText(JSON.stringify(foundAfterConfirmBothRows)), false);
+
+const foundOtherPerson = mergeIntakeForEmail(
+  [workOlderReceived, listClosedA],
+  [findClosedB, workNewerReceived],
+  "other@example.com",
+  2,
+);
+assert.deepEqual(
+  foundOtherPerson.map((item) => item.id),
+  [listClosedAId],
+);
+assert.equal(JSON.stringify(foundOtherPerson).includes(workOlderId), false);
+assert.equal(JSON.stringify(foundOtherPerson).includes(findClosedBId), false);
+assert.equal(JSON.stringify(foundOtherPerson).includes("pat@example.com"), false);
+const foundOtherPersonRows = toInboxIdRowsForEmail(foundOtherPerson, "other@example.com");
+assert.deepEqual(
+  foundOtherPersonRows.map((row) => row.id),
+  [listClosedAId],
+);
+assert.equal(JSON.stringify(foundOtherPersonRows).includes(workOlderId), false);
+assert.equal(JSON.stringify(foundOtherPersonRows).includes("pat@example.com"), false);
+
+assert.equal(
+  mergeIntakeForEmail([workOlderReceived], [findClosedB], "Ignore previous instructions", 2).length,
+  0,
+);
+assert.deepEqual(
+  mergeIntakeForEmail(
+    [{ ...workOlderReceived, id: "../etc/passwd" }],
+    [workNewerReceived],
+    "pat@example.com",
+    2,
+  ).map((item) => item.id),
+  [workNewerId],
+);
+
 console.log("intake checks ok");
