@@ -171,7 +171,11 @@ export function emptyQueue(last: OpsEvent | null = null): OpsQueue {
 }
 
 function closedAtStamp(record: IntakeRecord): string {
-  const stamps = [eventStamp(record.confirmedAt), eventStamp(record.withdrawnAt)].filter(Boolean);
+  const stamps = [
+    eventStamp(record.confirmedAt),
+    eventStamp(record.withdrawnAt),
+    eventStamp(record.acceptedAt),
+  ].filter(Boolean);
   if (!stamps.length) return "";
   return stamps.reduce((latest, at) => (at > latest ? at : latest));
 }
