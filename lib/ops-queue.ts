@@ -62,6 +62,10 @@ export function opsLastPath(): string {
   return "ops/last.json";
 }
 
+export function opsWorkPath(): string {
+  return "ops/work.json";
+}
+
 export function isOpsEventType(value: unknown): value is OpsEventType {
   return typeof value === "string" && (OPS_EVENTS as readonly string[]).includes(value);
 }
@@ -375,6 +379,7 @@ export type InboxIdRow = {
 export const INTAKE_LIST_GET_LIMIT = 50;
 export const INTAKE_LIST_META_MAX = 200;
 export const EMAIL_INDEX_MAX_IDS = 50;
+export const WORK_INDEX_MAX_IDS = 50;
 
 const EMAIL_INDEX_DIGEST_RE = /^[0-9a-f]{64}$/;
 
@@ -391,7 +396,9 @@ function parseIndexId(value: unknown): string | null {
   return intakeBlobPath(id) ? id : null;
 }
 
-export function parseEmailIndex(raw: string): string[] {
+export function parseIdIndex(raw: string, max = EMAIL_INDEX_MAX_IDS): string[] {
+  const cap = Number.isInteger(max) ? Math.min(Math.max(max, 0), INTAKE_LIST_META_MAX) : 0;
+  if (!cap) return [];
   let value: unknown;
   try {
     value = JSON.parse(raw);
@@ -411,25 +418,64 @@ export function parseEmailIndex(raw: string): string[] {
     if (!id || seen.has(id)) continue;
     seen.add(id);
     ids.push(id);
-    if (ids.length >= EMAIL_INDEX_MAX_IDS) break;
+    if (ids.length >= cap) break;
   }
   return ids;
 }
 
-export function emailIndexAfterAdd(ids: string[], id: string): string[] {
+export function parseEmailIndex(raw: string): string[] {
+  return parseIdIndex(raw, EMAIL_INDEX_MAX_IDS);
+}
+
+export function parseWorkIndex(raw: string): string[] {
+  return parseIdIndex(raw, WORK_INDEX_MAX_IDS);
+}
+
+function idIndexAfterAdd(ids: string[], id: string, max: number): string[] {
   const nextId = parseIndexId(id);
   if (!nextId) {
-    return parseEmailIndex(JSON.stringify({ ids }));
+    return parseIdIndex(JSON.stringify({ ids }), max);
   }
-  const kept = parseEmailIndex(JSON.stringify({ ids })).filter((item) => item !== nextId);
-  return [nextId, ...kept].slice(0, EMAIL_INDEX_MAX_IDS);
+  const kept = parseIdIndex(JSON.stringify({ ids }), max).filter((item) => item !== nextId);
+  return [nextId, ...kept].slice(0, max);
+}
+
+function idIndexAfterDelete(ids: string[], id: string, max: number): string[] {
+  const drop = parseIndexId(id);
+  const kept = parseIdIndex(JSON.stringify({ ids }), max);
+  if (!drop) return kept;
+  return kept.filter((item) => item !== drop);
+}
+
+export function emailIndexAfterAdd(ids: string[], id: string): string[] {
+  return idIndexAfterAdd(ids, id, EMAIL_INDEX_MAX_IDS);
 }
 
 export function emailIndexAfterDelete(ids: string[], id: string): string[] {
-  const drop = parseIndexId(id);
-  const kept = parseEmailIndex(JSON.stringify({ ids }));
-  if (!drop) return kept;
-  return kept.filter((item) => item !== drop);
+  return idIndexAfterDelete(ids, id, EMAIL_INDEX_MAX_IDS);
+}
+
+export function workIndexAfterAdd(ids: string[], id: string): string[] {
+  return idIndexAfterAdd(ids, id, WORK_INDEX_MAX_IDS);
+}
+
+export function workIndexAfterDelete(ids: string[], id: string): string[] {
+  return idIndexAfterDelete(ids, id, WORK_INDEX_MAX_IDS);
+}
+
+export function workIndexAfterSave(
+  ids: string[],
+  record: IntakeRecord,
+  paymentConnected = false,
+): string[] {
+  const id = typeof record.id === "string" ? record.id : "";
+  if (!intakeBlobPath(id)) {
+    return parseWorkIndex(JSON.stringify({ ids }));
+  }
+  if (toWorkItem(record, paymentConnected) || toWaitingItem(record, paymentConnected)) {
+    return workIndexAfterAdd(ids, id);
+  }
+  return workIndexAfterDelete(ids, id);
 }
 
 export function selectIntakeByEmail(
@@ -454,6 +500,18 @@ export function mergeIntakeForEmail(
     byId.set(record.id, record);
   }
   return selectIntakeForInbox([...byId.values()], limit);
+}
+
+export function mergeIntakeForQueue(
+  indexed: IntakeRecord[],
+  recent: IntakeRecord[],
+): IntakeRecord[] {
+  const byId = new Map<string, IntakeRecord>();
+  for (const record of [...indexed, ...recent]) {
+    if (!intakeBlobPath(record.id)) continue;
+    byId.set(record.id, record);
+  }
+  return [...byId.values()];
 }
 
 export type IntakeBlobMeta = {

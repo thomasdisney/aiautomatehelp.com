@@ -16,17 +16,22 @@ import {
   eventFromStatus,
   INTAKE_LIST_GET_LIMIT,
   INTAKE_LIST_META_MAX,
+  mergeIntakeForQueue,
   opsLastAfterDelete,
   opsLastPath,
   opsSignalPayload,
   opsSignalUrl,
+  opsWorkPath,
   parseEmailIndex,
   parseOpsEvent,
+  parseWorkIndex,
   rankIntakeBlobs,
   mergeIntakeForEmail,
   selectIntakeForInbox,
   summarizeQueue,
   toOpsEvent,
+  workIndexAfterDelete,
+  workIndexAfterSave,
   type OpsEvent,
   type OpsQueue,
 } from "@/lib/ops-queue";
@@ -123,6 +128,7 @@ async function persistBlob(record: IntakeRecord): Promise<boolean> {
   const { put } = await import("@vercel/blob");
   await put(path, JSON.stringify(record), intakeBlobPutOptions());
   await rememberIntakeEmail(record.email, record.id);
+  await rememberWork(record);
   return true;
 }
 
@@ -269,11 +275,16 @@ export async function getOpsLastEvent(): Promise<OpsEvent | null> {
 }
 
 export async function getOpsQueue(): Promise<OpsQueue> {
-  const [items, last] = await Promise.all([
+  const paymentConnected = paymentConfigured();
+  const [recent, workIds, last] = await Promise.all([
     loadIntakeRecords(INTAKE_LIST_GET_LIMIT),
+    readWorkIndex(),
     getOpsLastEvent(),
   ]);
-  return summarizeQueue(items, last, { paymentConnected: paymentConfigured() });
+  const recentIds = new Set(recent.map((item) => item.id));
+  const missing = workIds.filter((id) => !recentIds.has(id));
+  const indexed = missing.length ? await loadIntakeByIds(missing) : [];
+  return summarizeQueue(mergeIntakeForQueue(indexed, recent), last, { paymentConnected });
 }
 
 async function pingOpsSignal(event: OpsEvent): Promise<void> {
@@ -362,15 +373,21 @@ export async function listIntakeByEmail(
   return mergeIntakeForEmail(indexed, recent, email, limit);
 }
 
-async function loadIndexedIntakeForEmail(email: string): Promise<IntakeRecord[]> {
-  const ids = await readEmailIndex(email);
-  if (!ids.length) return [];
+async function loadIntakeByIds(ids: string[]): Promise<IntakeRecord[]> {
   const records: IntakeRecord[] = [];
+  const seen = new Set<string>();
   for (const id of ids) {
+    if (!intakeBlobPath(id) || seen.has(id)) continue;
+    seen.add(id);
     const record = await getIntake(id);
-    if (record && emailsMatch(record.email, email)) records.push(record);
+    if (record) records.push(record);
   }
   return records;
+}
+
+async function loadIndexedIntakeForEmail(email: string): Promise<IntakeRecord[]> {
+  const records = await loadIntakeByIds(await readEmailIndex(email));
+  return records.filter((record) => emailsMatch(record.email, email));
 }
 
 async function readEmailIndex(email: string): Promise<string[]> {
@@ -416,6 +433,49 @@ async function forgetIntakeEmail(email: string, id: string): Promise<void> {
   }
 }
 
+async function readWorkIndex(): Promise<string[]> {
+  const path = opsWorkPath();
+  if (detectIntakeBackend() !== "blob") return [];
+  try {
+    const { get } = await import("@vercel/blob");
+    const file = await get(path, { access: "private", useCache: false });
+    if (!file?.stream) return [];
+    const text = await new Response(file.stream).text();
+    return parseWorkIndex(text);
+  } catch {
+    return [];
+  }
+}
+
+async function writeWorkIndex(ids: string[]): Promise<void> {
+  const path = opsWorkPath();
+  if (detectIntakeBackend() !== "blob") return;
+  const { put, del } = await import("@vercel/blob");
+  if (!ids.length) {
+    await del(path);
+    return;
+  }
+  await put(path, JSON.stringify({ ids }), intakeBlobPutOptions());
+}
+
+async function rememberWork(record: IntakeRecord): Promise<void> {
+  try {
+    const current = await readWorkIndex();
+    await writeWorkIndex(workIndexAfterSave(current, record, paymentConfigured()));
+  } catch {
+    // Work index writes must not fail the customer path.
+  }
+}
+
+async function forgetWork(id: string): Promise<void> {
+  try {
+    const current = await readWorkIndex();
+    await writeWorkIndex(workIndexAfterDelete(current, id));
+  } catch {
+    // Clearing the work index must not fail the delete.
+  }
+}
+
 export async function deleteIntake(id: string): Promise<boolean> {
   const path = intakeBlobPath(id);
   if (!path || detectIntakeBackend() !== "blob") return false;
@@ -423,6 +483,7 @@ export async function deleteIntake(id: string): Promise<boolean> {
   const { del } = await import("@vercel/blob");
   await del(path);
   if (current) await forgetIntakeEmail(current.email, id);
+  await forgetWork(id);
   try {
     const last = await getOpsLastEvent();
     if (last && opsLastAfterDelete(last, id) === null) {
