@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { bearerMatches, inboxReadToken } from "@/lib/inbox-auth";
-import { intakeBlobPath } from "@/lib/intake";
 import {
   deleteIntake,
   getIntake,
@@ -178,8 +177,8 @@ export async function DELETE(request: Request) {
   } catch {
     return NextResponse.json({ ok: false, code: "invalid" }, { status: 400 });
   }
-  const id = body && typeof body === "object" ? (body as { id?: unknown }).id : "";
-  if (typeof id !== "string" || !intakeBlobPath(id)) {
+  const id = parseInboxId(body && typeof body === "object" ? (body as { id?: unknown }).id : "");
+  if (!id) {
     return NextResponse.json({ ok: false, code: "invalid" }, { status: 400 });
   }
   const deleted = await deleteIntake(id);

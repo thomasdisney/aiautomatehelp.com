@@ -12,6 +12,7 @@
  *   node scripts/inbox.mjs update <uuid> <text>
  *   node scripts/inbox.mjs note <uuid> <text>
  *   node scripts/inbox.mjs decide <uuid> delivered <handoff text>
+ *   node scripts/inbox.mjs delete <uuid>
  */
 import { readFileSync } from "node:fs";
 import { homedir } from "node:os";
@@ -195,6 +196,16 @@ if (cmd === "note" && id) {
   process.exit(0);
 }
 
+if (cmd === "delete" && id) {
+  const { status: http, json } = await call("DELETE", "/api/inbox", { id });
+  if (!json.ok) {
+    console.error("delete_failed", http, json.code ?? "error");
+    process.exit(1);
+  }
+  console.log(`ok ${id}`);
+  process.exit(0);
+}
+
 if (cmd === "decide" && id && status) {
   let quoteText = rest.join(" ").trim();
   let amountCents = 0;
@@ -281,4 +292,5 @@ console.error("       node scripts/inbox.mjs decide <uuid> declined <reason>");
 console.error("       node scripts/inbox.mjs update <uuid> <text>");
 console.error("       node scripts/inbox.mjs note <uuid> <text>");
 console.error("       node scripts/inbox.mjs decide <uuid> delivered <handoff text>");
+console.error("       node scripts/inbox.mjs delete <uuid>");
 process.exit(2);

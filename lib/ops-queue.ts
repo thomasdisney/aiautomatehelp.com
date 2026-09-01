@@ -91,6 +91,29 @@ export function parseOpsEvent(raw: string): OpsEvent | null {
   });
 }
 
+export function opsLastAfterDelete(
+  last: OpsEvent | null,
+  deletedId: string,
+): OpsEvent | null {
+  if (!last) return null;
+  const id = typeof deletedId === "string" ? deletedId.trim().toLowerCase() : "";
+  if (!intakeBlobPath(id)) {
+    return {
+      event: last.event,
+      id: last.id,
+      status: last.status,
+      at: last.at,
+    };
+  }
+  if (last.id === id) return null;
+  return {
+    event: last.event,
+    id: last.id,
+    status: last.status,
+    at: last.at,
+  };
+}
+
 export function eventFromCustomerDecision(
   decision: "accept" | "decline" | "question" | "confirm",
 ): OpsEventType {

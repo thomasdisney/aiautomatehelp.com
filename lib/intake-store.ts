@@ -10,6 +10,7 @@ import {
 import {
   eventFromCustomerDecision,
   eventFromStatus,
+  opsLastAfterDelete,
   opsLastPath,
   opsSignalPayload,
   opsSignalUrl,
@@ -315,5 +316,13 @@ export async function deleteIntake(id: string): Promise<boolean> {
   if (!path || detectIntakeBackend() !== "blob") return false;
   const { del } = await import("@vercel/blob");
   await del(path);
+  try {
+    const last = await getOpsLastEvent();
+    if (last && opsLastAfterDelete(last, id) === null) {
+      await del(opsLastPath());
+    }
+  } catch {
+    // Clearing last must not fail the delete.
+  }
   return true;
 }
