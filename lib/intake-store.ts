@@ -11,11 +11,15 @@ import {
   customerEventAt,
   eventFromCustomerDecision,
   eventFromStatus,
+  INTAKE_LIST_GET_LIMIT,
+  INTAKE_LIST_META_MAX,
   opsLastAfterDelete,
   opsLastPath,
   opsSignalPayload,
   opsSignalUrl,
   parseOpsEvent,
+  rankIntakeBlobs,
+  selectIntakeForInbox,
   summarizeQueue,
   toOpsEvent,
   type OpsEvent,
@@ -259,7 +263,10 @@ export async function getOpsLastEvent(): Promise<OpsEvent | null> {
 }
 
 export async function getOpsQueue(): Promise<OpsQueue> {
-  const [items, last] = await Promise.all([listIntake(20), getOpsLastEvent()]);
+  const [items, last] = await Promise.all([
+    loadIntakeRecords(INTAKE_LIST_GET_LIMIT),
+    getOpsLastEvent(),
+  ]);
   return summarizeQueue(items, last, { paymentConnected: paymentConfigured() });
 }
 
@@ -296,20 +303,46 @@ export async function getIntake(id: string): Promise<IntakeRecord | null> {
   }
 }
 
-export async function listIntake(limit = 20): Promise<IntakeRecord[]> {
+async function loadIntakeRecords(getLimit: number): Promise<IntakeRecord[]> {
   if (detectIntakeBackend() !== "blob") return [];
-  const { list, get } = await import("@vercel/blob");
-  const { blobs } = await list({ prefix: "intake/", limit: Math.min(limit, 50) });
-  const records: IntakeRecord[] = [];
-  for (const blob of blobs) {
-    const file = await get(blob.pathname, { access: "private", useCache: false });
-    if (!file?.stream) continue;
-    const text = await new Response(file.stream).text();
-    const parsed = parseIntakeRecord(text);
-    if (parsed) records.push(parsed);
+  const cap = Number.isInteger(getLimit)
+    ? Math.min(Math.max(getLimit, 0), INTAKE_LIST_GET_LIMIT)
+    : 0;
+  if (!cap) return [];
+  try {
+    const { list, get } = await import("@vercel/blob");
+    const listed: { pathname: string; uploadedAt: Date }[] = [];
+    let cursor: string | undefined;
+    for (let page = 0; page < 8 && listed.length < INTAKE_LIST_META_MAX; page += 1) {
+      const result = await list({
+        prefix: "intake/",
+        limit: 100,
+        ...(cursor ? { cursor } : {}),
+      });
+      for (const blob of result.blobs) {
+        listed.push({ pathname: blob.pathname, uploadedAt: blob.uploadedAt });
+        if (listed.length >= INTAKE_LIST_META_MAX) break;
+      }
+      if (!result.hasMore || !result.cursor) break;
+      cursor = result.cursor;
+    }
+    const records: IntakeRecord[] = [];
+    for (const path of rankIntakeBlobs(listed, cap)) {
+      const file = await get(path, { access: "private", useCache: false });
+      if (!file?.stream) continue;
+      const text = await new Response(file.stream).text();
+      const parsed = parseIntakeRecord(text);
+      if (parsed) records.push(parsed);
+    }
+    return records;
+  } catch {
+    return [];
   }
-  records.sort((a, b) => b.receivedAt.localeCompare(a.receivedAt));
-  return records;
+}
+
+export async function listIntake(limit = 20): Promise<IntakeRecord[]> {
+  const records = await loadIntakeRecords(INTAKE_LIST_GET_LIMIT);
+  return selectIntakeForInbox(records, limit);
 }
 
 export async function deleteIntake(id: string): Promise<boolean> {

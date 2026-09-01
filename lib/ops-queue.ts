@@ -368,6 +368,14 @@ export type InboxIdRow = {
   notedAt?: string;
 };
 
+export const INTAKE_LIST_GET_LIMIT = 50;
+export const INTAKE_LIST_META_MAX = 200;
+
+export type IntakeBlobMeta = {
+  pathname?: unknown;
+  uploadedAt?: unknown;
+};
+
 export function parseInboxListView(value: unknown): InboxListView | "invalid" {
   if (value === null || value === undefined || value === "") return "queue";
   if (typeof value !== "string") return "invalid";
@@ -423,7 +431,7 @@ export function toInboxIdRow(record: IntakeRecord): InboxIdRow | null {
   return row;
 }
 
-function inboxActivityAt(record: IntakeRecord): string {
+export function inboxActivityAt(record: IntakeRecord): string {
   return latestStamp(
     record.receivedAt,
     record.updateAt,
@@ -437,6 +445,63 @@ function inboxActivityAt(record: IntakeRecord): string {
     record.paidAt,
     record.notedAt,
   );
+}
+
+function intakePathFromBlob(pathname: unknown): string | null {
+  if (typeof pathname !== "string") return null;
+  const raw = pathname.trim();
+  if (!raw.startsWith("intake/") || !raw.endsWith(".json")) return null;
+  const id = raw.slice("intake/".length, -".json".length);
+  return intakeBlobPath(id);
+}
+
+function uploadedAtMs(value: unknown): number {
+  if (value instanceof Date) {
+    const ms = value.getTime();
+    return Number.isFinite(ms) ? ms : 0;
+  }
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string") {
+    const ms = Date.parse(value.trim().slice(0, 40));
+    return Number.isFinite(ms) ? ms : 0;
+  }
+  return 0;
+}
+
+export function rankIntakeBlobs(blobs: IntakeBlobMeta[], getLimit: number): string[] {
+  const cap = Number.isInteger(getLimit) ? Math.min(Math.max(getLimit, 0), INTAKE_LIST_META_MAX) : 0;
+  if (cap === 0) return [];
+  const rows: { path: string; at: number }[] = [];
+  for (const blob of blobs) {
+    const path = intakePathFromBlob(blob.pathname);
+    if (!path) continue;
+    rows.push({ path, at: uploadedAtMs(blob.uploadedAt) || 1 });
+  }
+  rows.sort((a, b) => {
+    if (b.at !== a.at) return b.at - a.at;
+    return a.path.localeCompare(b.path);
+  });
+  const seen = new Set<string>();
+  const paths: string[] = [];
+  for (const row of rows) {
+    if (seen.has(row.path)) continue;
+    seen.add(row.path);
+    paths.push(row.path);
+    if (paths.length >= cap) break;
+  }
+  return paths;
+}
+
+export function selectIntakeForInbox(records: IntakeRecord[], limit: number): IntakeRecord[] {
+  const cap = Number.isInteger(limit) ? Math.min(Math.max(limit, 0), INTAKE_LIST_META_MAX) : 0;
+  if (cap === 0) return [];
+  return [...records]
+    .sort((a, b) => {
+      const byAt = inboxActivityAt(b).localeCompare(inboxActivityAt(a));
+      if (byAt !== 0) return byAt;
+      return a.id.localeCompare(b.id);
+    })
+    .slice(0, cap);
 }
 
 function toSortedInboxIdRows(records: IntakeRecord[]): InboxIdRow[] {
