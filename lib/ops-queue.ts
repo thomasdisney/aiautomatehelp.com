@@ -163,6 +163,21 @@ export function hasOpenQuestion(record: IntakeRecord): boolean {
   return record.updateAt < record.customerReplyAt;
 }
 
+export function openQuestionAt(record: IntakeRecord): string | null {
+  if (!hasOpenQuestion(record)) return null;
+  const thread = hydrateThread(record);
+  if (thread.length) {
+    for (let i = thread.length - 1; i >= 0; i -= 1) {
+      if (thread[i].role !== "customer") continue;
+      const at = thread[i].at.trim().slice(0, 40);
+      if (at) return at;
+    }
+  }
+  const replyAt =
+    typeof record.customerReplyAt === "string" ? record.customerReplyAt.trim().slice(0, 40) : "";
+  return replyAt || null;
+}
+
 export function hasPublicOperatorUpdate(record: IntakeRecord): boolean {
   const thread = hydrateThread(record);
   if (thread.length) {
@@ -311,6 +326,7 @@ export type InboxIdRow = {
   confirmedAt?: string;
   dueAt?: string;
   amountCents?: number;
+  questionAt?: string;
 };
 
 export function parseInboxListView(value: unknown): InboxListView | "invalid" {
@@ -336,6 +352,8 @@ export function toInboxIdRow(record: IntakeRecord): InboxIdRow | null {
   if (dueAt) row.dueAt = dueAt;
   const amountCents = parseAmountCents(record.amountCents);
   if (amountCents !== null) row.amountCents = amountCents;
+  const questionAt = openQuestionAt(record);
+  if (questionAt) row.questionAt = questionAt;
   return row;
 }
 

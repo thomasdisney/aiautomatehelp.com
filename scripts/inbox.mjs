@@ -138,8 +138,9 @@ if (cmd === "list") {
     const confirmedAt = typeof row?.confirmedAt === "string" ? row.confirmedAt : "";
     const dueAt = typeof row?.dueAt === "string" ? row.dueAt : "";
     const amountCents = typeof row?.amountCents === "number" ? row.amountCents : 0;
+    const questionAt = typeof row?.questionAt === "string" ? row.questionAt : "";
     console.log(
-      `${id} ${status} ${receivedAt}${amountCents ? ` ${amountCents}` : ""}${dueAt ? ` due ${dueAt}` : ""}${confirmedAt ? ` confirmed ${confirmedAt}` : ""}`.trim(),
+      `${id} ${status} ${receivedAt}${amountCents ? ` ${amountCents}` : ""}${dueAt ? ` due ${dueAt}` : ""}${confirmedAt ? ` confirmed ${confirmedAt}` : ""}${questionAt ? ` question ${questionAt}` : ""}`.trim(),
     );
   }
   process.exit(0);
@@ -159,8 +160,9 @@ if (cmd === "find" && id) {
     const confirmedAt = typeof row?.confirmedAt === "string" ? row.confirmedAt : "";
     const dueAt = typeof row?.dueAt === "string" ? row.dueAt : "";
     const amountCents = typeof row?.amountCents === "number" ? row.amountCents : 0;
+    const questionAt = typeof row?.questionAt === "string" ? row.questionAt : "";
     console.log(
-      `${foundId} ${foundStatus} ${receivedAt}${amountCents ? ` ${amountCents}` : ""}${dueAt ? ` due ${dueAt}` : ""}${confirmedAt ? ` confirmed ${confirmedAt}` : ""}`.trim(),
+      `${foundId} ${foundStatus} ${receivedAt}${amountCents ? ` ${amountCents}` : ""}${dueAt ? ` due ${dueAt}` : ""}${confirmedAt ? ` confirmed ${confirmedAt}` : ""}${questionAt ? ` question ${questionAt}` : ""}`.trim(),
     );
   }
   process.exit(0);
