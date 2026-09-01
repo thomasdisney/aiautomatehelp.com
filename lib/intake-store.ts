@@ -83,7 +83,9 @@ export async function updateIntake(
 ): Promise<UpdateIntakeResult> {
   const current = await getIntake(id);
   if (!current) return { ok: false, error: "not_found" };
-  const applied = applyOperatorPatch(current, patch, new Date().toISOString());
+  const applied = applyOperatorPatch(current, patch, new Date().toISOString(), {
+    paymentConnected: paymentConfigured(),
+  });
   if (!applied.ok) return applied;
   const stored = await saveIntake(applied.record);
   if (stored) {

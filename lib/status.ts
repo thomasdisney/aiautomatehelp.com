@@ -346,15 +346,20 @@ export function parseInboxPatch(body: unknown): InboxPatch {
   };
 }
 
+export type OperatorPatchOptions = {
+  paymentConnected?: boolean;
+};
+
 function operatorMayChangeStatus(
   current: IntakeStatus,
   next: IntakeStatus | null,
+  paymentConnected = false,
 ): boolean {
   if (next === "paid" || next === "accepted" || next === "withdrawn") return false;
   if (!next || next === current) return true;
   if (current === "paid") return next === "delivered";
   if (current === "delivered") return next === "delivered";
-  if (current === "accepted") return false;
+  if (current === "accepted") return next === "delivered" && !paymentConnected;
   if (current === "withdrawn" || current === "declined") return next === "quoted";
   return next !== "delivered";
 }
@@ -371,8 +376,9 @@ export function applyOperatorPatch(
     doneWhen?: string;
   },
   now: string,
+  options: OperatorPatchOptions = {},
 ): ApplyOperatorPatch {
-  if (!operatorMayChangeStatus(record.status, patch.status)) {
+  if (!operatorMayChangeStatus(record.status, patch.status, Boolean(options.paymentConnected))) {
     return { ok: false, error: "not_allowed" };
   }
 
