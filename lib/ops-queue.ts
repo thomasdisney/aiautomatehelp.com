@@ -1,8 +1,12 @@
+import { createHash } from "node:crypto";
 import {
   hydrateThread,
   intakeBlobPath,
+  isValidEmail,
   parseDueAt,
   parseIntakeStatus,
+  sanitizeText,
+  FIELD_LIMITS,
   type IntakeRecord,
   type IntakeStatus,
 } from "./intake.ts";
@@ -370,6 +374,76 @@ export type InboxIdRow = {
 
 export const INTAKE_LIST_GET_LIMIT = 50;
 export const INTAKE_LIST_META_MAX = 200;
+export const EMAIL_INDEX_MAX_IDS = 50;
+
+const EMAIL_INDEX_DIGEST_RE = /^[0-9a-f]{64}$/;
+
+export function emailIndexPath(email: string): string | null {
+  const normalized = sanitizeText(email, FIELD_LIMITS.email).toLowerCase();
+  if (!isValidEmail(normalized)) return null;
+  const digest = createHash("sha256").update(normalized).digest("hex");
+  if (!EMAIL_INDEX_DIGEST_RE.test(digest)) return null;
+  return `ops/xref/${digest}.json`;
+}
+
+function parseIndexId(value: unknown): string | null {
+  const id = typeof value === "string" ? value.trim().toLowerCase() : "";
+  return intakeBlobPath(id) ? id : null;
+}
+
+export function parseEmailIndex(raw: string): string[] {
+  let value: unknown;
+  try {
+    value = JSON.parse(raw);
+  } catch {
+    return [];
+  }
+  const idsRaw = Array.isArray(value)
+    ? value
+    : value && typeof value === "object"
+      ? (value as { ids?: unknown }).ids
+      : null;
+  if (!Array.isArray(idsRaw)) return [];
+  const seen = new Set<string>();
+  const ids: string[] = [];
+  for (const item of idsRaw) {
+    const id = parseIndexId(item);
+    if (!id || seen.has(id)) continue;
+    seen.add(id);
+    ids.push(id);
+    if (ids.length >= EMAIL_INDEX_MAX_IDS) break;
+  }
+  return ids;
+}
+
+export function emailIndexAfterAdd(ids: string[], id: string): string[] {
+  const nextId = parseIndexId(id);
+  if (!nextId) {
+    return parseEmailIndex(JSON.stringify({ ids }));
+  }
+  const kept = parseEmailIndex(JSON.stringify({ ids })).filter((item) => item !== nextId);
+  return [nextId, ...kept].slice(0, EMAIL_INDEX_MAX_IDS);
+}
+
+export function emailIndexAfterDelete(ids: string[], id: string): string[] {
+  const drop = parseIndexId(id);
+  const kept = parseEmailIndex(JSON.stringify({ ids }));
+  if (!drop) return kept;
+  return kept.filter((item) => item !== drop);
+}
+
+export function selectIntakeByEmail(
+  records: IntakeRecord[],
+  email: string,
+  limit: number,
+): IntakeRecord[] {
+  const normalized = sanitizeText(email, FIELD_LIMITS.email).toLowerCase();
+  if (!isValidEmail(normalized)) return [];
+  return selectIntakeForInbox(
+    records.filter((record) => emailsMatch(record.email, normalized)),
+    limit,
+  );
+}
 
 export type IntakeBlobMeta = {
   pathname?: unknown;

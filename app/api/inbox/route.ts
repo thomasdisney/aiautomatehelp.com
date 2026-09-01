@@ -5,6 +5,7 @@ import {
   getIntake,
   getOpsQueue,
   listIntake,
+  listIntakeByEmail,
   updateIntake,
 } from "@/lib/intake-store";
 import { parseInboxListView, toInboxIdRows, toInboxIdRowsForEmail } from "@/lib/ops-queue";
@@ -107,7 +108,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const ids = toInboxIdRowsForEmail(await listIntake(50), parsed.email);
+  const ids = toInboxIdRowsForEmail(await listIntakeByEmail(parsed.email), parsed.email);
   return NextResponse.json(
     { ok: true, ids },
     { headers: { "cache-control": "no-store" } },

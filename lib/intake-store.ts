@@ -9,6 +9,9 @@ import {
 } from "@/lib/intake";
 import {
   customerEventAt,
+  emailIndexAfterAdd,
+  emailIndexAfterDelete,
+  emailIndexPath,
   eventFromCustomerDecision,
   eventFromStatus,
   INTAKE_LIST_GET_LIMIT,
@@ -17,8 +20,10 @@ import {
   opsLastPath,
   opsSignalPayload,
   opsSignalUrl,
+  parseEmailIndex,
   parseOpsEvent,
   rankIntakeBlobs,
+  selectIntakeByEmail,
   selectIntakeForInbox,
   summarizeQueue,
   toOpsEvent,
@@ -226,6 +231,7 @@ export async function persistIntake(
       status: record.status,
       at: record.receivedAt,
     });
+    await rememberIntakeEmail(record.email, record.id);
   }
   return { stored, id };
 }
@@ -345,11 +351,82 @@ export async function listIntake(limit = 20): Promise<IntakeRecord[]> {
   return selectIntakeForInbox(records, limit);
 }
 
+export async function listIntakeByEmail(
+  email: string,
+  limit = INTAKE_LIST_GET_LIMIT,
+): Promise<IntakeRecord[]> {
+  const [indexed, recent] = await Promise.all([
+    loadIndexedIntakeForEmail(email),
+    listIntake(INTAKE_LIST_GET_LIMIT),
+  ]);
+  const byId = new Map<string, IntakeRecord>();
+  for (const record of [...indexed, ...recent]) {
+    byId.set(record.id, record);
+  }
+  return selectIntakeByEmail([...byId.values()], email, limit);
+}
+
+async function loadIndexedIntakeForEmail(email: string): Promise<IntakeRecord[]> {
+  const ids = await readEmailIndex(email);
+  if (!ids.length) return [];
+  const records: IntakeRecord[] = [];
+  for (const id of ids) {
+    const record = await getIntake(id);
+    if (record) records.push(record);
+  }
+  return records;
+}
+
+async function readEmailIndex(email: string): Promise<string[]> {
+  const path = emailIndexPath(email);
+  if (!path || detectIntakeBackend() !== "blob") return [];
+  try {
+    const { get } = await import("@vercel/blob");
+    const file = await get(path, { access: "private", useCache: false });
+    if (!file?.stream) return [];
+    const text = await new Response(file.stream).text();
+    return parseEmailIndex(text);
+  } catch {
+    return [];
+  }
+}
+
+async function writeEmailIndex(email: string, ids: string[]): Promise<void> {
+  const path = emailIndexPath(email);
+  if (!path || detectIntakeBackend() !== "blob") return;
+  const { put, del } = await import("@vercel/blob");
+  if (!ids.length) {
+    await del(path);
+    return;
+  }
+  await put(path, JSON.stringify({ ids }), intakeBlobPutOptions());
+}
+
+async function rememberIntakeEmail(email: string, id: string): Promise<void> {
+  try {
+    const current = await readEmailIndex(email);
+    await writeEmailIndex(email, emailIndexAfterAdd(current, id));
+  } catch {
+    // Index writes must not fail the customer path.
+  }
+}
+
+async function forgetIntakeEmail(email: string, id: string): Promise<void> {
+  try {
+    const current = await readEmailIndex(email);
+    await writeEmailIndex(email, emailIndexAfterDelete(current, id));
+  } catch {
+    // Clearing the index must not fail the delete.
+  }
+}
+
 export async function deleteIntake(id: string): Promise<boolean> {
   const path = intakeBlobPath(id);
   if (!path || detectIntakeBackend() !== "blob") return false;
+  const current = await getIntake(id);
   const { del } = await import("@vercel/blob");
   await del(path);
+  if (current) await forgetIntakeEmail(current.email, id);
   try {
     const last = await getOpsLastEvent();
     if (last && opsLastAfterDelete(last, id) === null) {
