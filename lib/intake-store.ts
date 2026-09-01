@@ -8,6 +8,7 @@ import {
   type IntakeRecord,
 } from "@/lib/intake";
 import {
+  customerEventAt,
   eventFromCustomerDecision,
   eventFromStatus,
   opsLastAfterDelete,
@@ -178,12 +179,7 @@ export async function replyToIntake(
       event: eventFromCustomerDecision(action.decision),
       id: applied.record.id,
       status: applied.record.status,
-      at:
-        action.decision === "decline"
-          ? applied.record.withdrawnAt ||
-            applied.record.customerReplyAt ||
-            new Date().toISOString()
-          : applied.record.customerReplyAt || new Date().toISOString(),
+      at: customerEventAt(applied.record, action.decision) || new Date().toISOString(),
     });
   }
   return stored ? { ok: true, record: applied.record } : { ok: false, error: "store" };

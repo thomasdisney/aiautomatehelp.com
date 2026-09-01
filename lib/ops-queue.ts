@@ -123,6 +123,32 @@ export function eventFromCustomerDecision(
   return "question";
 }
 
+function eventStamp(value: unknown): string {
+  return typeof value === "string" ? value.trim().slice(0, 40) : "";
+}
+
+export function customerEventAt(
+  record: {
+    acceptedAt?: string;
+    confirmedAt?: string;
+    withdrawnAt?: string;
+    customerReplyAt?: string;
+  },
+  decision: "accept" | "decline" | "question" | "confirm",
+): string {
+  if (decision === "decline") {
+    const at = eventStamp(record.withdrawnAt);
+    if (at) return at;
+  } else if (decision === "confirm") {
+    const at = eventStamp(record.confirmedAt);
+    if (at) return at;
+  } else if (decision === "accept") {
+    const at = eventStamp(record.acceptedAt);
+    if (at) return at;
+  }
+  return eventStamp(record.customerReplyAt);
+}
+
 export function eventFromStatus(status: IntakeStatus): OpsEventType {
   return status;
 }
