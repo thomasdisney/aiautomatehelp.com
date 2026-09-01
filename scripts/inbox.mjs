@@ -97,6 +97,7 @@ if (cmd === "show" && id) {
   if (item.acceptedAt) console.log(`acceptedAt ${item.acceptedAt}`);
   if (item.deliveredAt) console.log(`deliveredAt ${item.deliveredAt}`);
   if (item.withdrawnAt) console.log(`withdrawnAt ${item.withdrawnAt}`);
+  if (item.declinedAt) console.log(`declinedAt ${item.declinedAt}`);
   console.log("message");
   console.log(item.message);
   if (item.quoteText) {
@@ -147,8 +148,9 @@ if (cmd === "list") {
     const acceptedAt = typeof row?.acceptedAt === "string" ? row.acceptedAt : "";
     const deliveredAt = typeof row?.deliveredAt === "string" ? row.deliveredAt : "";
     const withdrawnAt = typeof row?.withdrawnAt === "string" ? row.withdrawnAt : "";
+    const declinedAt = typeof row?.declinedAt === "string" ? row.declinedAt : "";
     console.log(
-      `${id} ${status} ${receivedAt}${amountCents ? ` ${amountCents}` : ""}${dueAt ? ` due ${dueAt}` : ""}${updateAt ? ` update ${updateAt}` : ""}${acceptedAt ? ` accepted ${acceptedAt}` : ""}${withdrawnAt ? ` withdrawn ${withdrawnAt}` : ""}${deliveredAt ? ` delivered ${deliveredAt}` : ""}${confirmedAt ? ` confirmed ${confirmedAt}` : ""}${questionAt ? ` question ${questionAt}` : ""}`.trim(),
+      `${id} ${status} ${receivedAt}${amountCents ? ` ${amountCents}` : ""}${dueAt ? ` due ${dueAt}` : ""}${updateAt ? ` update ${updateAt}` : ""}${acceptedAt ? ` accepted ${acceptedAt}` : ""}${withdrawnAt ? ` withdrawn ${withdrawnAt}` : ""}${declinedAt ? ` declined ${declinedAt}` : ""}${deliveredAt ? ` delivered ${deliveredAt}` : ""}${confirmedAt ? ` confirmed ${confirmedAt}` : ""}${questionAt ? ` question ${questionAt}` : ""}`.trim(),
     );
   }
   process.exit(0);
@@ -173,8 +175,9 @@ if (cmd === "find" && id) {
     const acceptedAt = typeof row?.acceptedAt === "string" ? row.acceptedAt : "";
     const deliveredAt = typeof row?.deliveredAt === "string" ? row.deliveredAt : "";
     const withdrawnAt = typeof row?.withdrawnAt === "string" ? row.withdrawnAt : "";
+    const declinedAt = typeof row?.declinedAt === "string" ? row.declinedAt : "";
     console.log(
-      `${foundId} ${foundStatus} ${receivedAt}${amountCents ? ` ${amountCents}` : ""}${dueAt ? ` due ${dueAt}` : ""}${updateAt ? ` update ${updateAt}` : ""}${acceptedAt ? ` accepted ${acceptedAt}` : ""}${withdrawnAt ? ` withdrawn ${withdrawnAt}` : ""}${deliveredAt ? ` delivered ${deliveredAt}` : ""}${confirmedAt ? ` confirmed ${confirmedAt}` : ""}${questionAt ? ` question ${questionAt}` : ""}`.trim(),
+      `${foundId} ${foundStatus} ${receivedAt}${amountCents ? ` ${amountCents}` : ""}${dueAt ? ` due ${dueAt}` : ""}${updateAt ? ` update ${updateAt}` : ""}${acceptedAt ? ` accepted ${acceptedAt}` : ""}${withdrawnAt ? ` withdrawn ${withdrawnAt}` : ""}${declinedAt ? ` declined ${declinedAt}` : ""}${deliveredAt ? ` delivered ${deliveredAt}` : ""}${confirmedAt ? ` confirmed ${confirmedAt}` : ""}${questionAt ? ` question ${questionAt}` : ""}`.trim(),
     );
   }
   process.exit(0);
