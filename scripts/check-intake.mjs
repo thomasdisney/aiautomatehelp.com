@@ -70,6 +70,7 @@ import {
   selectIntakeByEmail,
   mergeIntakeForEmail,
   mergeIntakeForQueue,
+  selectIntakeForList,
   opsWorkPath,
 } from "../lib/ops-queue.ts";
 import {
@@ -12407,5 +12408,153 @@ assert.equal("email" in workPublic, false);
 assert.equal("name" in workPublic, false);
 assert.equal("message" in workPublic, false);
 assert.equal(JSON.stringify(workPublic).includes("pat@example.com"), false);
+
+const listClosedAId = "e1e1e1e1-e1e1-41e1-81e1-e1e1e1e1e1e1";
+const listClosedBId = "e2e2e2e2-e2e2-42e2-82e2-e2e2e2e2e2e2";
+const listClosedA = {
+  ...workConfirmed.record,
+  id: listClosedAId,
+  receivedAt: "2026-08-28T00:00:00.000Z",
+  confirmedAt: "2026-08-28T12:00:00.000Z",
+  email: "other@example.com",
+  name: "Other",
+  message: workNoteText,
+};
+const listClosedB = {
+  ...workConfirmed.record,
+  id: listClosedBId,
+  receivedAt: "2026-08-29T00:00:00.000Z",
+  confirmedAt: "2026-08-29T12:00:00.000Z",
+  email: "third@example.com",
+  name: "Third",
+  message: workNoteText,
+};
+
+assert.equal(
+  selectIntakeForInbox(
+    mergeIntakeForQueue([workOlderReceived], [listClosedB, listClosedA]),
+    2,
+  ).some((item) => item.id === workOlderId),
+  false,
+);
+
+const listedOpen = selectIntakeForList(
+  [workOlderReceived],
+  [listClosedB, listClosedA],
+  2,
+);
+assert.deepEqual(
+  listedOpen.map((item) => item.id),
+  [listClosedBId, workOlderId],
+);
+assert.equal(
+  listedOpen.map((item) => item.id).includes(listClosedAId),
+  false,
+);
+const listedOpenRows = toInboxIdRows(listedOpen);
+assert.deepEqual(
+  listedOpenRows.map((row) => row.id),
+  [listClosedBId, workOlderId],
+);
+const listedOlderRow = listedOpenRows.find((row) => row.id === workOlderId);
+assert.deepEqual(listedOlderRow, {
+  id: workOlderId,
+  status: "received",
+  receivedAt: workOlderReceivedAt,
+});
+assert.equal("email" in listedOlderRow, false);
+assert.equal("name" in listedOlderRow, false);
+assert.equal("message" in listedOlderRow, false);
+assert.equal(JSON.stringify(listedOpenRows).includes("pat@example.com"), false);
+assert.equal(queueJsonHasCustomerText(JSON.stringify(listedOpenRows)), false);
+
+const listedQuoted = selectIntakeForList(
+  [workOlderQuoted.record],
+  [listClosedB, listClosedA],
+  2,
+);
+assert.equal(
+  listedQuoted.map((item) => item.id).includes(workOlderId),
+  true,
+);
+const listedQuotedRow = toInboxIdRows(listedQuoted).find((row) => row.id === workOlderId);
+assert.equal(listedQuotedRow.status, "quoted");
+assert.equal(listedQuotedRow.amountCents, 80000);
+assert.equal(listedQuotedRow.dueAt, dueSoon);
+assert.equal(listedQuotedRow.quotedAt, workQuotedAt);
+assert.equal("email" in listedQuotedRow, false);
+assert.equal("name" in listedQuotedRow, false);
+assert.equal("message" in listedQuotedRow, false);
+assert.equal("quoteText" in listedQuotedRow, false);
+assert.equal("doneWhen" in listedQuotedRow, false);
+assert.equal(JSON.stringify(listedQuotedRow).includes(workQuoteText), false);
+assert.equal(JSON.stringify(listedQuotedRow).includes(workDoneWhen), false);
+
+assert.deepEqual(
+  workIndexAfterSave([workOlderId, workNewerId], workConfirmed.record),
+  [workNewerId],
+);
+const listedAfterConfirm = selectIntakeForList(
+  [workNewerReceived],
+  [workConfirmed.record, workNewerReceived],
+  1,
+);
+assert.deepEqual(
+  listedAfterConfirm.map((item) => item.id),
+  [workNewerId],
+);
+assert.equal(
+  listedAfterConfirm.map((item) => item.id).includes(workOlderId),
+  false,
+);
+const listedAfterConfirmRows = toInboxIdRows(listedAfterConfirm);
+assert.deepEqual(
+  listedAfterConfirmRows.map((row) => row.id),
+  [workNewerId],
+);
+assert.equal(JSON.stringify(listedAfterConfirmRows).includes(workOlderId), false);
+assert.equal(JSON.stringify(listedAfterConfirmRows).includes("pat@example.com"), false);
+assert.equal(queueJsonHasCustomerText(JSON.stringify(listedAfterConfirmRows)), false);
+
+const poisonedListIds = parseWorkIndex(
+  JSON.stringify({
+    ids: [workNewerId, "../etc/passwd", "not-a-uuid", workNewerId],
+    email: "pat@example.com",
+    name: "Pat",
+    message: workNoteText,
+  }),
+);
+assert.deepEqual(poisonedListIds, [workNewerId]);
+const poisonedListed = selectIntakeForList([], [workNewerReceived], 2);
+assert.deepEqual(
+  poisonedListed.map((item) => item.id),
+  [workNewerId],
+);
+const poisonedListedRows = toInboxIdRows(poisonedListed);
+assert.deepEqual(Object.keys(poisonedListedRows[0]).sort(), ["id", "receivedAt", "status"]);
+assert.equal(JSON.stringify(poisonedListedRows).includes("pat@example.com"), false);
+assert.equal(JSON.stringify(poisonedListedRows).includes("Pat"), false);
+assert.equal(JSON.stringify(poisonedListedRows).includes(workNoteText), false);
+assert.equal(queueJsonHasCustomerText(JSON.stringify(poisonedListedRows)), false);
+assert.equal(selectIntakeForList([], [], 2).length, 0);
+assert.deepEqual(
+  selectIntakeForList(
+    [{ ...workOlderReceived, id: "../etc/passwd" }],
+    [workNewerReceived],
+    2,
+  ).map((item) => item.id),
+  [workNewerId],
+);
+
+const listBFind = toInboxIdRowsForEmail(
+  [workOlderReceived, workNewerReceived, listClosedA],
+  "other@example.com",
+);
+assert.deepEqual(
+  listBFind.map((row) => row.id),
+  [listClosedAId],
+);
+assert.equal(JSON.stringify(listBFind).includes(workOlderId), false);
+assert.equal(JSON.stringify(listBFind).includes("pat@example.com"), false);
 
 console.log("intake checks ok");

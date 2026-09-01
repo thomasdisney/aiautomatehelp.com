@@ -28,6 +28,7 @@ import {
   rankIntakeBlobs,
   mergeIntakeForEmail,
   selectIntakeForInbox,
+  selectIntakeForList,
   summarizeQueue,
   toOpsEvent,
   workIndexAfterDelete,
@@ -360,6 +361,18 @@ async function loadIntakeRecords(getLimit: number): Promise<IntakeRecord[]> {
 export async function listIntake(limit = 20): Promise<IntakeRecord[]> {
   const records = await loadIntakeRecords(INTAKE_LIST_GET_LIMIT);
   return selectIntakeForInbox(records, limit);
+}
+
+export async function listIntakeForList(limit = 20): Promise<IntakeRecord[]> {
+  const paymentConnected = paymentConfigured();
+  const [recent, workIds] = await Promise.all([
+    loadIntakeRecords(INTAKE_LIST_GET_LIMIT),
+    readWorkIndex(),
+  ]);
+  const recentIds = new Set(recent.map((item) => item.id));
+  const missing = workIds.filter((id) => !recentIds.has(id));
+  const indexed = missing.length ? await loadIntakeByIds(missing) : [];
+  return selectIntakeForList(indexed, recent, limit, paymentConnected);
 }
 
 export async function listIntakeByEmail(

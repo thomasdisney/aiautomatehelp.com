@@ -514,6 +514,32 @@ export function mergeIntakeForQueue(
   return [...byId.values()];
 }
 
+export function selectIntakeForList(
+  indexed: IntakeRecord[],
+  recent: IntakeRecord[],
+  limit: number,
+  paymentConnected = false,
+): IntakeRecord[] {
+  const cap = Number.isInteger(limit)
+    ? Math.min(Math.max(limit, 0), INTAKE_LIST_META_MAX)
+    : 0;
+  if (cap === 0) return [];
+  const merged = mergeIntakeForQueue(indexed, recent);
+  const open: IntakeRecord[] = [];
+  const closed: IntakeRecord[] = [];
+  for (const record of merged) {
+    if (toWorkItem(record, paymentConnected) || toWaitingItem(record, paymentConnected)) {
+      open.push(record);
+    } else {
+      closed.push(record);
+    }
+  }
+  const openSorted = selectIntakeForInbox(open, cap);
+  const remaining = cap - openSorted.length;
+  const closedSorted = remaining > 0 ? selectIntakeForInbox(closed, remaining) : [];
+  return selectIntakeForInbox([...openSorted, ...closedSorted], cap);
+}
+
 export type IntakeBlobMeta = {
   pathname?: unknown;
   uploadedAt?: unknown;
