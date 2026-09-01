@@ -129,6 +129,15 @@ function eventStamp(value: unknown): string {
   return typeof value === "string" ? value.trim().slice(0, 40) : "";
 }
 
+function latestStamp(...values: unknown[]): string {
+  let latest = "";
+  for (const value of values) {
+    const at = eventStamp(value);
+    if (at && at > latest) latest = at;
+  }
+  return latest;
+}
+
 export function customerEventAt(
   record: {
     acceptedAt?: string;
@@ -215,7 +224,12 @@ export function toWorkItem(
       : record.status === "paid"
         ? record.paidAt || record.receivedAt
         : record.status === "accepted"
-          ? record.acceptedAt || record.customerReplyAt || record.updateAt || record.receivedAt
+          ? latestStamp(
+              record.acceptedAt,
+              record.updateAt,
+              record.customerReplyAt,
+              record.receivedAt,
+            )
           : record.receivedAt;
   return {
     id: record.id,
@@ -242,7 +256,12 @@ export function toWaitingItem(
   if (!isWaitingOnCustomer(record, paymentConnected)) return null;
   const at =
     record.status === "accepted"
-      ? record.acceptedAt || record.updateAt || record.customerReplyAt || record.receivedAt
+      ? latestStamp(
+          record.acceptedAt,
+          record.updateAt,
+          record.customerReplyAt,
+          record.receivedAt,
+        )
       : record.status === "delivered"
         ? record.updateAt || record.paidAt || record.receivedAt
         : record.updateAt || record.receivedAt;
