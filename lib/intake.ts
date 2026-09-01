@@ -138,6 +138,7 @@ export type IntakeRecord = IntakeFields & {
   confirmedAt: string;
   acceptedAt: string;
   deliveredAt: string;
+  withdrawnAt: string;
 };
 
 export function parseThreadRole(value: unknown): ThreadRole | null {
@@ -242,6 +243,7 @@ export function toIntakeRecord(
     confirmedAt?: string;
     acceptedAt?: string;
     deliveredAt?: string;
+    withdrawnAt?: string;
   } = {},
 ): IntakeRecord {
   return {
@@ -263,6 +265,7 @@ export function toIntakeRecord(
     confirmedAt: typeof extras.confirmedAt === "string" ? extras.confirmedAt.slice(0, 40) : "",
     acceptedAt: typeof extras.acceptedAt === "string" ? extras.acceptedAt.slice(0, 40) : "",
     deliveredAt: typeof extras.deliveredAt === "string" ? extras.deliveredAt.slice(0, 40) : "",
+    withdrawnAt: typeof extras.withdrawnAt === "string" ? extras.withdrawnAt.slice(0, 40) : "",
     name: data.name,
     email: data.email,
     company: data.company,
@@ -313,6 +316,7 @@ export function parseIntakeRecord(raw: string): IntakeRecord | null {
   const confirmedAt = typeof row.confirmedAt === "string" ? row.confirmedAt.slice(0, 40) : "";
   const acceptedAt = typeof row.acceptedAt === "string" ? row.acceptedAt.slice(0, 40) : "";
   const deliveredAt = typeof row.deliveredAt === "string" ? row.deliveredAt.slice(0, 40) : "";
+  const withdrawnAt = typeof row.withdrawnAt === "string" ? row.withdrawnAt.slice(0, 40) : "";
   return toIntakeRecord(
     id,
     { name, email, company, message },
@@ -334,6 +338,7 @@ export function parseIntakeRecord(raw: string): IntakeRecord | null {
       confirmedAt,
       acceptedAt,
       deliveredAt,
+      withdrawnAt,
     },
   );
 }

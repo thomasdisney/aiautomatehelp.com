@@ -265,6 +265,7 @@ export function applyCustomerAction(
       record: {
         ...record,
         status: "withdrawn",
+        withdrawnAt: stamp,
         customerReply: action.note || record.customerReply,
         customerReplyAt: action.note ? stamp : record.customerReplyAt,
         thread: action.note

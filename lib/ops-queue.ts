@@ -359,6 +359,7 @@ export type InboxIdRow = {
   updateAt?: string;
   acceptedAt?: string;
   deliveredAt?: string;
+  withdrawnAt?: string;
 };
 
 export function parseInboxListView(value: unknown): InboxListView | "invalid" {
@@ -395,6 +396,9 @@ export function toInboxIdRow(record: IntakeRecord): InboxIdRow | null {
   const deliveredAt =
     typeof record.deliveredAt === "string" ? record.deliveredAt.trim().slice(0, 40) : "";
   if (deliveredAt) row.deliveredAt = deliveredAt;
+  const withdrawnAt =
+    typeof record.withdrawnAt === "string" ? record.withdrawnAt.trim().slice(0, 40) : "";
+  if (withdrawnAt) row.withdrawnAt = withdrawnAt;
   return row;
 }
 

@@ -178,7 +178,12 @@ export async function replyToIntake(
       event: eventFromCustomerDecision(action.decision),
       id: applied.record.id,
       status: applied.record.status,
-      at: applied.record.customerReplyAt || new Date().toISOString(),
+      at:
+        action.decision === "decline"
+          ? applied.record.withdrawnAt ||
+            applied.record.customerReplyAt ||
+            new Date().toISOString()
+          : applied.record.customerReplyAt || new Date().toISOString(),
     });
   }
   return stored ? { ok: true, record: applied.record } : { ok: false, error: "store" };
