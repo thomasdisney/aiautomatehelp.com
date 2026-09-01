@@ -28,7 +28,8 @@ export default function TermsPage() {
       <h2 className="mt-10 text-xl font-semibold text-ink">Scope</h2>
       <p className="mt-3 leading-relaxed text-ink/70">
         I build what the scope says. New requests are a new quote. I may decline
-        a job. If I decline, the no and the reason show on the status page.
+        a job, including after you accept, until it is paid. If I decline, the
+        no and the reason show on the status page.
       </p>
       <h2 className="mt-10 text-xl font-semibold text-ink">Your materials</h2>
       <p className="mt-3 leading-relaxed text-ink/70">

@@ -371,7 +371,10 @@ function operatorMayChangeStatus(
   if (!next || next === current) return true;
   if (current === "paid") return next === "delivered";
   if (current === "delivered") return next === "delivered";
-  if (current === "accepted") return next === "delivered" && !paymentConnected;
+  if (current === "accepted") {
+    if (next === "declined") return true;
+    return next === "delivered" && !paymentConnected;
+  }
   if (current === "withdrawn" || current === "declined") return next === "quoted";
   return next !== "delivered";
 }
