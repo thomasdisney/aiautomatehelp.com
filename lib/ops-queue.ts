@@ -358,6 +358,7 @@ export type InboxIdRow = {
   withdrawnAt?: string;
   declinedAt?: string;
   quotedAt?: string;
+  replyAt?: string;
 };
 
 export function parseInboxListView(value: unknown): InboxListView | "invalid" {
@@ -403,6 +404,9 @@ export function toInboxIdRow(record: IntakeRecord): InboxIdRow | null {
   const quotedAt =
     typeof record.quotedAt === "string" ? record.quotedAt.trim().slice(0, 40) : "";
   if (quotedAt) row.quotedAt = quotedAt;
+  const replyAt =
+    typeof record.customerReplyAt === "string" ? record.customerReplyAt.trim().slice(0, 40) : "";
+  if (replyAt) row.replyAt = replyAt;
   return row;
 }
 
