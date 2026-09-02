@@ -23,8 +23,9 @@ import {
   opsSignalUrl,
   opsWorkPath,
   parseEmailIndexAtPath,
-  parseOpsEvent,
+  parseOpsEventAtPath,
   parseWorkIndexAtPath,
+  toOpsLastPayload,
   toEmailIndexPayload,
   toWorkIndexPayload,
   rankIntakeBlobs,
@@ -258,7 +259,8 @@ export async function recordOpsEvent(input: {
   try {
     if (detectIntakeBackend() === "blob") {
       const { put } = await import("@vercel/blob");
-      await put(opsLastPath(), JSON.stringify(opsSignalPayload(event)), intakeBlobPutOptions());
+      const payload = toOpsLastPayload(event) ?? opsSignalPayload(event);
+      await put(opsLastPath(), JSON.stringify(payload), intakeBlobPutOptions());
     }
   } catch {
     // Queue writes must not fail the customer path.
@@ -268,12 +270,13 @@ export async function recordOpsEvent(input: {
 
 export async function getOpsLastEvent(): Promise<OpsEvent | null> {
   if (detectIntakeBackend() !== "blob") return null;
+  const path = opsLastPath();
   try {
     const { get } = await import("@vercel/blob");
-    const file = await get(opsLastPath(), { access: "private", useCache: false });
+    const file = await get(path, { access: "private", useCache: false });
     if (!file?.stream) return null;
     const text = await new Response(file.stream).text();
-    return parseOpsEvent(text);
+    return parseOpsEventAtPath(text, path);
   } catch {
     return null;
   }

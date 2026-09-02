@@ -76,6 +76,15 @@ export function opsWorkPathFromPath(pathname: unknown): string | null {
   return "ops/work.json";
 }
 
+export function opsLastPathFromPath(pathname: unknown): string | null {
+  if (typeof pathname !== "string") return null;
+  const raw = pathname.trim();
+  if (raw.includes("\0") || raw.includes("\\") || raw.includes("..")) return null;
+  const normalized = raw.toLowerCase();
+  if (normalized !== "ops/last.json") return null;
+  return "ops/last.json";
+}
+
 export function isOpsEventType(value: unknown): value is OpsEventType {
   return typeof value === "string" && (OPS_EVENTS as readonly string[]).includes(value);
 }
@@ -109,6 +118,42 @@ export function parseOpsEvent(raw: string): OpsEvent | null {
     status: row.status,
     at: row.at,
   });
+}
+
+export function toOpsLastPayload(input: {
+  event: unknown;
+  id: unknown;
+  status: unknown;
+  at: unknown;
+}): (OpsEvent & { path: string }) | null {
+  const event = toOpsEvent(input);
+  if (!event) return null;
+  return {
+    event: event.event,
+    id: event.id,
+    status: event.status,
+    at: event.at,
+    path: opsLastPath(),
+  };
+}
+
+export function parseOpsEventAtPath(raw: string, pathname: unknown): OpsEvent | null {
+  const expected = opsLastPathFromPath(pathname);
+  if (!expected) return null;
+  let value: unknown;
+  try {
+    value = JSON.parse(raw);
+  } catch {
+    return null;
+  }
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    const row = value as Record<string, unknown>;
+    if ("path" in row) {
+      const path = typeof row.path === "string" ? row.path.trim().toLowerCase() : "";
+      if (path !== expected) return null;
+    }
+  }
+  return parseOpsEvent(raw);
 }
 
 export function opsLastAfterDelete(
