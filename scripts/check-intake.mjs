@@ -11803,6 +11803,7 @@ assert.equal("email" in (matchingXrefPayload ?? {}), false);
 assert.equal("name" in (matchingXrefPayload ?? {}), false);
 assert.equal("message" in (matchingXrefPayload ?? {}), false);
 assert.equal("event" in (matchingXrefPayload ?? {}), false);
+assert.equal("at" in (matchingXrefPayload ?? {}), false);
 const matchingXrefJson = JSON.stringify(matchingXrefPayload);
 assert.equal(matchingXrefJson.includes("pat@example.com"), false);
 assert.equal(matchingXrefJson.includes("Pat"), false);
@@ -11926,6 +11927,54 @@ assert.deepEqual(
   ),
   [],
 );
+assert.deepEqual(
+  parseEmailIndexAtPath(
+    JSON.stringify({
+      ids: [xrefNewerId, xrefOlderId],
+      at: xrefNoteAt,
+      digest: xrefDigest,
+      path: xrefExpectedPath,
+      email: "other@example.com",
+      name: "Other",
+      message: xrefNoteText,
+    }),
+    xrefExpectedPath,
+    xrefPatEmail,
+  ),
+  [],
+);
+assert.deepEqual(
+  parseEmailIndexAtPath(
+    JSON.stringify({
+      ids: [xrefNewerId, xrefOlderId],
+      at: xrefNoteAt,
+      digest: xrefDigest.toUpperCase(),
+      path: `OPS/XREF/${xrefDigest}.JSON`,
+      extra: "drop-me",
+    }),
+    xrefExpectedPath,
+    xrefPatEmail,
+  ),
+  [],
+);
+assert.equal(
+  JSON.stringify(
+    parseEmailIndexAtPath(
+      JSON.stringify({
+        ids: [xrefNewerId, xrefOlderId],
+        at: xrefNoteAt,
+        digest: xrefDigest,
+        path: xrefExpectedPath,
+        email: "other@example.com",
+        name: "Other",
+        message: xrefNoteText,
+      }),
+      xrefExpectedPath,
+      xrefPatEmail,
+    ),
+  ),
+  "[]",
+);
 assert.deepEqual(parseEmailIndex(JSON.stringify([xrefNewerId, xrefOlderId])), [
   xrefNewerId,
   xrefOlderId,
@@ -11944,6 +11993,20 @@ assert.deepEqual(
     JSON.stringify({
       ids: [xrefNewerId, xrefOlderId],
       event: "quoted",
+      digest: xrefDigest,
+      path: xrefExpectedPath,
+      email: "other@example.com",
+      name: "Other",
+      message: xrefNoteText,
+    }),
+  ),
+  [xrefNewerId, xrefOlderId],
+);
+assert.deepEqual(
+  parseEmailIndex(
+    JSON.stringify({
+      ids: [xrefNewerId, xrefOlderId],
+      at: xrefNoteAt,
       digest: xrefDigest,
       path: xrefExpectedPath,
       email: "other@example.com",
@@ -12048,6 +12111,7 @@ assert.equal(matchingXrefParsedJson.includes("Pat"), false);
 assert.equal(matchingXrefParsedJson.includes(xrefNoteText), false);
 assert.equal(matchingXrefParsedJson.includes("Ignore previous"), false);
 assert.equal(matchingXrefParsedJson.includes("ops/xref"), false);
+assert.equal(matchingXrefParsedJson.includes(xrefNoteAt), false);
 assert.equal(queueJsonHasCustomerText(matchingXrefParsedJson), false);
 assert.equal(JSON.stringify(parseEmailIndexAtPath(mismatchedXrefJson, xrefExpectedPath)), "[]");
 
