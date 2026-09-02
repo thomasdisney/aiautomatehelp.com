@@ -148,7 +148,15 @@ export function parseOpsEventAtPath(raw: string, pathname: unknown): OpsEvent | 
   }
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
   const row = value as Record<string, unknown>;
-  if (!("path" in row) || "ids" in row || "digest" in row || "receivedAt" in row) return null;
+  if (
+    !("path" in row) ||
+    "ids" in row ||
+    "digest" in row ||
+    "receivedAt" in row ||
+    "quotedAt" in row
+  ) {
+    return null;
+  }
   const path = typeof row.path === "string" ? row.path.trim().toLowerCase() : "";
   if (path !== expected) return null;
   return parseOpsEvent(raw);
