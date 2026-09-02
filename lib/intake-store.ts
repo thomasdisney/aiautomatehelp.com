@@ -3,6 +3,7 @@ import {
   intakeBlobPath,
   intakeBlobPutOptions,
   parseIntakeRecordAtPath,
+  toIntakePathPayload,
   toIntakeRecord,
   type IntakeFields,
   type IntakeRecord,
@@ -51,8 +52,10 @@ export {
   detectIntakeBackend,
   intakeBlobPath,
   intakeBlobPutOptions,
+  intakePathFromPath,
   parseIntakeRecord,
   parseIntakeRecordAtPath,
+  toIntakePathPayload,
   toIntakeRecord,
 } from "@/lib/intake";
 export type { IntakeBackend, IntakeRecord } from "@/lib/intake";
@@ -128,10 +131,10 @@ export async function updateIntake(
 }
 
 async function persistBlob(record: IntakeRecord): Promise<boolean> {
-  const path = intakeBlobPath(record.id);
-  if (!path) return false;
+  const payload = toIntakePathPayload(record);
+  if (!payload) return false;
   const { put } = await import("@vercel/blob");
-  await put(path, JSON.stringify(record), intakeBlobPutOptions());
+  await put(payload.path, JSON.stringify(payload), intakeBlobPutOptions());
   await rememberIntakeEmail(record.email, record.id);
   await rememberWork(record);
   return true;
@@ -161,13 +164,13 @@ async function persistWebhook(record: IntakeRecord, webhook: string): Promise<bo
 }
 
 async function persistDir(record: IntakeRecord, dir: string): Promise<boolean> {
-  const path = intakeBlobPath(record.id);
-  if (!path) return false;
+  const payload = toIntakePathPayload(record);
+  if (!payload) return false;
   const { mkdir, writeFile } = await import("node:fs/promises");
   const { join } = await import("node:path");
   const safe = assertSafeDir(dir);
   await mkdir(safe, { recursive: true });
-  await writeFile(join(safe, `${record.id}.json`), JSON.stringify(record, null, 2), {
+  await writeFile(join(safe, `${payload.id}.json`), JSON.stringify(payload, null, 2), {
     mode: 0o600,
   });
   return true;

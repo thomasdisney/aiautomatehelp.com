@@ -217,21 +217,48 @@ export function intakeBlobPath(id: string): string | null {
 
 export function intakeIdFromBlobPath(pathname: unknown): string | null {
   if (typeof pathname !== "string") return null;
-  const raw = pathname.trim();
+  const raw = pathname.trim().toLowerCase();
   if (!raw.startsWith("intake/") || !raw.endsWith(".json")) return null;
   if (raw.includes("\0") || raw.includes("\\") || raw.includes("..")) return null;
-  const id = raw.slice("intake/".length, -".json".length).trim().toLowerCase();
+  const id = raw.slice("intake/".length, -".json".length).trim();
   if (!id || id.includes("/") || id.includes("\\") || id.includes("..")) return null;
   return intakeBlobPath(id) ? id : null;
 }
 
+export function intakePathFromPath(pathname: unknown): string | null {
+  const id = intakeIdFromBlobPath(pathname);
+  return id ? intakeBlobPath(id) : null;
+}
+
+export function toIntakePathPayload(
+  record: IntakeRecord,
+): (IntakeRecord & { path: string }) | null {
+  const id = typeof record.id === "string" ? record.id.trim().toLowerCase() : "";
+  const path = intakeBlobPath(id);
+  if (!path) return null;
+  return { ...record, id, path };
+}
+
 export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeRecord | null {
-  const expected = intakeIdFromBlobPath(pathname);
-  if (!expected) return null;
+  const expectedPath = intakePathFromPath(pathname);
+  if (!expectedPath) return null;
+  const expectedId = intakeIdFromBlobPath(pathname);
+  if (!expectedId) return null;
+  let value: unknown;
+  try {
+    value = JSON.parse(raw);
+  } catch {
+    return null;
+  }
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const row = value as Record<string, unknown>;
+  if (!("path" in row)) return null;
+  const path = typeof row.path === "string" ? row.path.trim().toLowerCase() : "";
+  if (path !== expectedPath) return null;
   const parsed = parseIntakeRecord(raw);
-  if (!parsed || parsed.id.toLowerCase() !== expected) return null;
-  if (parsed.id === expected) return parsed;
-  return { ...parsed, id: expected };
+  if (!parsed || parsed.id.toLowerCase() !== expectedId) return null;
+  if (parsed.id === expectedId) return parsed;
+  return { ...parsed, id: expectedId };
 }
 
 export function intakeBlobPutOptions() {
