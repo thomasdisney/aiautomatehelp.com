@@ -252,7 +252,7 @@ export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeR
   }
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
   const row = value as Record<string, unknown>;
-  if (!("path" in row) || "event" in row || "digest" in row) return null;
+  if (!("path" in row) || "event" in row || "digest" in row || "ids" in row) return null;
   const path = typeof row.path === "string" ? row.path.trim().toLowerCase() : "";
   if (path !== expectedPath) return null;
   const parsed = parseIntakeRecord(raw);
