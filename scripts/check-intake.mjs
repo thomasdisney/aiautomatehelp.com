@@ -14552,6 +14552,8 @@ assert.deepEqual(matchingLastPayload, {
 assert.equal("email" in (matchingLastPayload ?? {}), false);
 assert.equal("name" in (matchingLastPayload ?? {}), false);
 assert.equal("message" in (matchingLastPayload ?? {}), false);
+assert.equal("digest" in (matchingLastPayload ?? {}), false);
+assert.equal("ids" in (matchingLastPayload ?? {}), false);
 const matchingLastJson = JSON.stringify(matchingLastPayload);
 assert.equal(matchingLastJson.includes("pat@example.com"), false);
 assert.equal(matchingLastJson.includes("Pat"), false);
@@ -14678,6 +14680,38 @@ assert.equal(
   ),
   null,
 );
+assert.equal(
+  parseOpsEventAtPath(
+    JSON.stringify({
+      event: "quoted",
+      id: lastPathId,
+      status: "quoted",
+      at: lastPathAt,
+      digest: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      path: "ops/last.json",
+      email: "other@example.com",
+      name: "Other",
+      message: lastPathNote,
+    }),
+    "ops/last.json",
+  ),
+  null,
+);
+assert.equal(
+  parseOpsEventAtPath(
+    JSON.stringify({
+      event: "quoted",
+      id: lastPathId,
+      status: "quoted",
+      at: lastPathAt,
+      digest: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      path: "OPS/LAST.JSON",
+      extra: "drop-me",
+    }),
+    "ops/last.json",
+  ),
+  null,
+);
 assert.deepEqual(
   parseOpsEvent(
     JSON.stringify({
@@ -14720,6 +14754,27 @@ assert.deepEqual(
       status: "quoted",
       at: lastPathAt,
       ids: [lastPathOtherId, lastPathId],
+      path: "ops/last.json",
+      email: "other@example.com",
+      name: "Other",
+      message: lastPathNote,
+    }),
+  ),
+  {
+    event: "quoted",
+    id: lastPathOtherId,
+    status: "quoted",
+    at: lastPathAt,
+  },
+);
+assert.deepEqual(
+  parseOpsEvent(
+    JSON.stringify({
+      event: "quoted",
+      id: lastPathOtherId,
+      status: "quoted",
+      at: lastPathAt,
+      digest: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       path: "ops/last.json",
       email: "other@example.com",
       name: "Other",
