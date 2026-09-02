@@ -12451,6 +12451,7 @@ assert.equal("email" in matchingWorkPayload, false);
 assert.equal("name" in matchingWorkPayload, false);
 assert.equal("message" in matchingWorkPayload, false);
 assert.equal("digest" in matchingWorkPayload, false);
+assert.equal("event" in matchingWorkPayload, false);
 const matchingWorkJson = JSON.stringify(matchingWorkPayload);
 assert.equal(matchingWorkJson.includes("pat@example.com"), false);
 assert.equal(matchingWorkJson.includes("Pat"), false);
@@ -12529,6 +12530,32 @@ assert.deepEqual(
   ),
   [],
 );
+assert.deepEqual(
+  parseWorkIndexAtPath(
+    JSON.stringify({
+      ids: [workNewerId, workOlderId],
+      event: "quoted",
+      path: "ops/work.json",
+      email: "other@example.com",
+      name: "Other",
+      message: workNoteText,
+    }),
+    "ops/work.json",
+  ),
+  [],
+);
+assert.deepEqual(
+  parseWorkIndexAtPath(
+    JSON.stringify({
+      ids: [workNewerId, workOlderId],
+      event: "QUOTED",
+      path: "OPS/WORK.JSON",
+      extra: "drop-me",
+    }),
+    "ops/work.json",
+  ),
+  [],
+);
 assert.deepEqual(parseWorkIndex(JSON.stringify([workNewerId, workOlderId])), [
   workNewerId,
   workOlderId,
@@ -12547,6 +12574,19 @@ assert.deepEqual(
     JSON.stringify({
       ids: [workNewerId, workOlderId],
       digest: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      path: "ops/work.json",
+      email: "other@example.com",
+      name: "Other",
+      message: workNoteText,
+    }),
+  ),
+  [workNewerId, workOlderId],
+);
+assert.deepEqual(
+  parseWorkIndex(
+    JSON.stringify({
+      ids: [workNewerId, workOlderId],
+      event: "quoted",
       path: "ops/work.json",
       email: "other@example.com",
       name: "Other",
