@@ -14646,6 +14646,38 @@ assert.equal(
   ),
   null,
 );
+assert.equal(
+  parseOpsEventAtPath(
+    JSON.stringify({
+      event: "quoted",
+      id: lastPathId,
+      status: "quoted",
+      at: lastPathAt,
+      ids: [lastPathOtherId, lastPathId],
+      path: "ops/last.json",
+      email: "other@example.com",
+      name: "Other",
+      message: lastPathNote,
+    }),
+    "ops/last.json",
+  ),
+  null,
+);
+assert.equal(
+  parseOpsEventAtPath(
+    JSON.stringify({
+      event: "quoted",
+      id: lastPathId,
+      status: "quoted",
+      at: lastPathAt,
+      ids: [lastPathOtherId],
+      path: "OPS/LAST.JSON",
+      extra: "drop-me",
+    }),
+    "ops/last.json",
+  ),
+  null,
+);
 assert.deepEqual(
   parseOpsEvent(
     JSON.stringify({
@@ -14671,6 +14703,27 @@ assert.deepEqual(
       at: lastPathAt,
       ids: [lastPathOtherId],
       path: "ops/work.json",
+    }),
+  ),
+  {
+    event: "quoted",
+    id: lastPathOtherId,
+    status: "quoted",
+    at: lastPathAt,
+  },
+);
+assert.deepEqual(
+  parseOpsEvent(
+    JSON.stringify({
+      event: "quoted",
+      id: lastPathOtherId,
+      status: "quoted",
+      at: lastPathAt,
+      ids: [lastPathOtherId, lastPathId],
+      path: "ops/last.json",
+      email: "other@example.com",
+      name: "Other",
+      message: lastPathNote,
     }),
   ),
   {
