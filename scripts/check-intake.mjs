@@ -12758,6 +12758,7 @@ const workQuotedAt = "2026-08-21T12:00:00.000Z";
 const workPathQuotedAt = "2026-08-20T09:00:00.000Z";
 const workPathDueAt = "2026-09-24";
 const workPathUpdateAt = "2026-08-25T15:00:00.000Z";
+const workPathAcceptedAt = "2026-08-26T16:00:00.000Z";
 const workDeliveredAt = "2026-08-22T12:00:00.000Z";
 const workConfirmedAt = "2026-08-22T13:00:00.000Z";
 const workQuoteText = "Fixed price $800. Pay before I start.";
@@ -12828,6 +12829,7 @@ assert.equal("receivedAt" in matchingWorkPayload, false);
 assert.equal("quotedAt" in matchingWorkPayload, false);
 assert.equal("dueAt" in matchingWorkPayload, false);
 assert.equal("updateAt" in matchingWorkPayload, false);
+assert.equal("acceptedAt" in matchingWorkPayload, false);
 const matchingWorkJson = JSON.stringify(matchingWorkPayload);
 assert.equal(matchingWorkJson.includes("pat@example.com"), false);
 assert.equal(matchingWorkJson.includes("Pat"), false);
@@ -13142,6 +13144,48 @@ assert.equal(
   ),
   "[]",
 );
+assert.deepEqual(
+  parseWorkIndexAtPath(
+    JSON.stringify({
+      ids: [workNewerId, workOlderId],
+      acceptedAt: workPathAcceptedAt,
+      path: "ops/work.json",
+      email: "other@example.com",
+      name: "Other",
+      message: workNoteText,
+    }),
+    "ops/work.json",
+  ),
+  [],
+);
+assert.deepEqual(
+  parseWorkIndexAtPath(
+    JSON.stringify({
+      ids: [workNewerId, workOlderId],
+      acceptedAt: workPathAcceptedAt,
+      path: "OPS/WORK.JSON",
+      extra: "drop-me",
+    }),
+    "ops/work.json",
+  ),
+  [],
+);
+assert.equal(
+  JSON.stringify(
+    parseWorkIndexAtPath(
+      JSON.stringify({
+        ids: [workNewerId, workOlderId],
+        acceptedAt: workPathAcceptedAt,
+        path: "ops/work.json",
+        email: "other@example.com",
+        name: "Other",
+        message: workNoteText,
+      }),
+      "ops/work.json",
+    ),
+  ),
+  "[]",
+);
 assert.deepEqual(parseWorkIndex(JSON.stringify([workNewerId, workOlderId])), [
   workNewerId,
   workOlderId,
@@ -13246,6 +13290,19 @@ assert.deepEqual(
   ),
   [workNewerId, workOlderId],
 );
+assert.deepEqual(
+  parseWorkIndex(
+    JSON.stringify({
+      ids: [workNewerId, workOlderId],
+      acceptedAt: workPathAcceptedAt,
+      path: "ops/work.json",
+      email: "other@example.com",
+      name: "Other",
+      message: workNoteText,
+    }),
+  ),
+  [workNewerId, workOlderId],
+);
 
 const mismatchedWorkJson = JSON.stringify({
   ids: [workOtherId, workNewerId],
@@ -13316,6 +13373,7 @@ assert.equal(matchingWorkParsedJson.includes(workNewerReceivedAt), false);
 assert.equal(matchingWorkParsedJson.includes(workPathQuotedAt), false);
 assert.equal(matchingWorkParsedJson.includes(workPathDueAt), false);
 assert.equal(matchingWorkParsedJson.includes(workPathUpdateAt), false);
+assert.equal(matchingWorkParsedJson.includes(workPathAcceptedAt), false);
 assert.equal(queueJsonHasCustomerText(matchingWorkParsedJson), false);
 assert.equal(JSON.stringify(parseWorkIndexAtPath(mismatchedWorkJson, "ops/work.json")), "[]");
 
