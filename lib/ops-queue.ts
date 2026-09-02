@@ -156,7 +156,8 @@ export function parseOpsEventAtPath(raw: string, pathname: unknown): OpsEvent | 
     "quotedAt" in row ||
     "dueAt" in row ||
     "updateAt" in row ||
-    "acceptedAt" in row
+    "acceptedAt" in row ||
+    "declinedAt" in row
   ) {
     return null;
   }
