@@ -146,13 +146,11 @@ export function parseOpsEventAtPath(raw: string, pathname: unknown): OpsEvent | 
   } catch {
     return null;
   }
-  if (value && typeof value === "object" && !Array.isArray(value)) {
-    const row = value as Record<string, unknown>;
-    if ("path" in row) {
-      const path = typeof row.path === "string" ? row.path.trim().toLowerCase() : "";
-      if (path !== expected) return null;
-    }
-  }
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const row = value as Record<string, unknown>;
+  if (!("path" in row)) return null;
+  const path = typeof row.path === "string" ? row.path.trim().toLowerCase() : "";
+  if (path !== expected) return null;
   return parseOpsEvent(raw);
 }
 

@@ -259,8 +259,10 @@ export async function recordOpsEvent(input: {
   try {
     if (detectIntakeBackend() === "blob") {
       const { put } = await import("@vercel/blob");
-      const payload = toOpsLastPayload(event) ?? opsSignalPayload(event);
-      await put(opsLastPath(), JSON.stringify(payload), intakeBlobPutOptions());
+      const payload = toOpsLastPayload(event);
+      if (payload) {
+        await put(opsLastPath(), JSON.stringify(payload), intakeBlobPutOptions());
+      }
     }
   } catch {
     // Queue writes must not fail the customer path.
