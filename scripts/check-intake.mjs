@@ -11802,6 +11802,7 @@ assert.deepEqual(matchingXrefPayload, {
 assert.equal("email" in (matchingXrefPayload ?? {}), false);
 assert.equal("name" in (matchingXrefPayload ?? {}), false);
 assert.equal("message" in (matchingXrefPayload ?? {}), false);
+assert.equal("event" in (matchingXrefPayload ?? {}), false);
 const matchingXrefJson = JSON.stringify(matchingXrefPayload);
 assert.equal(matchingXrefJson.includes("pat@example.com"), false);
 assert.equal(matchingXrefJson.includes("Pat"), false);
@@ -11895,6 +11896,36 @@ assert.deepEqual(
   ),
   [],
 );
+assert.deepEqual(
+  parseEmailIndexAtPath(
+    JSON.stringify({
+      ids: [xrefNewerId, xrefOlderId],
+      event: "quoted",
+      digest: xrefDigest,
+      path: xrefExpectedPath,
+      email: "other@example.com",
+      name: "Other",
+      message: xrefNoteText,
+    }),
+    xrefExpectedPath,
+    xrefPatEmail,
+  ),
+  [],
+);
+assert.deepEqual(
+  parseEmailIndexAtPath(
+    JSON.stringify({
+      ids: [xrefNewerId, xrefOlderId],
+      event: "QUOTED",
+      digest: xrefDigest.toUpperCase(),
+      path: `OPS/XREF/${xrefDigest}.JSON`,
+      extra: "drop-me",
+    }),
+    xrefExpectedPath,
+    xrefPatEmail,
+  ),
+  [],
+);
 assert.deepEqual(parseEmailIndex(JSON.stringify([xrefNewerId, xrefOlderId])), [
   xrefNewerId,
   xrefOlderId,
@@ -11904,6 +11935,20 @@ assert.deepEqual(
     JSON.stringify({
       ids: [xrefNewerId, xrefOlderId],
       path: "ops/work.json",
+    }),
+  ),
+  [xrefNewerId, xrefOlderId],
+);
+assert.deepEqual(
+  parseEmailIndex(
+    JSON.stringify({
+      ids: [xrefNewerId, xrefOlderId],
+      event: "quoted",
+      digest: xrefDigest,
+      path: xrefExpectedPath,
+      email: "other@example.com",
+      name: "Other",
+      message: xrefNoteText,
     }),
   ),
   [xrefNewerId, xrefOlderId],
