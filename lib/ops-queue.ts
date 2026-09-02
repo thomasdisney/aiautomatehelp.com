@@ -522,16 +522,14 @@ export function parseEmailIndexAtPath(
   } catch {
     return [];
   }
-  if (value && typeof value === "object" && !Array.isArray(value)) {
-    const row = value as Record<string, unknown>;
-    if ("email" in row) {
-      const digest = emailIndexDigest(typeof row.email === "string" ? row.email : "");
-      if (digest !== expected) return [];
-    }
-    if ("digest" in row) {
-      const digest = typeof row.digest === "string" ? row.digest.trim().toLowerCase() : "";
-      if (digest !== expected) return [];
-    }
+  if (!value || typeof value !== "object" || Array.isArray(value)) return [];
+  const row = value as Record<string, unknown>;
+  if (!("digest" in row)) return [];
+  const digest = typeof row.digest === "string" ? row.digest.trim().toLowerCase() : "";
+  if (digest !== expected) return [];
+  if ("email" in row) {
+    const emailDigest = emailIndexDigest(typeof row.email === "string" ? row.email : "");
+    if (emailDigest !== expected) return [];
   }
   return parseIdIndex(raw, EMAIL_INDEX_MAX_IDS);
 }
