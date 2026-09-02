@@ -558,13 +558,11 @@ export function parseWorkIndexAtPath(raw: string, pathname: unknown): string[] {
   } catch {
     return [];
   }
-  if (value && typeof value === "object" && !Array.isArray(value)) {
-    const row = value as Record<string, unknown>;
-    if ("path" in row) {
-      const path = typeof row.path === "string" ? row.path.trim().toLowerCase() : "";
-      if (path !== expected) return [];
-    }
-  }
+  if (!value || typeof value !== "object" || Array.isArray(value)) return [];
+  const row = value as Record<string, unknown>;
+  if (!("path" in row)) return [];
+  const path = typeof row.path === "string" ? row.path.trim().toLowerCase() : "";
+  if (path !== expected) return [];
   return parseIdIndex(raw, WORK_INDEX_MAX_IDS);
 }
 
