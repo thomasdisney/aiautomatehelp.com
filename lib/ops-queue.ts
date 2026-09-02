@@ -448,6 +448,11 @@ export function emailIndexPath(email: string): string | null {
   return digest ? `ops/xref/${digest}.json` : null;
 }
 
+export function emailIndexPathFromPath(pathname: unknown): string | null {
+  const digest = emailIndexDigestFromPath(pathname);
+  return digest ? `ops/xref/${digest}.json` : null;
+}
+
 export function emailIndexDigestFromPath(pathname: unknown): string | null {
   if (typeof pathname !== "string") return null;
   const raw = pathname.trim();
@@ -499,10 +504,15 @@ export function parseEmailIndex(raw: string): string[] {
 export function toEmailIndexPayload(
   ids: string[],
   email: string,
-): { ids: string[]; digest: string } | null {
+): { ids: string[]; digest: string; path: string } | null {
   const digest = emailIndexDigest(email);
-  if (!digest) return null;
-  return { ids: parseIdIndex(JSON.stringify({ ids }), EMAIL_INDEX_MAX_IDS), digest };
+  const path = emailIndexPath(email);
+  if (!digest || !path) return null;
+  return {
+    ids: parseIdIndex(JSON.stringify({ ids }), EMAIL_INDEX_MAX_IDS),
+    digest,
+    path,
+  };
 }
 
 export function parseEmailIndexAtPath(
@@ -510,11 +520,12 @@ export function parseEmailIndexAtPath(
   pathname: unknown,
   email?: string,
 ): string[] {
-  const expected = emailIndexDigestFromPath(pathname);
-  if (!expected) return [];
+  const expectedPath = emailIndexPathFromPath(pathname);
+  const expectedDigest = emailIndexDigestFromPath(pathname);
+  if (!expectedPath || !expectedDigest) return [];
   if (email !== undefined) {
     const digest = emailIndexDigest(email);
-    if (digest !== expected) return [];
+    if (digest !== expectedDigest) return [];
   }
   let value: unknown;
   try {
@@ -524,12 +535,14 @@ export function parseEmailIndexAtPath(
   }
   if (!value || typeof value !== "object" || Array.isArray(value)) return [];
   const row = value as Record<string, unknown>;
-  if (!("digest" in row)) return [];
+  if (!("path" in row) || !("digest" in row)) return [];
+  const path = typeof row.path === "string" ? row.path.trim().toLowerCase() : "";
+  if (path !== expectedPath) return [];
   const digest = typeof row.digest === "string" ? row.digest.trim().toLowerCase() : "";
-  if (digest !== expected) return [];
+  if (digest !== expectedDigest) return [];
   if ("email" in row) {
     const emailDigest = emailIndexDigest(typeof row.email === "string" ? row.email : "");
-    if (emailDigest !== expected) return [];
+    if (emailDigest !== expectedDigest) return [];
   }
   return parseIdIndex(raw, EMAIL_INDEX_MAX_IDS);
 }
