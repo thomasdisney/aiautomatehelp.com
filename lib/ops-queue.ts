@@ -67,6 +67,15 @@ export function opsWorkPath(): string {
   return "ops/work.json";
 }
 
+export function opsWorkPathFromPath(pathname: unknown): string | null {
+  if (typeof pathname !== "string") return null;
+  const raw = pathname.trim();
+  if (raw.includes("\0") || raw.includes("\\") || raw.includes("..")) return null;
+  const normalized = raw.toLowerCase();
+  if (normalized !== "ops/work.json") return null;
+  return "ops/work.json";
+}
+
 export function isOpsEventType(value: unknown): value is OpsEventType {
   return typeof value === "string" && (OPS_EVENTS as readonly string[]).includes(value);
 }
@@ -485,6 +494,32 @@ export function parseEmailIndexAtPath(
 }
 
 export function parseWorkIndex(raw: string): string[] {
+  return parseIdIndex(raw, WORK_INDEX_MAX_IDS);
+}
+
+export function toWorkIndexPayload(ids: string[]): { ids: string[]; path: string } {
+  return {
+    ids: parseIdIndex(JSON.stringify({ ids }), WORK_INDEX_MAX_IDS),
+    path: opsWorkPath(),
+  };
+}
+
+export function parseWorkIndexAtPath(raw: string, pathname: unknown): string[] {
+  const expected = opsWorkPathFromPath(pathname);
+  if (!expected) return [];
+  let value: unknown;
+  try {
+    value = JSON.parse(raw);
+  } catch {
+    return [];
+  }
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    const row = value as Record<string, unknown>;
+    if ("path" in row) {
+      const path = typeof row.path === "string" ? row.path.trim().toLowerCase() : "";
+      if (path !== expected) return [];
+    }
+  }
   return parseIdIndex(raw, WORK_INDEX_MAX_IDS);
 }
 

@@ -24,8 +24,9 @@ import {
   opsWorkPath,
   parseEmailIndexAtPath,
   parseOpsEvent,
-  parseWorkIndex,
+  parseWorkIndexAtPath,
   toEmailIndexPayload,
+  toWorkIndexPayload,
   rankIntakeBlobs,
   mergeIntakeForEmail,
   selectIntakeForInbox,
@@ -464,7 +465,7 @@ async function readWorkIndex(): Promise<string[]> {
     const file = await get(path, { access: "private", useCache: false });
     if (!file?.stream) return [];
     const text = await new Response(file.stream).text();
-    return parseWorkIndex(text);
+    return parseWorkIndexAtPath(text, path);
   } catch {
     return [];
   }
@@ -478,7 +479,7 @@ async function writeWorkIndex(ids: string[]): Promise<void> {
     await del(path);
     return;
   }
-  await put(path, JSON.stringify({ ids }), intakeBlobPutOptions());
+  await put(path, JSON.stringify(toWorkIndexPayload(ids)), intakeBlobPutOptions());
 }
 
 async function rememberWork(record: IntakeRecord): Promise<void> {
