@@ -550,7 +550,8 @@ export function parseEmailIndexAtPath(
     "event" in row ||
     "at" in row ||
     "receivedAt" in row ||
-    "quotedAt" in row
+    "quotedAt" in row ||
+    "dueAt" in row
   ) {
     return [];
   }
