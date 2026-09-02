@@ -556,7 +556,8 @@ export function parseEmailIndexAtPath(
     "quotedAt" in row ||
     "dueAt" in row ||
     "updateAt" in row ||
-    "acceptedAt" in row
+    "acceptedAt" in row ||
+    "declinedAt" in row
   ) {
     return [];
   }
