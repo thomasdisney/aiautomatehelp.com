@@ -566,7 +566,8 @@ export function parseEmailIndexAtPath(
     "confirmedAt" in row ||
     "deliveredAt" in row ||
     "paidAt" in row ||
-    "withdrawnAt" in row
+    "withdrawnAt" in row ||
+    "customerReplyAt" in row
   ) {
     return [];
   }
