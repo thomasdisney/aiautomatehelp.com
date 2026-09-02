@@ -602,7 +602,8 @@ export function parseWorkIndexAtPath(raw: string, pathname: unknown): string[] {
     "quotedAt" in row ||
     "dueAt" in row ||
     "updateAt" in row ||
-    "acceptedAt" in row
+    "acceptedAt" in row ||
+    "declinedAt" in row
   ) {
     return [];
   }
