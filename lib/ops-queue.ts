@@ -543,7 +543,16 @@ export function parseEmailIndexAtPath(
   }
   if (!value || typeof value !== "object" || Array.isArray(value)) return [];
   const row = value as Record<string, unknown>;
-  if (!("path" in row) || !("digest" in row) || "event" in row || "at" in row || "receivedAt" in row) return [];
+  if (
+    !("path" in row) ||
+    !("digest" in row) ||
+    "event" in row ||
+    "at" in row ||
+    "receivedAt" in row ||
+    "quotedAt" in row
+  ) {
+    return [];
+  }
   const path = typeof row.path === "string" ? row.path.trim().toLowerCase() : "";
   if (path !== expectedPath) return [];
   const digest = typeof row.digest === "string" ? row.digest.trim().toLowerCase() : "";
