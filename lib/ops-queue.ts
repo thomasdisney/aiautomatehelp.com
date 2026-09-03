@@ -178,7 +178,8 @@ export function parseOpsEventAtPath(raw: string, pathname: unknown): OpsEvent | 
     "company" in row ||
     "website" in row ||
     "questionAt" in row ||
-    "replyAt" in row
+    "replyAt" in row ||
+    "text" in row
   ) {
     return null;
   }
