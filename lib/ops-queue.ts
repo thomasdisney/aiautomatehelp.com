@@ -582,7 +582,8 @@ export function parseEmailIndexAtPath(
     "doneWhen" in row ||
     "customerReply" in row ||
     "updateText" in row ||
-    "operatorNote" in row
+    "operatorNote" in row ||
+    "thread" in row
   ) {
     return [];
   }
