@@ -644,7 +644,8 @@ export function parseWorkIndexAtPath(raw: string, pathname: unknown): string[] {
     "customerReply" in row ||
     "updateText" in row ||
     "operatorNote" in row ||
-    "thread" in row
+    "thread" in row ||
+    "paymentRef" in row
   ) {
     return [];
   }
