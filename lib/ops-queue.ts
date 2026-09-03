@@ -180,7 +180,8 @@ export function parseOpsEventAtPath(raw: string, pathname: unknown): OpsEvent | 
     "questionAt" in row ||
     "replyAt" in row ||
     "text" in row ||
-    "role" in row
+    "role" in row ||
+    "ok" in row
   ) {
     return null;
   }
