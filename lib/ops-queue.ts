@@ -568,7 +568,8 @@ export function parseEmailIndexAtPath(
     "deliveredAt" in row ||
     "paidAt" in row ||
     "withdrawnAt" in row ||
-    "customerReplyAt" in row
+    "customerReplyAt" in row ||
+    "notedAt" in row
   ) {
     return [];
   }
