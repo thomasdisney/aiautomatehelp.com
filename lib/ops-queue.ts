@@ -574,7 +574,8 @@ export function parseEmailIndexAtPath(
     "customerReplyAt" in row ||
     "notedAt" in row ||
     "quoteText" in row ||
-    "amountCents" in row
+    "amountCents" in row ||
+    "doneWhen" in row
   ) {
     return [];
   }
