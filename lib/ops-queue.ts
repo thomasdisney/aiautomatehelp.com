@@ -594,7 +594,8 @@ export function parseEmailIndexAtPath(
     "name" in row ||
     "email" in row ||
     "message" in row ||
-    "company" in row
+    "company" in row ||
+    "website" in row
   ) {
     return [];
   }
