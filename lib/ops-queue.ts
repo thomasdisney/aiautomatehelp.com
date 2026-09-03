@@ -164,7 +164,8 @@ export function parseOpsEventAtPath(raw: string, pathname: unknown): OpsEvent | 
     "withdrawnAt" in row ||
     "customerReplyAt" in row ||
     "notedAt" in row ||
-    "quoteText" in row
+    "quoteText" in row ||
+    "amountCents" in row
   ) {
     return null;
   }
