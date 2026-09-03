@@ -165,7 +165,8 @@ export function parseOpsEventAtPath(raw: string, pathname: unknown): OpsEvent | 
     "customerReplyAt" in row ||
     "notedAt" in row ||
     "quoteText" in row ||
-    "amountCents" in row
+    "amountCents" in row ||
+    "doneWhen" in row
   ) {
     return null;
   }
