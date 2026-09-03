@@ -588,7 +588,8 @@ export function parseEmailIndexAtPath(
     "operatorNote" in row ||
     "thread" in row ||
     "paymentRef" in row ||
-    "name" in row
+    "name" in row ||
+    "email" in row
   ) {
     return [];
   }
@@ -596,10 +597,6 @@ export function parseEmailIndexAtPath(
   if (path !== expectedPath) return [];
   const digest = typeof row.digest === "string" ? row.digest.trim().toLowerCase() : "";
   if (digest !== expectedDigest) return [];
-  if ("email" in row) {
-    const emailDigest = emailIndexDigest(typeof row.email === "string" ? row.email : "");
-    if (emailDigest !== expectedDigest) return [];
-  }
   return parseIdIndex(raw, EMAIL_INDEX_MAX_IDS);
 }
 
