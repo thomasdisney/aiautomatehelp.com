@@ -15105,6 +15105,46 @@ assert.equal(
   ),
   "[]",
 );
+assert.deepEqual(
+  parseWorkIndexAtPath(
+    JSON.stringify({
+      ids: [workNewerId, workOlderId],
+      message: workNoteText,
+      path: "ops/work.json",
+      name: workPathName,
+      email: workPathEmail,
+    }),
+    "ops/work.json",
+  ),
+  [],
+);
+assert.deepEqual(
+  parseWorkIndexAtPath(
+    JSON.stringify({
+      ids: [workNewerId, workOlderId],
+      message: workNoteText,
+      path: "OPS/WORK.JSON",
+      extra: "drop-me",
+    }),
+    "ops/work.json",
+  ),
+  [],
+);
+assert.equal(
+  JSON.stringify(
+    parseWorkIndexAtPath(
+      JSON.stringify({
+        ids: [workNewerId, workOlderId],
+        message: workNoteText,
+        path: "ops/work.json",
+        name: workPathName,
+        email: workPathEmail,
+      }),
+      "ops/work.json",
+    ),
+  ),
+  "[]",
+);
 assert.deepEqual(parseWorkIndex(JSON.stringify([workNewerId, workOlderId])), [
   workNewerId,
   workOlderId,
@@ -15441,6 +15481,18 @@ assert.deepEqual(
   ),
   [workNewerId, workOlderId],
 );
+assert.deepEqual(
+  parseWorkIndex(
+    JSON.stringify({
+      ids: [workNewerId, workOlderId],
+      message: workNoteText,
+      path: "ops/work.json",
+      name: workPathName,
+      email: workPathEmail,
+    }),
+  ),
+  [workNewerId, workOlderId],
+);
 
 const mismatchedWorkJson = JSON.stringify({
   ids: [workOtherId, workNewerId],
@@ -15494,7 +15546,7 @@ const matchingWorkParsed = parseWorkIndexAtPath(
   JSON.stringify({
     ids: [workOlderId],
     path: "OPS/WORK.JSON",
-    message: workNoteText,
+    extra: "drop-me",
   }),
   "ops/work.json",
 );
@@ -15531,6 +15583,7 @@ assert.equal(matchingWorkParsedJson.includes(workPathName), false);
 assert.equal(matchingWorkParsedJson.includes('"name"'), false);
 assert.equal(matchingWorkParsedJson.includes(workPathEmail), false);
 assert.equal(matchingWorkParsedJson.includes('"email"'), false);
+assert.equal(matchingWorkParsedJson.includes('"message"'), false);
 assert.equal(queueJsonHasCustomerText(matchingWorkParsedJson), false);
 assert.equal(JSON.stringify(parseWorkIndexAtPath(mismatchedWorkJson, "ops/work.json")), "[]");
 
