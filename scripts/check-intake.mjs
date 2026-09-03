@@ -19018,6 +19018,55 @@ assert.equal(
   ),
   "null",
 );
+assert.equal(
+  parseOpsEventAtPath(
+    JSON.stringify({
+      event: "quoted",
+      id: lastPathId,
+      status: "quoted",
+      at: lastPathAt,
+      message: lastPathNote,
+      path: "ops/last.json",
+      name: lastPathName,
+      email: lastPathEmail,
+    }),
+    "ops/last.json",
+  ),
+  null,
+);
+assert.equal(
+  parseOpsEventAtPath(
+    JSON.stringify({
+      event: "quoted",
+      id: lastPathId,
+      status: "quoted",
+      at: lastPathAt,
+      message: lastPathNote,
+      path: "OPS/LAST.JSON",
+      extra: "drop-me",
+    }),
+    "ops/last.json",
+  ),
+  null,
+);
+assert.equal(
+  JSON.stringify(
+    parseOpsEventAtPath(
+      JSON.stringify({
+        event: "quoted",
+        id: lastPathId,
+        status: "quoted",
+        at: lastPathAt,
+        message: lastPathNote,
+        path: "ops/last.json",
+        name: lastPathName,
+        email: lastPathEmail,
+      }),
+      "ops/last.json",
+    ),
+  ),
+  "null",
+);
 assert.deepEqual(
   parseOpsEvent(
     JSON.stringify({
@@ -19554,6 +19603,26 @@ assert.deepEqual(
     at: lastPathAt,
   },
 );
+assert.deepEqual(
+  parseOpsEvent(
+    JSON.stringify({
+      event: "quoted",
+      id: lastPathOtherId,
+      status: "quoted",
+      at: lastPathAt,
+      message: lastPathNote,
+      path: "ops/last.json",
+      name: lastPathName,
+      email: lastPathEmail,
+    }),
+  ),
+  {
+    event: "quoted",
+    id: lastPathOtherId,
+    status: "quoted",
+    at: lastPathAt,
+  },
+);
 
 const mismatchedLastJson = JSON.stringify({
   event: "received",
@@ -19624,7 +19693,7 @@ const matchingLastParsed = parseOpsEventAtPath(
     status: "quoted",
     at: lastPathAt,
     path: "OPS/LAST.JSON",
-    message: lastPathNote,
+    extra: "drop-me",
   }),
   "ops/last.json",
 );
@@ -19695,6 +19764,7 @@ assert.equal(matchingLastParsedJson.includes(lastPathName), false);
 assert.equal(matchingLastParsedJson.includes('"name"'), false);
 assert.equal(matchingLastParsedJson.includes(lastPathEmail), false);
 assert.equal(matchingLastParsedJson.includes('"email"'), false);
+assert.equal(matchingLastParsedJson.includes('"message"'), false);
 assert.equal(queueJsonHasCustomerText(matchingLastParsedJson), false);
 assert.equal(JSON.stringify(parseOpsEventAtPath(mismatchedLastJson, "ops/last.json")), "null");
 
