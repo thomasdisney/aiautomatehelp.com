@@ -181,7 +181,8 @@ export function parseOpsEventAtPath(raw: string, pathname: unknown): OpsEvent | 
     "replyAt" in row ||
     "text" in row ||
     "role" in row ||
-    "ok" in row
+    "ok" in row ||
+    "error" in row
   ) {
     return null;
   }
