@@ -608,7 +608,8 @@ export function parseEmailIndexAtPath(
     "text" in row ||
     "role" in row ||
     "ok" in row ||
-    "error" in row
+    "error" in row ||
+    "code" in row
   ) {
     return [];
   }
