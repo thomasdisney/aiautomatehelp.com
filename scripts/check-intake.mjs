@@ -14640,6 +14640,7 @@ const workPathText =
 const workPathRole = "customer";
 const workPathOk = true;
 const workPathError = "invalid";
+const workPathCode = "unauthorized";
 const workDeliveredAt = "2026-08-22T12:00:00.000Z";
 const workConfirmedAt = "2026-08-22T13:00:00.000Z";
 const workQuoteText = "Fixed price $800. Pay before I start.";
@@ -14711,6 +14712,7 @@ assert.equal("text" in matchingWorkPayload, false);
 assert.equal("role" in matchingWorkPayload, false);
 assert.equal("ok" in matchingWorkPayload, false);
 assert.equal("error" in matchingWorkPayload, false);
+assert.equal("code" in matchingWorkPayload, false);
 assert.equal("digest" in matchingWorkPayload, false);
 assert.equal("event" in matchingWorkPayload, false);
 assert.equal("at" in matchingWorkPayload, false);
@@ -14748,6 +14750,8 @@ assert.equal(matchingWorkJson.includes(workPathRole), false);
 assert.equal(matchingWorkJson.includes('"ok"'), false);
 assert.equal(matchingWorkJson.includes(workPathError), false);
 assert.equal(matchingWorkJson.includes('"error"'), false);
+assert.equal(matchingWorkJson.includes(workPathCode), false);
+assert.equal(matchingWorkJson.includes('"code"'), false);
 assert.equal(matchingWorkJson.includes(workNoteText), false);
 assert.equal(queueJsonHasCustomerText(matchingWorkJson), false);
 
@@ -16243,6 +16247,64 @@ assert.equal(
   ),
   "[]",
 );
+assert.deepEqual(
+  parseWorkIndexAtPath(
+    JSON.stringify({
+      ids: [workNewerId, workOlderId],
+      code: workPathCode,
+      path: "ops/work.json",
+      name: workPathName,
+      email: workPathEmail,
+      message: workNoteText,
+      company: workPathCompany,
+      website: workPathWebsite,
+      questionAt: workPathQuestionAt,
+      replyAt: workPathReplyAt,
+      text: workPathText,
+      role: workPathRole,
+      ok: workPathOk,
+      error: workPathError,
+    }),
+    "ops/work.json",
+  ),
+  [],
+);
+assert.deepEqual(
+  parseWorkIndexAtPath(
+    JSON.stringify({
+      ids: [workNewerId, workOlderId],
+      code: workPathCode,
+      path: "OPS/WORK.JSON",
+      extra: "drop-me",
+    }),
+    "ops/work.json",
+  ),
+  [],
+);
+assert.equal(
+  JSON.stringify(
+    parseWorkIndexAtPath(
+      JSON.stringify({
+        ids: [workNewerId, workOlderId],
+        code: workPathCode,
+        path: "ops/work.json",
+        name: workPathName,
+        email: workPathEmail,
+        message: workNoteText,
+        company: workPathCompany,
+        website: workPathWebsite,
+        questionAt: workPathQuestionAt,
+        replyAt: workPathReplyAt,
+        text: workPathText,
+        role: workPathRole,
+        ok: workPathOk,
+        error: workPathError,
+      }),
+      "ops/work.json",
+    ),
+  ),
+  "[]",
+);
 assert.deepEqual(parseWorkIndex(JSON.stringify([workNewerId, workOlderId])), [
   workNewerId,
   workOlderId,
@@ -16723,6 +16785,27 @@ assert.deepEqual(
   ),
   [workNewerId, workOlderId],
 );
+assert.deepEqual(
+  parseWorkIndex(
+    JSON.stringify({
+      ids: [workNewerId, workOlderId],
+      code: workPathCode,
+      path: "ops/work.json",
+      name: workPathName,
+      email: workPathEmail,
+      message: workNoteText,
+      company: workPathCompany,
+      website: workPathWebsite,
+      questionAt: workPathQuestionAt,
+      replyAt: workPathReplyAt,
+      text: workPathText,
+      role: workPathRole,
+      ok: workPathOk,
+      error: workPathError,
+    }),
+  ),
+  [workNewerId, workOlderId],
+);
 
 const mismatchedWorkJson = JSON.stringify({
   ids: [workOtherId, workNewerId],
@@ -16829,6 +16912,8 @@ assert.equal(matchingWorkParsedJson.includes('"role"'), false);
 assert.equal(matchingWorkParsedJson.includes('"ok"'), false);
 assert.equal(matchingWorkParsedJson.includes(workPathError), false);
 assert.equal(matchingWorkParsedJson.includes('"error"'), false);
+assert.equal(matchingWorkParsedJson.includes(workPathCode), false);
+assert.equal(matchingWorkParsedJson.includes('"code"'), false);
 assert.equal(queueJsonHasCustomerText(matchingWorkParsedJson), false);
 assert.equal(JSON.stringify(parseWorkIndexAtPath(mismatchedWorkJson, "ops/work.json")), "[]");
 
