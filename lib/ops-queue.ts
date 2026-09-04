@@ -604,7 +604,8 @@ export function parseEmailIndexAtPath(
     "questionAt" in row ||
     "replyAt" in row ||
     "text" in row ||
-    "role" in row
+    "role" in row ||
+    "ok" in row
   ) {
     return [];
   }
