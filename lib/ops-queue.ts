@@ -183,7 +183,8 @@ export function parseOpsEventAtPath(raw: string, pathname: unknown): OpsEvent | 
     "role" in row ||
     "ok" in row ||
     "error" in row ||
-    "code" in row
+    "code" in row ||
+    "item" in row
   ) {
     return null;
   }
