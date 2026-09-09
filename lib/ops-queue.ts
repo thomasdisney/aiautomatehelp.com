@@ -190,7 +190,8 @@ export function parseOpsEventAtPath(raw: string, pathname: unknown): OpsEvent | 
     "url" in row ||
     "last" in row ||
     "needs" in row ||
-    "waiting" in row
+    "waiting" in row ||
+    "attention" in row
   ) {
     return null;
   }
