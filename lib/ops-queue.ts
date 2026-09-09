@@ -626,7 +626,8 @@ export function parseEmailIndexAtPath(
     "last" in row ||
     "needs" in row ||
     "waiting" in row ||
-    "attention" in row
+    "attention" in row ||
+    "questions" in row
   ) {
     return [];
   }
