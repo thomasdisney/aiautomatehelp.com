@@ -632,7 +632,8 @@ export function parseEmailIndexAtPath(
     "attention" in row ||
     "questions" in row ||
     "received" in row ||
-    "quoted" in row
+    "quoted" in row ||
+    "accepted" in row
   ) {
     return [];
   }
