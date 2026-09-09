@@ -263,7 +263,8 @@ export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeR
     "replyAt" in row ||
     "text" in row ||
     "role" in row ||
-    "ok" in row
+    "ok" in row ||
+    "error" in row
   ) {
     return null;
   }
