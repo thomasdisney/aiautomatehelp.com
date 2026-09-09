@@ -196,7 +196,8 @@ export function parseOpsEventAtPath(raw: string, pathname: unknown): OpsEvent | 
     "received" in row ||
     "quoted" in row ||
     "accepted" in row ||
-    "declined" in row
+    "declined" in row ||
+    "withdrawn" in row
   ) {
     return null;
   }
