@@ -267,7 +267,8 @@ export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeR
     "error" in row ||
     "code" in row ||
     "item" in row ||
-    "queue" in row
+    "queue" in row ||
+    "connected" in row
   ) {
     return null;
   }
