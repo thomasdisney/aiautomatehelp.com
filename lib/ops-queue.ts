@@ -618,7 +618,8 @@ export function parseEmailIndexAtPath(
     "item" in row ||
     "queue" in row ||
     "connected" in row ||
-    "url" in row
+    "url" in row ||
+    "last" in row
   ) {
     return [];
   }
