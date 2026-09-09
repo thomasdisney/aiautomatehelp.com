@@ -11787,6 +11787,14 @@ const xrefPathNeeds = [
     at: "2026-09-04T12:00:00.000Z",
   },
 ];
+const xrefPathWaiting = [
+  {
+    id: xrefOtherId,
+    status: "quoted",
+    event: "quoted",
+    at: "2026-09-04T13:00:00.000Z",
+  },
+];
 const xrefPatEmail = "pat@example.com";
 const xrefExpectedPath = `ops/xref/${createHash("sha256").update(xrefPatEmail).digest("hex")}.json`;
 assert.equal(EMAIL_INDEX_MAX_IDS, 50);
@@ -11900,6 +11908,7 @@ assert.equal("connected" in (matchingXrefPayload ?? {}), false);
 assert.equal("url" in (matchingXrefPayload ?? {}), false);
 assert.equal("last" in (matchingXrefPayload ?? {}), false);
 assert.equal("needs" in (matchingXrefPayload ?? {}), false);
+assert.equal("waiting" in (matchingXrefPayload ?? {}), false);
 assert.equal("event" in (matchingXrefPayload ?? {}), false);
 assert.equal("at" in (matchingXrefPayload ?? {}), false);
 assert.equal("receivedAt" in (matchingXrefPayload ?? {}), false);
@@ -11949,6 +11958,8 @@ assert.equal(matchingXrefJson.includes(xrefOtherId), false);
 assert.equal(matchingXrefJson.includes(xrefPathLast.at), false);
 assert.equal(matchingXrefJson.includes('"needs"'), false);
 assert.equal(matchingXrefJson.includes(xrefPathNeeds[0].at), false);
+assert.equal(matchingXrefJson.includes('"waiting"'), false);
+assert.equal(matchingXrefJson.includes(xrefPathWaiting[0].at), false);
 assert.equal(matchingXrefJson.includes(xrefExpectedPath), true);
 assert.equal(queueJsonHasCustomerText(matchingXrefJson), false);
 assert.equal(toEmailIndexPayload([xrefOlderId], "not-an-email"), null);
@@ -14144,6 +14155,84 @@ assert.equal(
   ),
   "[]",
 );
+assert.deepEqual(
+  parseEmailIndexAtPath(
+    JSON.stringify({
+      ids: [xrefNewerId, xrefOlderId],
+      waiting: xrefPathWaiting,
+      digest: xrefDigest,
+      path: xrefExpectedPath,
+      name: xrefPathName,
+      email: xrefPatEmail,
+      message: xrefNoteText,
+      company: xrefPathCompany,
+      website: xrefPathWebsite,
+      questionAt: xrefPathQuestionAt,
+      replyAt: xrefPathReplyAt,
+      text: xrefPathText,
+      role: xrefPathRole,
+      ok: xrefPathOk,
+      error: xrefPathError,
+      code: xrefPathCode,
+      item: xrefPathItem,
+      queue: xrefPathQueue,
+      connected: xrefPathConnected,
+      url: xrefPathUrl,
+      last: xrefPathLast,
+      needs: xrefPathNeeds,
+    }),
+    xrefExpectedPath,
+    xrefPatEmail,
+  ),
+  [],
+);
+assert.deepEqual(
+  parseEmailIndexAtPath(
+    JSON.stringify({
+      ids: [xrefNewerId, xrefOlderId],
+      waiting: xrefPathWaiting,
+      digest: xrefDigest.toUpperCase(),
+      path: `OPS/XREF/${xrefDigest}.JSON`,
+      extra: "drop-me",
+    }),
+    xrefExpectedPath,
+    xrefPatEmail,
+  ),
+  [],
+);
+assert.equal(
+  JSON.stringify(
+    parseEmailIndexAtPath(
+      JSON.stringify({
+        ids: [xrefNewerId, xrefOlderId],
+        waiting: xrefPathWaiting,
+        digest: xrefDigest,
+        path: xrefExpectedPath,
+        name: xrefPathName,
+        email: xrefPatEmail,
+        message: xrefNoteText,
+        company: xrefPathCompany,
+        website: xrefPathWebsite,
+        questionAt: xrefPathQuestionAt,
+        replyAt: xrefPathReplyAt,
+        text: xrefPathText,
+        role: xrefPathRole,
+        ok: xrefPathOk,
+        error: xrefPathError,
+        code: xrefPathCode,
+        item: xrefPathItem,
+        queue: xrefPathQueue,
+        connected: xrefPathConnected,
+        url: xrefPathUrl,
+        last: xrefPathLast,
+        needs: xrefPathNeeds,
+      }),
+      xrefExpectedPath,
+      xrefPatEmail,
+    ),
+  ),
+  "[]",
+);
 assert.deepEqual(parseEmailIndex(JSON.stringify([xrefNewerId, xrefOlderId])), [
   xrefNewerId,
   xrefOlderId,
@@ -14819,6 +14908,35 @@ assert.deepEqual(
   ),
   [xrefNewerId, xrefOlderId],
 );
+assert.deepEqual(
+  parseEmailIndex(
+    JSON.stringify({
+      ids: [xrefNewerId, xrefOlderId],
+      waiting: xrefPathWaiting,
+      digest: xrefDigest,
+      path: xrefExpectedPath,
+      name: xrefPathName,
+      email: xrefPatEmail,
+      message: xrefNoteText,
+      company: xrefPathCompany,
+      website: xrefPathWebsite,
+      questionAt: xrefPathQuestionAt,
+      replyAt: xrefPathReplyAt,
+      text: xrefPathText,
+      role: xrefPathRole,
+      ok: xrefPathOk,
+      error: xrefPathError,
+      code: xrefPathCode,
+      item: xrefPathItem,
+      queue: xrefPathQueue,
+      connected: xrefPathConnected,
+      url: xrefPathUrl,
+      last: xrefPathLast,
+      needs: xrefPathNeeds,
+    }),
+  ),
+  [xrefNewerId, xrefOlderId],
+);
 
 const mismatchedXrefJson = JSON.stringify({
   ids: [xrefOtherId, xrefNewerId],
@@ -14967,6 +15085,8 @@ assert.equal(matchingXrefParsedJson.includes(xrefOtherId), false);
 assert.equal(matchingXrefParsedJson.includes(xrefPathLast.at), false);
 assert.equal(matchingXrefParsedJson.includes('"needs"'), false);
 assert.equal(matchingXrefParsedJson.includes(xrefPathNeeds[0].at), false);
+assert.equal(matchingXrefParsedJson.includes('"waiting"'), false);
+assert.equal(matchingXrefParsedJson.includes(xrefPathWaiting[0].at), false);
 assert.equal(queueJsonHasCustomerText(matchingXrefParsedJson), false);
 assert.equal(JSON.stringify(parseEmailIndexAtPath(mismatchedXrefJson, xrefExpectedPath)), "[]");
 
