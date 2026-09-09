@@ -252,7 +252,14 @@ export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeR
   }
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
   const row = value as Record<string, unknown>;
-  if (!("path" in row) || "event" in row || "digest" in row || "ids" in row || "at" in row) {
+  if (
+    !("path" in row) ||
+    "event" in row ||
+    "digest" in row ||
+    "ids" in row ||
+    "at" in row ||
+    "website" in row
+  ) {
     return null;
   }
   const path = typeof row.path === "string" ? row.path.trim().toLowerCase() : "";
