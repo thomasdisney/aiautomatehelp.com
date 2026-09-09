@@ -727,7 +727,8 @@ export function parseWorkIndexAtPath(raw: string, pathname: unknown): string[] {
     "declined" in row ||
     "withdrawn" in row ||
     "paid" in row ||
-    "delivered" in row
+    "delivered" in row ||
+    "question" in row
   ) {
     return [];
   }
