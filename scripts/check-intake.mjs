@@ -15316,6 +15316,14 @@ const workPathLast = {
   status: "received",
   at: "2026-09-04T11:00:00.000Z",
 };
+const workPathNeeds = [
+  {
+    id: workOtherId,
+    status: "received",
+    event: "received",
+    at: "2026-09-04T12:00:00.000Z",
+  },
+];
 
 assert.deepEqual(parseWorkIndex("not-json"), []);
 assert.deepEqual(parseWorkIndex("[]"), []);
@@ -15386,6 +15394,7 @@ assert.equal("queue" in matchingWorkPayload, false);
 assert.equal("connected" in matchingWorkPayload, false);
 assert.equal("url" in matchingWorkPayload, false);
 assert.equal("last" in matchingWorkPayload, false);
+assert.equal("needs" in matchingWorkPayload, false);
 assert.equal("digest" in matchingWorkPayload, false);
 assert.equal("event" in matchingWorkPayload, false);
 assert.equal("at" in matchingWorkPayload, false);
@@ -15433,6 +15442,8 @@ assert.equal(matchingWorkJson.includes(workPathUrl), false);
 assert.equal(matchingWorkJson.includes('"last"'), false);
 assert.equal(matchingWorkJson.includes(workOtherId), false);
 assert.equal(matchingWorkJson.includes(workPathLast.at), false);
+assert.equal(matchingWorkJson.includes('"needs"'), false);
+assert.equal(matchingWorkJson.includes(workPathNeeds[0].at), false);
 assert.equal(matchingWorkJson.includes(workNoteText), false);
 assert.equal(queueJsonHasCustomerText(matchingWorkJson), false);
 
@@ -17306,6 +17317,76 @@ assert.equal(
   ),
   "[]",
 );
+assert.deepEqual(
+  parseWorkIndexAtPath(
+    JSON.stringify({
+      ids: [workNewerId, workOlderId],
+      needs: workPathNeeds,
+      path: "ops/work.json",
+      name: workPathName,
+      email: workPathEmail,
+      message: workNoteText,
+      company: workPathCompany,
+      website: workPathWebsite,
+      questionAt: workPathQuestionAt,
+      replyAt: workPathReplyAt,
+      text: workPathText,
+      role: workPathRole,
+      ok: workPathOk,
+      error: workPathError,
+      code: workPathCode,
+      item: workPathItem,
+      queue: workPathQueue,
+      connected: workPathConnected,
+      url: workPathUrl,
+      last: workPathLast,
+    }),
+    "ops/work.json",
+  ),
+  [],
+);
+assert.deepEqual(
+  parseWorkIndexAtPath(
+    JSON.stringify({
+      ids: [workNewerId, workOlderId],
+      needs: workPathNeeds,
+      path: "OPS/WORK.JSON",
+      extra: "drop-me",
+    }),
+    "ops/work.json",
+  ),
+  [],
+);
+assert.equal(
+  JSON.stringify(
+    parseWorkIndexAtPath(
+      JSON.stringify({
+        ids: [workNewerId, workOlderId],
+        needs: workPathNeeds,
+        path: "ops/work.json",
+        name: workPathName,
+        email: workPathEmail,
+        message: workNoteText,
+        company: workPathCompany,
+        website: workPathWebsite,
+        questionAt: workPathQuestionAt,
+        replyAt: workPathReplyAt,
+        text: workPathText,
+        role: workPathRole,
+        ok: workPathOk,
+        error: workPathError,
+        code: workPathCode,
+        item: workPathItem,
+        queue: workPathQueue,
+        connected: workPathConnected,
+        url: workPathUrl,
+        last: workPathLast,
+      }),
+      "ops/work.json",
+    ),
+  ),
+  "[]",
+);
 assert.deepEqual(parseWorkIndex(JSON.stringify([workNewerId, workOlderId])), [
   workNewerId,
   workOlderId,
@@ -17927,6 +18008,33 @@ assert.deepEqual(
   ),
   [workNewerId, workOlderId],
 );
+assert.deepEqual(
+  parseWorkIndex(
+    JSON.stringify({
+      ids: [workNewerId, workOlderId],
+      needs: workPathNeeds,
+      path: "ops/work.json",
+      name: workPathName,
+      email: workPathEmail,
+      message: workNoteText,
+      company: workPathCompany,
+      website: workPathWebsite,
+      questionAt: workPathQuestionAt,
+      replyAt: workPathReplyAt,
+      text: workPathText,
+      role: workPathRole,
+      ok: workPathOk,
+      error: workPathError,
+      code: workPathCode,
+      item: workPathItem,
+      queue: workPathQueue,
+      connected: workPathConnected,
+      url: workPathUrl,
+      last: workPathLast,
+    }),
+  ),
+  [workNewerId, workOlderId],
+);
 
 const mismatchedWorkJson = JSON.stringify({
   ids: [workOtherId, workNewerId],
@@ -18043,6 +18151,8 @@ assert.equal(matchingWorkParsedJson.includes(workPathUrl), false);
 assert.equal(matchingWorkParsedJson.includes('"last"'), false);
 assert.equal(matchingWorkParsedJson.includes(workOtherId), false);
 assert.equal(matchingWorkParsedJson.includes(workPathLast.at), false);
+assert.equal(matchingWorkParsedJson.includes('"needs"'), false);
+assert.equal(matchingWorkParsedJson.includes(workPathNeeds[0].at), false);
 assert.equal(queueJsonHasCustomerText(matchingWorkParsedJson), false);
 assert.equal(JSON.stringify(parseWorkIndexAtPath(mismatchedWorkJson, "ops/work.json")), "[]");
 
