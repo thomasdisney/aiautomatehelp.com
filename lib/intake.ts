@@ -261,7 +261,8 @@ export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeR
     "website" in row ||
     "questionAt" in row ||
     "replyAt" in row ||
-    "text" in row
+    "text" in row ||
+    "role" in row
   ) {
     return null;
   }
