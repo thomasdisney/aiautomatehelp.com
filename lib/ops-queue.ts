@@ -703,7 +703,8 @@ export function parseWorkIndexAtPath(raw: string, pathname: unknown): string[] {
     "last" in row ||
     "needs" in row ||
     "waiting" in row ||
-    "attention" in row
+    "attention" in row ||
+    "questions" in row
   ) {
     return [];
   }
