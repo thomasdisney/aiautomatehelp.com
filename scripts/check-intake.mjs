@@ -20242,6 +20242,14 @@ const lastPathLast = {
   status: "received",
   at: lastPathReceivedAt,
 };
+const lastPathNeeds = [
+  {
+    id: lastPathOtherId,
+    status: "received",
+    event: "received",
+    at: lastPathReceivedAt,
+  },
+];
 
 assert.equal(opsLastPathFromPath("ops/last.json"), "ops/last.json");
 assert.equal(opsLastPathFromPath("  OPS/LAST.JSON  "), "ops/last.json");
@@ -20285,6 +20293,7 @@ const matchingLastPayload = toOpsLastPayload({
   connected: lastPathConnected,
   url: lastPathUrl,
   last: lastPathLast,
+  needs: lastPathNeeds,
 });
 assert.deepEqual(matchingLastPayload, {
   event: "quoted",
@@ -20310,6 +20319,7 @@ assert.equal("queue" in (matchingLastPayload ?? {}), false);
 assert.equal("connected" in (matchingLastPayload ?? {}), false);
 assert.equal("url" in (matchingLastPayload ?? {}), false);
 assert.equal("last" in (matchingLastPayload ?? {}), false);
+assert.equal("needs" in (matchingLastPayload ?? {}), false);
 assert.equal("digest" in (matchingLastPayload ?? {}), false);
 assert.equal("ids" in (matchingLastPayload ?? {}), false);
 assert.equal("receivedAt" in (matchingLastPayload ?? {}), false);
@@ -20354,6 +20364,7 @@ assert.equal(matchingLastJson.includes('"connected"'), false);
 assert.equal(matchingLastJson.includes('"url"'), false);
 assert.equal(matchingLastJson.includes(lastPathUrl), false);
 assert.equal(matchingLastJson.includes('"last"'), false);
+assert.equal(matchingLastJson.includes('"needs"'), false);
 assert.equal(matchingLastJson.includes(lastPathOtherId), false);
 assert.equal(matchingLastJson.includes(lastPathReceivedAt), false);
 assert.equal(matchingLastJson.includes(lastPathNote), false);
@@ -22573,6 +22584,86 @@ assert.equal(
   ),
   "null",
 );
+
+assert.equal(
+  parseOpsEventAtPath(
+    JSON.stringify({
+      event: "quoted",
+      id: lastPathId,
+      status: "quoted",
+      at: lastPathAt,
+      needs: lastPathNeeds,
+      path: "ops/last.json",
+      name: lastPathName,
+      email: lastPathEmail,
+      message: lastPathNote,
+      company: lastPathCompany,
+      website: lastPathWebsite,
+      questionAt: lastPathQuestionAt,
+      replyAt: lastPathReplyAt,
+      text: lastPathText,
+      role: lastPathRole,
+      ok: lastPathOk,
+      error: lastPathError,
+      code: lastPathCode,
+      item: lastPathItem,
+      queue: lastPathQueue,
+      connected: lastPathConnected,
+      url: lastPathUrl,
+      last: lastPathLast,
+    }),
+    "ops/last.json",
+  ),
+  null,
+);
+assert.equal(
+  parseOpsEventAtPath(
+    JSON.stringify({
+      event: "quoted",
+      id: lastPathId,
+      status: "quoted",
+      at: lastPathAt,
+      needs: lastPathNeeds,
+      path: "OPS/LAST.JSON",
+      extra: "drop-me",
+    }),
+    "ops/last.json",
+  ),
+  null,
+);
+assert.equal(
+  JSON.stringify(
+    parseOpsEventAtPath(
+      JSON.stringify({
+        event: "quoted",
+        id: lastPathId,
+        status: "quoted",
+        at: lastPathAt,
+        needs: lastPathNeeds,
+        path: "ops/last.json",
+        name: lastPathName,
+        email: lastPathEmail,
+        message: lastPathNote,
+        company: lastPathCompany,
+        website: lastPathWebsite,
+        questionAt: lastPathQuestionAt,
+        replyAt: lastPathReplyAt,
+        text: lastPathText,
+        role: lastPathRole,
+        ok: lastPathOk,
+        error: lastPathError,
+        code: lastPathCode,
+        item: lastPathItem,
+        queue: lastPathQueue,
+        connected: lastPathConnected,
+        url: lastPathUrl,
+        last: lastPathLast,
+      }),
+      "ops/last.json",
+    ),
+  ),
+  "null",
+);
 assert.deepEqual(
   parseOpsEvent(
     JSON.stringify({
@@ -23514,6 +23605,41 @@ assert.deepEqual(
     at: lastPathAt,
   },
 );
+assert.deepEqual(
+  parseOpsEvent(
+    JSON.stringify({
+      event: "quoted",
+      id: lastPathOtherId,
+      status: "quoted",
+      at: lastPathAt,
+      needs: lastPathNeeds,
+      path: "ops/last.json",
+      name: lastPathName,
+      email: lastPathEmail,
+      message: lastPathNote,
+      company: lastPathCompany,
+      website: lastPathWebsite,
+      questionAt: lastPathQuestionAt,
+      replyAt: lastPathReplyAt,
+      text: lastPathText,
+      role: lastPathRole,
+      ok: lastPathOk,
+      error: lastPathError,
+      code: lastPathCode,
+      item: lastPathItem,
+      queue: lastPathQueue,
+      connected: lastPathConnected,
+      url: lastPathUrl,
+      last: lastPathLast,
+    }),
+  ),
+  {
+    event: "quoted",
+    id: lastPathOtherId,
+    status: "quoted",
+    at: lastPathAt,
+  },
+);
 
 const mismatchedLastJson = JSON.stringify({
   event: "received",
@@ -23612,6 +23738,7 @@ assert.equal("queue" in (matchingLastParsed ?? {}), false);
 assert.equal("connected" in (matchingLastParsed ?? {}), false);
 assert.equal("url" in (matchingLastParsed ?? {}), false);
 assert.equal("last" in (matchingLastParsed ?? {}), false);
+assert.equal("needs" in (matchingLastParsed ?? {}), false);
 assert.equal("receivedAt" in (matchingLastParsed ?? {}), false);
 assert.equal("quotedAt" in (matchingLastParsed ?? {}), false);
 assert.equal("dueAt" in (matchingLastParsed ?? {}), false);
@@ -23693,6 +23820,7 @@ assert.equal(matchingLastParsedJson.includes('"connected"'), false);
 assert.equal(matchingLastParsedJson.includes('"url"'), false);
 assert.equal(matchingLastParsedJson.includes(lastPathUrl), false);
 assert.equal(matchingLastParsedJson.includes('"last"'), false);
+assert.equal(matchingLastParsedJson.includes('"needs"'), false);
 assert.equal(matchingLastParsedJson.includes(lastPathOtherId), false);
 assert.equal(matchingLastParsedJson.includes(lastPathReceivedAt), false);
 assert.equal(queueJsonHasCustomerText(matchingLastParsedJson), false);
