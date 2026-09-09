@@ -186,7 +186,8 @@ export function parseOpsEventAtPath(raw: string, pathname: unknown): OpsEvent | 
     "code" in row ||
     "item" in row ||
     "queue" in row ||
-    "connected" in row
+    "connected" in row ||
+    "url" in row
   ) {
     return null;
   }
