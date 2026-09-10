@@ -213,7 +213,8 @@ export function parseOpsEventAtPath(raw: string, pathname: unknown): OpsEvent | 
     "metadata" in row ||
     "payment_intent_data" in row ||
     "line_items" in row ||
-    "integration_identifier" in row
+    "integration_identifier" in row ||
+    "payment_status" in row
   ) {
     return null;
   }
