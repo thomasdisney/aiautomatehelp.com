@@ -766,7 +766,8 @@ export function parseWorkIndexAtPath(raw: string, pathname: unknown): string[] {
     "cancel_url" in row ||
     "metadata" in row ||
     "payment_intent_data" in row ||
-    "line_items" in row
+    "line_items" in row ||
+    "integration_identifier" in row
   ) {
     return [];
   }
