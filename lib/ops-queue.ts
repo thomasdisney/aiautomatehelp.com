@@ -658,7 +658,8 @@ export function parseEmailIndexAtPath(
     "decision" in row ||
     "mode" in row ||
     "customer_email" in row ||
-    "client_reference_id" in row
+    "client_reference_id" in row ||
+    "success_url" in row
   ) {
     return [];
   }
