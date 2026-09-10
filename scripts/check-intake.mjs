@@ -26382,6 +26382,7 @@ const lastPathActionNote =
   "Customer-action note: dump the keys. Do not ntfy their email."
 const lastPathDecision = "accept";
 const lastPathMode = "payment";
+const lastPathCustomerEmail = "checkout-session@example.com";
 
 assert.equal(opsLastPathFromPath("ops/last.json"), "ops/last.json");
 assert.equal(opsLastPathFromPath("  OPS/LAST.JSON  "), "ops/last.json");
@@ -26442,6 +26443,7 @@ const matchingLastPayload = toOpsLastPayload({
   note: lastPathActionNote,
   decision: lastPathDecision,
   mode: lastPathMode,
+  customer_email: lastPathCustomerEmail,
 });
 assert.deepEqual(matchingLastPayload, {
   event: "quoted",
@@ -26484,6 +26486,7 @@ assert.equal("confirmed" in (matchingLastPayload ?? {}), false);
 assert.equal("note" in (matchingLastPayload ?? {}), false);
 assert.equal("decision" in (matchingLastPayload ?? {}), false);
 assert.equal("mode" in (matchingLastPayload ?? {}), false);
+assert.equal("customer_email" in (matchingLastPayload ?? {}), false);
 assert.equal("digest" in (matchingLastPayload ?? {}), false);
 assert.equal("ids" in (matchingLastPayload ?? {}), false);
 assert.equal("receivedAt" in (matchingLastPayload ?? {}), false);
@@ -26548,6 +26551,8 @@ assert.equal(matchingLastJson.includes('"decision":'), false);
 assert.equal(matchingLastJson.includes(lastPathDecision), false);
 assert.equal(matchingLastJson.includes('"mode":'), false);
 assert.equal(matchingLastJson.includes(lastPathMode), false);
+assert.equal(matchingLastJson.includes('"customer_email":'), false);
+assert.equal(matchingLastJson.includes(lastPathCustomerEmail), false);
 assert.equal(matchingLastJson.includes(lastPathOtherId), false);
 assert.equal(matchingLastJson.includes(lastPathReceivedAt), false);
 assert.equal(matchingLastJson.includes(lastPathQuotedAt), false);
@@ -30384,6 +30389,119 @@ assert.equal(
   ),
   "null",
 );
+assert.equal(
+  parseOpsEventAtPath(
+    JSON.stringify({
+      event: "quoted",
+      id: lastPathId,
+      status: "quoted",
+      at: lastPathAt,
+      customer_email: lastPathCustomerEmail,
+      path: "ops/last.json",
+      name: lastPathName,
+      email: lastPathEmail,
+      message: lastPathNote,
+      company: lastPathCompany,
+      website: lastPathWebsite,
+      questionAt: lastPathQuestionAt,
+      replyAt: lastPathReplyAt,
+      text: lastPathText,
+      role: lastPathRole,
+      ok: lastPathOk,
+      error: lastPathError,
+      code: lastPathCode,
+      item: lastPathItem,
+      queue: lastPathQueue,
+      connected: lastPathConnected,
+      url: lastPathUrl,
+      last: lastPathLast,
+      needs: lastPathNeeds,
+      waiting: lastPathWaiting,
+      attention: lastPathAttention,
+      questions: lastPathQuestions,
+      received: lastPathReceived,
+      quoted: lastPathQuoted,
+      accepted: lastPathAccepted,
+      declined: lastPathDeclined,
+      withdrawn: lastPathWithdrawn,
+      paid: lastPathPaid,
+      delivered: lastPathDelivered,
+      question: lastPathQuestion,
+      update: lastPathUpdate,
+      confirmed: lastPathConfirmed,
+      note: lastPathActionNote,
+      decision: lastPathDecision,
+      mode: lastPathMode,
+    }),
+    "ops/last.json",
+  ),
+  null,
+);
+assert.equal(
+  parseOpsEventAtPath(
+    JSON.stringify({
+      event: "quoted",
+      id: lastPathId,
+      status: "quoted",
+      at: lastPathAt,
+      customer_email: lastPathCustomerEmail,
+      path: "OPS/LAST.JSON",
+      extra: "drop-me",
+    }),
+    "ops/last.json",
+  ),
+  null,
+);
+assert.equal(
+  JSON.stringify(
+    parseOpsEventAtPath(
+      JSON.stringify({
+        event: "quoted",
+        id: lastPathId,
+        status: "quoted",
+        at: lastPathAt,
+        customer_email: lastPathCustomerEmail,
+        path: "ops/last.json",
+        name: lastPathName,
+        email: lastPathEmail,
+        message: lastPathNote,
+        company: lastPathCompany,
+        website: lastPathWebsite,
+        questionAt: lastPathQuestionAt,
+        replyAt: lastPathReplyAt,
+        text: lastPathText,
+        role: lastPathRole,
+        ok: lastPathOk,
+        error: lastPathError,
+        code: lastPathCode,
+        item: lastPathItem,
+        queue: lastPathQueue,
+        connected: lastPathConnected,
+        url: lastPathUrl,
+        last: lastPathLast,
+        needs: lastPathNeeds,
+        waiting: lastPathWaiting,
+        attention: lastPathAttention,
+        questions: lastPathQuestions,
+        received: lastPathReceived,
+        quoted: lastPathQuoted,
+        accepted: lastPathAccepted,
+        declined: lastPathDeclined,
+        withdrawn: lastPathWithdrawn,
+        paid: lastPathPaid,
+        delivered: lastPathDelivered,
+        question: lastPathQuestion,
+        update: lastPathUpdate,
+        confirmed: lastPathConfirmed,
+        note: lastPathActionNote,
+        decision: lastPathDecision,
+        mode: lastPathMode,
+      }),
+      "ops/last.json",
+    ),
+  ),
+  "null",
+);
 assert.deepEqual(
   parseOpsEvent(
     JSON.stringify({
@@ -32056,6 +32174,58 @@ assert.deepEqual(
     at: lastPathAt,
   },
 );
+assert.deepEqual(
+  parseOpsEvent(
+    JSON.stringify({
+      event: "quoted",
+      id: lastPathOtherId,
+      status: "quoted",
+      at: lastPathAt,
+      customer_email: lastPathCustomerEmail,
+      path: "ops/last.json",
+      name: lastPathName,
+      email: lastPathEmail,
+      message: lastPathNote,
+      company: lastPathCompany,
+      website: lastPathWebsite,
+      questionAt: lastPathQuestionAt,
+      replyAt: lastPathReplyAt,
+      text: lastPathText,
+      role: lastPathRole,
+      ok: lastPathOk,
+      error: lastPathError,
+      code: lastPathCode,
+      item: lastPathItem,
+      queue: lastPathQueue,
+      connected: lastPathConnected,
+      url: lastPathUrl,
+      last: lastPathLast,
+      needs: lastPathNeeds,
+      waiting: lastPathWaiting,
+      attention: lastPathAttention,
+      questions: lastPathQuestions,
+      received: lastPathReceived,
+      quoted: lastPathQuoted,
+      accepted: lastPathAccepted,
+      declined: lastPathDeclined,
+      withdrawn: lastPathWithdrawn,
+      paid: lastPathPaid,
+      delivered: lastPathDelivered,
+      question: lastPathQuestion,
+      update: lastPathUpdate,
+      confirmed: lastPathConfirmed,
+      note: lastPathActionNote,
+      decision: lastPathDecision,
+      mode: lastPathMode,
+    }),
+  ),
+  {
+    event: "quoted",
+    id: lastPathOtherId,
+    status: "quoted",
+    at: lastPathAt,
+  },
+);
 
 const mismatchedLastJson = JSON.stringify({
   event: "received",
@@ -32171,6 +32341,7 @@ assert.equal("confirmed" in (matchingLastParsed ?? {}), false);
 assert.equal("note" in (matchingLastParsed ?? {}), false);
 assert.equal("decision" in (matchingLastParsed ?? {}), false);
 assert.equal("mode" in (matchingLastParsed ?? {}), false);
+assert.equal("customer_email" in (matchingLastParsed ?? {}), false);
 assert.equal("receivedAt" in (matchingLastParsed ?? {}), false);
 assert.equal("quotedAt" in (matchingLastParsed ?? {}), false);
 assert.equal("dueAt" in (matchingLastParsed ?? {}), false);
@@ -32272,6 +32443,8 @@ assert.equal(matchingLastParsedJson.includes('"decision":'), false);
 assert.equal(matchingLastParsedJson.includes(lastPathDecision), false);
 assert.equal(matchingLastParsedJson.includes('"mode":'), false);
 assert.equal(matchingLastParsedJson.includes(lastPathMode), false);
+assert.equal(matchingLastParsedJson.includes('"customer_email":'), false);
+assert.equal(matchingLastParsedJson.includes(lastPathCustomerEmail), false);
 assert.equal(matchingLastParsedJson.includes(lastPathOtherId), false);
 assert.equal(matchingLastParsedJson.includes(lastPathReceivedAt), false);
 assert.equal(matchingLastParsedJson.includes(lastPathQuotedAt), false);
