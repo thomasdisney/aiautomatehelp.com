@@ -275,7 +275,8 @@ export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeR
     "waiting" in row ||
     "attention" in row ||
     "questions" in row ||
-    "received" in row
+    "received" in row ||
+    "quoted" in row
   ) {
     return null;
   }
