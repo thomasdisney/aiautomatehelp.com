@@ -288,7 +288,8 @@ export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeR
     "note" in row ||
     "decision" in row ||
     "mode" in row ||
-    "customer_email" in row
+    "customer_email" in row ||
+    "client_reference_id" in row
   ) {
     return null;
   }
