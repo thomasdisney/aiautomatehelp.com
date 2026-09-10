@@ -18632,6 +18632,19 @@ const workPathSuccessUrl = "https://checkout-session.example/success";
 const workPathCancelUrl = "https://checkout-session.example/cancel";
 const workPathMetadata = { brief_id: workOtherId };
 const workPathPaymentIntentData = { metadata: { brief_id: workOtherId } };
+const workPathLineItems = [
+  {
+    quantity: 1,
+    price_data: {
+      currency: "usd",
+      unit_amount: 80000,
+      product_data: {
+        name: "Scoped automation",
+        description: `Reference ${workOtherId}`,
+      },
+    },
+  },
+];
 
 assert.deepEqual(parseWorkIndex("not-json"), []);
 assert.deepEqual(parseWorkIndex("[]"), []);
@@ -18725,6 +18738,7 @@ assert.equal("success_url" in matchingWorkPayload, false);
 assert.equal("cancel_url" in matchingWorkPayload, false);
 assert.equal("metadata" in matchingWorkPayload, false);
 assert.equal("payment_intent_data" in matchingWorkPayload, false);
+assert.equal("line_items" in matchingWorkPayload, false);
 assert.equal("digest" in matchingWorkPayload, false);
 assert.equal("event" in matchingWorkPayload, false);
 assert.equal("at" in matchingWorkPayload, false);
@@ -18805,6 +18819,7 @@ assert.equal(matchingWorkJson.includes(workPathCancelUrl), false);
 assert.equal(matchingWorkJson.includes('"metadata"'), false);
 assert.equal(matchingWorkJson.includes('"brief_id"'), false);
 assert.equal(matchingWorkJson.includes('"payment_intent_data"'), false);
+assert.equal(matchingWorkJson.includes('"line_items"'), false);
 assert.equal(matchingWorkJson.includes(workNoteText), false);
 assert.equal(queueJsonHasCustomerText(matchingWorkJson), false);
 
@@ -22742,6 +22757,122 @@ assert.deepEqual(
   parseWorkIndexAtPath(
     JSON.stringify({
       ids: [workNewerId, workOlderId],
+      line_items: workPathLineItems,
+      path: "ops/work.json",
+      name: workPathName,
+      email: workPathEmail,
+      message: workNoteText,
+      company: workPathCompany,
+      website: workPathWebsite,
+      questionAt: workPathQuestionAt,
+      replyAt: workPathReplyAt,
+      text: workPathText,
+      role: workPathRole,
+      ok: workPathOk,
+      error: workPathError,
+      code: workPathCode,
+      item: workPathItem,
+      queue: workPathQueue,
+      connected: workPathConnected,
+      url: workPathUrl,
+      last: workPathLast,
+      needs: workPathNeeds,
+      waiting: workPathWaiting,
+      attention: workPathAttention,
+      questions: workPathQuestions,
+      received: workPathReceived,
+      quoted: workPathQuoted,
+      accepted: workPathAccepted,
+      declined: workPathDeclined,
+      withdrawn: workPathWithdrawn,
+      paid: workPathPaid,
+      delivered: workPathDelivered,
+      question: workPathQuestion,
+      update: workPathUpdate,
+      confirmed: workPathConfirmed,
+      note: workPathActionNote,
+      decision: workPathDecision,
+      mode: workPathMode,
+      customer_email: workPathCustomerEmail,
+      client_reference_id: workPathClientReferenceId,
+      success_url: workPathSuccessUrl,
+      cancel_url: workPathCancelUrl,
+      metadata: workPathMetadata,
+      payment_intent_data: workPathPaymentIntentData,
+    }),
+    "ops/work.json",
+  ),
+  [],
+);
+assert.deepEqual(
+  parseWorkIndexAtPath(
+    JSON.stringify({
+      ids: [workNewerId, workOlderId],
+      line_items: workPathLineItems,
+      path: "OPS/WORK.JSON",
+      extra: "drop-me",
+    }),
+    "ops/work.json",
+  ),
+  [],
+);
+assert.equal(
+  JSON.stringify(
+    parseWorkIndexAtPath(
+      JSON.stringify({
+        ids: [workNewerId, workOlderId],
+        line_items: workPathLineItems,
+        path: "ops/work.json",
+        name: workPathName,
+        email: workPathEmail,
+        message: workNoteText,
+        company: workPathCompany,
+        website: workPathWebsite,
+        questionAt: workPathQuestionAt,
+        replyAt: workPathReplyAt,
+        text: workPathText,
+        role: workPathRole,
+        ok: workPathOk,
+        error: workPathError,
+        code: workPathCode,
+        item: workPathItem,
+        queue: workPathQueue,
+        connected: workPathConnected,
+        url: workPathUrl,
+        last: workPathLast,
+        needs: workPathNeeds,
+        waiting: workPathWaiting,
+        attention: workPathAttention,
+        questions: workPathQuestions,
+        received: workPathReceived,
+        quoted: workPathQuoted,
+        accepted: workPathAccepted,
+        declined: workPathDeclined,
+        withdrawn: workPathWithdrawn,
+        paid: workPathPaid,
+        delivered: workPathDelivered,
+        question: workPathQuestion,
+        update: workPathUpdate,
+        confirmed: workPathConfirmed,
+        note: workPathActionNote,
+        decision: workPathDecision,
+        mode: workPathMode,
+        customer_email: workPathCustomerEmail,
+        client_reference_id: workPathClientReferenceId,
+        success_url: workPathSuccessUrl,
+        cancel_url: workPathCancelUrl,
+        metadata: workPathMetadata,
+        payment_intent_data: workPathPaymentIntentData,
+      }),
+      "ops/work.json",
+    ),
+  ),
+  "[]",
+);
+assert.deepEqual(
+  parseWorkIndexAtPath(
+    JSON.stringify({
+      ids: [workNewerId, workOlderId],
       note: workPathActionNote,
       path: "OPS/WORK.JSON",
       extra: "drop-me",
@@ -24289,6 +24420,56 @@ assert.deepEqual(
   ),
   [workNewerId, workOlderId],
 );
+assert.deepEqual(
+  parseWorkIndex(
+    JSON.stringify({
+      ids: [workNewerId, workOlderId],
+      line_items: workPathLineItems,
+      path: "ops/work.json",
+      name: workPathName,
+      email: workPathEmail,
+      message: workNoteText,
+      company: workPathCompany,
+      website: workPathWebsite,
+      questionAt: workPathQuestionAt,
+      replyAt: workPathReplyAt,
+      text: workPathText,
+      role: workPathRole,
+      ok: workPathOk,
+      error: workPathError,
+      code: workPathCode,
+      item: workPathItem,
+      queue: workPathQueue,
+      connected: workPathConnected,
+      url: workPathUrl,
+      last: workPathLast,
+      needs: workPathNeeds,
+      waiting: workPathWaiting,
+      attention: workPathAttention,
+      questions: workPathQuestions,
+      received: workPathReceived,
+      quoted: workPathQuoted,
+      accepted: workPathAccepted,
+      declined: workPathDeclined,
+      withdrawn: workPathWithdrawn,
+      paid: workPathPaid,
+      delivered: workPathDelivered,
+      question: workPathQuestion,
+      update: workPathUpdate,
+      confirmed: workPathConfirmed,
+      note: workPathActionNote,
+      decision: workPathDecision,
+      mode: workPathMode,
+      customer_email: workPathCustomerEmail,
+      client_reference_id: workPathClientReferenceId,
+      success_url: workPathSuccessUrl,
+      cancel_url: workPathCancelUrl,
+      metadata: workPathMetadata,
+      payment_intent_data: workPathPaymentIntentData,
+    }),
+  ),
+  [workNewerId, workOlderId],
+);
 
 const mismatchedWorkJson = JSON.stringify({
   ids: [workOtherId, workNewerId],
@@ -24438,6 +24619,7 @@ assert.equal(matchingWorkParsedJson.includes(workPathCancelUrl), false);
 assert.equal(matchingWorkParsedJson.includes('"metadata"'), false);
 assert.equal(matchingWorkParsedJson.includes('"brief_id"'), false);
 assert.equal(matchingWorkParsedJson.includes('"payment_intent_data"'), false);
+assert.equal(matchingWorkParsedJson.includes('"line_items"'), false);
 assert.equal(queueJsonHasCustomerText(matchingWorkParsedJson), false);
 assert.equal(JSON.stringify(parseWorkIndexAtPath(mismatchedWorkJson, "ops/work.json")), "[]");
 
