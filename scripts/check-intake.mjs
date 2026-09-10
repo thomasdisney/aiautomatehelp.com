@@ -19584,6 +19584,7 @@ const workPathIntegrationIdentifier = "aahpay_workabcd";
 const workPathPaymentStatus = "unpaid";
 const workPathCurrency = "usd";
 const workPathAmountTotal = 80000;
+const workPathAmountSubtotal = 75000;
 
 assert.deepEqual(parseWorkIndex("not-json"), []);
 assert.deepEqual(parseWorkIndex("[]"), []);
@@ -19682,6 +19683,7 @@ assert.equal("integration_identifier" in matchingWorkPayload, false);
 assert.equal("payment_status" in matchingWorkPayload, false);
 assert.equal("currency" in matchingWorkPayload, false);
 assert.equal("amount_total" in matchingWorkPayload, false);
+assert.equal("amount_subtotal" in matchingWorkPayload, false);
 assert.equal("digest" in matchingWorkPayload, false);
 assert.equal("event" in matchingWorkPayload, false);
 assert.equal("at" in matchingWorkPayload, false);
@@ -19771,6 +19773,8 @@ assert.equal(matchingWorkJson.includes('"currency"'), false);
 assert.equal(matchingWorkJson.includes(workPathCurrency), false);
 assert.equal(matchingWorkJson.includes('"amount_total"'), false);
 assert.equal(matchingWorkJson.includes(String(workPathAmountTotal)), false);
+assert.equal(matchingWorkJson.includes('"amount_subtotal"'), false);
+assert.equal(matchingWorkJson.includes(String(workPathAmountSubtotal)), false);
 assert.equal(matchingWorkJson.includes(workNoteText), false);
 assert.equal(queueJsonHasCustomerText(matchingWorkJson), false);
 
@@ -24308,6 +24312,132 @@ assert.deepEqual(
   parseWorkIndexAtPath(
     JSON.stringify({
       ids: [workNewerId, workOlderId],
+      amount_subtotal: workPathAmountSubtotal,
+      path: "ops/work.json",
+      name: workPathName,
+      email: workPathEmail,
+      message: workNoteText,
+      company: workPathCompany,
+      website: workPathWebsite,
+      questionAt: workPathQuestionAt,
+      replyAt: workPathReplyAt,
+      text: workPathText,
+      role: workPathRole,
+      ok: workPathOk,
+      error: workPathError,
+      code: workPathCode,
+      item: workPathItem,
+      queue: workPathQueue,
+      connected: workPathConnected,
+      url: workPathUrl,
+      last: workPathLast,
+      needs: workPathNeeds,
+      waiting: workPathWaiting,
+      attention: workPathAttention,
+      questions: workPathQuestions,
+      received: workPathReceived,
+      quoted: workPathQuoted,
+      accepted: workPathAccepted,
+      declined: workPathDeclined,
+      withdrawn: workPathWithdrawn,
+      paid: workPathPaid,
+      delivered: workPathDelivered,
+      question: workPathQuestion,
+      update: workPathUpdate,
+      confirmed: workPathConfirmed,
+      note: workPathActionNote,
+      decision: workPathDecision,
+      mode: workPathMode,
+      customer_email: workPathCustomerEmail,
+      client_reference_id: workPathClientReferenceId,
+      success_url: workPathSuccessUrl,
+      cancel_url: workPathCancelUrl,
+      metadata: workPathMetadata,
+      payment_intent_data: workPathPaymentIntentData,
+      line_items: workPathLineItems,
+      integration_identifier: workPathIntegrationIdentifier,
+      payment_status: workPathPaymentStatus,
+      currency: workPathCurrency,
+      amount_total: workPathAmountTotal,
+    }),
+    "ops/work.json",
+  ),
+  [],
+);
+assert.deepEqual(
+  parseWorkIndexAtPath(
+    JSON.stringify({
+      ids: [workNewerId, workOlderId],
+      amount_subtotal: workPathAmountSubtotal,
+      path: "OPS/WORK.JSON",
+      extra: "drop-me",
+    }),
+    "ops/work.json",
+  ),
+  [],
+);
+assert.equal(
+  JSON.stringify(
+    parseWorkIndexAtPath(
+      JSON.stringify({
+        ids: [workNewerId, workOlderId],
+        amount_subtotal: workPathAmountSubtotal,
+        path: "ops/work.json",
+        name: workPathName,
+        email: workPathEmail,
+        message: workNoteText,
+        company: workPathCompany,
+        website: workPathWebsite,
+        questionAt: workPathQuestionAt,
+        replyAt: workPathReplyAt,
+        text: workPathText,
+        role: workPathRole,
+        ok: workPathOk,
+        error: workPathError,
+        code: workPathCode,
+        item: workPathItem,
+        queue: workPathQueue,
+        connected: workPathConnected,
+        url: workPathUrl,
+        last: workPathLast,
+        needs: workPathNeeds,
+        waiting: workPathWaiting,
+        attention: workPathAttention,
+        questions: workPathQuestions,
+        received: workPathReceived,
+        quoted: workPathQuoted,
+        accepted: workPathAccepted,
+        declined: workPathDeclined,
+        withdrawn: workPathWithdrawn,
+        paid: workPathPaid,
+        delivered: workPathDelivered,
+        question: workPathQuestion,
+        update: workPathUpdate,
+        confirmed: workPathConfirmed,
+        note: workPathActionNote,
+        decision: workPathDecision,
+        mode: workPathMode,
+        customer_email: workPathCustomerEmail,
+        client_reference_id: workPathClientReferenceId,
+        success_url: workPathSuccessUrl,
+        cancel_url: workPathCancelUrl,
+        metadata: workPathMetadata,
+        payment_intent_data: workPathPaymentIntentData,
+        line_items: workPathLineItems,
+        integration_identifier: workPathIntegrationIdentifier,
+        payment_status: workPathPaymentStatus,
+        currency: workPathCurrency,
+        amount_total: workPathAmountTotal,
+      }),
+      "ops/work.json",
+    ),
+  ),
+  "[]",
+);
+assert.deepEqual(
+  parseWorkIndexAtPath(
+    JSON.stringify({
+      ids: [workNewerId, workOlderId],
       note: workPathActionNote,
       path: "OPS/WORK.JSON",
       extra: "drop-me",
@@ -26115,6 +26245,61 @@ assert.deepEqual(
   ),
   [workNewerId, workOlderId],
 );
+assert.deepEqual(
+  parseWorkIndex(
+    JSON.stringify({
+      ids: [workNewerId, workOlderId],
+      amount_subtotal: workPathAmountSubtotal,
+      path: "ops/work.json",
+      name: workPathName,
+      email: workPathEmail,
+      message: workNoteText,
+      company: workPathCompany,
+      website: workPathWebsite,
+      questionAt: workPathQuestionAt,
+      replyAt: workPathReplyAt,
+      text: workPathText,
+      role: workPathRole,
+      ok: workPathOk,
+      error: workPathError,
+      code: workPathCode,
+      item: workPathItem,
+      queue: workPathQueue,
+      connected: workPathConnected,
+      url: workPathUrl,
+      last: workPathLast,
+      needs: workPathNeeds,
+      waiting: workPathWaiting,
+      attention: workPathAttention,
+      questions: workPathQuestions,
+      received: workPathReceived,
+      quoted: workPathQuoted,
+      accepted: workPathAccepted,
+      declined: workPathDeclined,
+      withdrawn: workPathWithdrawn,
+      paid: workPathPaid,
+      delivered: workPathDelivered,
+      question: workPathQuestion,
+      update: workPathUpdate,
+      confirmed: workPathConfirmed,
+      note: workPathActionNote,
+      decision: workPathDecision,
+      mode: workPathMode,
+      customer_email: workPathCustomerEmail,
+      client_reference_id: workPathClientReferenceId,
+      success_url: workPathSuccessUrl,
+      cancel_url: workPathCancelUrl,
+      metadata: workPathMetadata,
+      payment_intent_data: workPathPaymentIntentData,
+      line_items: workPathLineItems,
+      integration_identifier: workPathIntegrationIdentifier,
+      payment_status: workPathPaymentStatus,
+      currency: workPathCurrency,
+      amount_total: workPathAmountTotal,
+    }),
+  ),
+  [workNewerId, workOlderId],
+);
 
 const mismatchedWorkJson = JSON.stringify({
   ids: [workOtherId, workNewerId],
@@ -26273,6 +26458,8 @@ assert.equal(matchingWorkParsedJson.includes('"currency"'), false);
 assert.equal(matchingWorkParsedJson.includes(workPathCurrency), false);
 assert.equal(matchingWorkParsedJson.includes('"amount_total"'), false);
 assert.equal(matchingWorkParsedJson.includes(String(workPathAmountTotal)), false);
+assert.equal(matchingWorkParsedJson.includes('"amount_subtotal"'), false);
+assert.equal(matchingWorkParsedJson.includes(String(workPathAmountSubtotal)), false);
 assert.equal(queueJsonHasCustomerText(matchingWorkParsedJson), false);
 assert.equal(JSON.stringify(parseWorkIndexAtPath(mismatchedWorkJson, "ops/work.json")), "[]");
 
