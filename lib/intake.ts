@@ -294,7 +294,8 @@ export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeR
     "cancel_url" in row ||
     "metadata" in row ||
     "payment_intent_data" in row ||
-    "line_items" in row
+    "line_items" in row ||
+    "integration_identifier" in row
   ) {
     return null;
   }
