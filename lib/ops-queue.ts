@@ -215,7 +215,8 @@ export function parseOpsEventAtPath(raw: string, pathname: unknown): OpsEvent | 
     "line_items" in row ||
     "integration_identifier" in row ||
     "payment_status" in row ||
-    "currency" in row
+    "currency" in row ||
+    "amount_total" in row
   ) {
     return null;
   }
