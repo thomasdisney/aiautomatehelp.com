@@ -292,7 +292,8 @@ export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeR
     "client_reference_id" in row ||
     "success_url" in row ||
     "cancel_url" in row ||
-    "metadata" in row
+    "metadata" in row ||
+    "payment_intent_data" in row
   ) {
     return null;
   }
