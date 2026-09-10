@@ -739,7 +739,8 @@ export function parseWorkIndexAtPath(raw: string, pathname: unknown): string[] {
     "question" in row ||
     "update" in row ||
     "confirmed" in row ||
-    "note" in row
+    "note" in row ||
+    "decision" in row
   ) {
     return [];
   }
