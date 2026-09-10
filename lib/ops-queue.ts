@@ -654,7 +654,8 @@ export function parseEmailIndexAtPath(
     "confirmed" in row ||
     "note" in row ||
     "decision" in row ||
-    "mode" in row
+    "mode" in row ||
+    "customer_email" in row
   ) {
     return [];
   }
