@@ -204,7 +204,8 @@ export function parseOpsEventAtPath(raw: string, pathname: unknown): OpsEvent | 
     "update" in row ||
     "confirmed" in row ||
     "note" in row ||
-    "decision" in row
+    "decision" in row ||
+    "mode" in row
   ) {
     return null;
   }
