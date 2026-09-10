@@ -674,7 +674,8 @@ export function parseEmailIndexAtPath(
     "line_items" in row ||
     "integration_identifier" in row ||
     "payment_status" in row ||
-    "currency" in row
+    "currency" in row ||
+    "amount_total" in row
   ) {
     return [];
   }
