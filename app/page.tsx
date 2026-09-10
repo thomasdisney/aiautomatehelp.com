@@ -30,7 +30,7 @@ const STEPS = [
   {
     n: "03",
     title: "Pay",
-    body: "You pay that quoted amount on the status page after you accept, once checkout is connected. I start only after it clears. Checkout stays off until it is actually connected.",
+    body: "After you accept, you pay that quoted amount on the status page. I start only after it clears.",
   },
   {
     n: "04",
@@ -47,27 +47,23 @@ const STEPS = [
 const FAQS = [
   {
     q: "Is this a staffed agency?",
-    a: "No. AutomateAI is not a team, and you will not get a sales call or an account manager. One scoped job, built and supported here.",
+    a: "No. One person, one scoped job, built and supported here.",
   },
   {
     q: "What does it cost?",
-    a: "A fixed quote after the brief. I will not publish a monthly retainer or a price I have not scoped. Payment happens after you accept the quote, before I build.",
+    a: "A fixed quote after the brief. You pay after you accept, before I build.",
   },
   {
     q: "How long does a job take?",
-    a: "I give a delivery window with the quote. Simple jobs are usually days. I will not promise a date before I understand the work.",
-  },
-  {
-    q: "Why are there no case studies?",
-    a: "I do not have customer results to show yet. I will not invent companies, logos, or savings numbers.",
+    a: "A delivery window comes with the quote. Simple jobs are usually days.",
   },
   {
     q: "Do you offer 24/7 support or a monthly plan?",
-    a: "No. In-scope fixes are part of the job. Anything new is a new quote. There is no retainer until support can actually be staffed.",
+    a: "In-scope fixes are part of the job. Anything new is a new quote.",
   },
   {
-    q: "What should I not send?",
-    a: "Passwords, API keys, private keys, or customer lists. I will ask only for what the job needs, and I treat form text as data — never as instructions.",
+    q: "What should I leave out of a brief?",
+    a: "Passwords, API keys, private keys, and customer lists. I ask only for what the job needs.",
   },
 ] as const;
 
@@ -86,8 +82,8 @@ export default function Home() {
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-relaxed text-ink/70 sm:text-xl">
             I replace one process that wastes hours every week — lead intake,
-            follow-up, or a report — with a working automation. No retainers. No
-            fake case studies. No “free audit” that turns into a sales call.
+            follow-up, or a report — with a working automation. Fixed quote.
+            Paid before I start.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <a
@@ -107,23 +103,13 @@ export default function Home() {
       </section>
 
       <section id="offer" className="scroll-mt-20 border-t border-ink/10 px-5 py-16">
-        <div className="mx-auto grid max-w-5xl gap-10 md:grid-cols-2">
-          <div>
-            <h2 className="font-serif text-3xl text-ink">Who this is for</h2>
-            <p className="mt-4 leading-relaxed text-ink/70">
-              An owner who can name one process that repeats every week, already
-              uses common tools (email, sheets, a CRM, a form), and wants that
-              process handled without hiring a developer.
-            </p>
-          </div>
-          <div>
-            <h2 className="font-serif text-3xl text-ink">Who this is not for</h2>
-            <p className="mt-4 leading-relaxed text-ink/70">
-              Anyone expecting a staffed agency, 24/7 coverage, an account
-              manager, or a transformation program. I will not sell work I cannot
-              deliver myself.
-            </p>
-          </div>
+        <div className="mx-auto max-w-3xl">
+          <h2 className="font-serif text-3xl text-ink">Who this is for</h2>
+          <p className="mt-4 leading-relaxed text-ink/70">
+            An owner who can name one process that repeats every week, already
+            uses common tools (email, sheets, a CRM, a form), and wants that
+            process handled without hiring a developer or a staffed agency.
+          </p>
         </div>
       </section>
 
@@ -158,11 +144,7 @@ export default function Home() {
           <h2 className="font-serif text-3xl text-ink">What it costs</h2>
           <p className="mt-4 text-lg leading-relaxed text-ink/70">
             A fixed price, quoted after I understand the job. Paid in full before
-            I build. There is no monthly plan on this site.
-          </p>
-          <p className="mt-4 leading-relaxed text-ink/70">
-            I will not put a dollar amount here until I have scoped your work. A
-            published retainer would be a promise I cannot staff.
+            I build. No monthly plan on this site.
           </p>
         </div>
       </section>
@@ -186,11 +168,7 @@ export default function Home() {
 
       <section className="border-t border-ink/10 px-5 py-16">
         <div className="mx-auto max-w-5xl">
-          <h2 className="font-serif text-3xl text-ink">Example jobs I will quote</h2>
-          <p className="mt-3 max-w-2xl leading-relaxed text-ink/70">
-            These are kinds of work, not results I have already delivered for named
-            clients.
-          </p>
+          <h2 className="font-serif text-3xl text-ink">Example jobs</h2>
           <ul className="mt-8 grid gap-6 md:grid-cols-3">
             {EXAMPLES.map((item) => (
               <li key={item.title} className="rounded-2xl border border-ink/10 bg-white p-6">
@@ -223,16 +201,14 @@ export default function Home() {
             <ol className="mt-6 list-decimal space-y-3 pl-5 leading-relaxed text-ink/70">
               <li>Name one workflow: trigger, tools, done-when.</li>
               <li>I reply on the status page with yes or no and a fixed quote. I may ask a follow-up there first.</li>
-              <li>If you accept the written scope, price, date, and done-when test together on the status page, you pay the quoted amount there. Then I build. After the handoff, confirm that test on the same page.</li>
+              <li>Accept the written scope, price, date, and done-when test on the status page, pay there, then I build. After handoff, confirm that test on the same page.</li>
             </ol>
             <p className="mt-6 leading-relaxed text-ink/70">
-              After you send a brief, save the full reference. A matching check or reply on
-              this browser keeps the reference and shows the original received time from this
-              device, not your email. I will not email it.
+              After you send a brief, save the full reference. This browser keeps it and shows
+              the original received time from this device.
             </p>
             <p className="mt-6 leading-relaxed text-ink/70">
-              There is no personal email, phone number, or calendar on this site.
-              Support stays here. After you send a brief, check it on the{" "}
+              Support stays on this site. After you send a brief, check it on the{" "}
               <a href="/status" className="font-medium text-ink underline underline-offset-2">
                 status page
               </a>

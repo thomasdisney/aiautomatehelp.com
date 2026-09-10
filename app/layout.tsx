@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     template: "%s · AutomateAI",
   },
   description:
-    "One repetitive workflow at a time. Fixed quote after a brief. Paid before I start. No retainers, no fake case studies.",
+    "One repetitive workflow at a time. Fixed quote after a brief. Paid before I start.",
   alternates: {
     canonical: "/",
   },
