@@ -211,7 +211,8 @@ export function parseOpsEventAtPath(raw: string, pathname: unknown): OpsEvent | 
     "success_url" in row ||
     "cancel_url" in row ||
     "metadata" in row ||
-    "payment_intent_data" in row
+    "payment_intent_data" in row ||
+    "line_items" in row
   ) {
     return null;
   }
