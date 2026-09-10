@@ -279,7 +279,8 @@ export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeR
     "quoted" in row ||
     "accepted" in row ||
     "declined" in row ||
-    "withdrawn" in row
+    "withdrawn" in row ||
+    "paid" in row
   ) {
     return null;
   }
