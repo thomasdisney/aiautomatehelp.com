@@ -286,7 +286,8 @@ export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeR
     "update" in row ||
     "confirmed" in row ||
     "note" in row ||
-    "decision" in row
+    "decision" in row ||
+    "mode" in row
   ) {
     return null;
   }
