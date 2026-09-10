@@ -208,7 +208,8 @@ export function parseOpsEventAtPath(raw: string, pathname: unknown): OpsEvent | 
     "mode" in row ||
     "customer_email" in row ||
     "client_reference_id" in row ||
-    "success_url" in row
+    "success_url" in row ||
+    "cancel_url" in row
   ) {
     return null;
   }
