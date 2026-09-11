@@ -223,7 +223,8 @@ export function parseOpsEventAtPath(raw: string, pathname: unknown): OpsEvent | 
     "customer" in row ||
     "customer_details" in row ||
     "discounts" in row ||
-    "expires_at" in row
+    "expires_at" in row ||
+    "invoice" in row
   ) {
     return null;
   }
