@@ -686,7 +686,8 @@ export function parseEmailIndexAtPath(
     "object" in row ||
     "payment_intent" in row ||
     "customer" in row ||
-    "customer_details" in row
+    "customer_details" in row ||
+    "discounts" in row
   ) {
     return [];
   }
