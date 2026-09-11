@@ -27,7 +27,7 @@ const ERRORS: Record<string, string> = {
   required: "Name, email, and a short job description are required.",
   email: "That email does not look usable.",
   invalid: "The form could not be read. Try again.",
-  intake_not_connected: "Briefs are not being accepted right now. Try again later.",
+  intake_not_connected: "The inbox is not accepting briefs right now.",
 };
 
 export function IntakeForm({ connected }: { connected: boolean }) {
@@ -71,10 +71,10 @@ export function IntakeForm({ connected }: { connected: boolean }) {
     return (
       <div className="space-y-4">
         <div className="rounded-2xl border border-ink/10 bg-white p-6 sm:p-8" role="status">
-          <p className="text-sm font-medium uppercase tracking-wide text-ink/50">Brief form</p>
-          <p className="mt-3 text-lg font-semibold text-ink">Checking…</p>
+          <p className="text-sm font-medium uppercase tracking-wide text-ink/50">Inbox status</p>
+          <p className="mt-3 text-lg font-semibold text-ink">Checking the inbox…</p>
           <p className="mt-3 leading-relaxed text-ink/70">
-            Making sure a brief can be stored here.
+            Confirming whether briefs can be stored here.
           </p>
         </div>
         {saved}
@@ -86,11 +86,11 @@ export function IntakeForm({ connected }: { connected: boolean }) {
     return (
       <div className="space-y-4">
         <div className="rounded-2xl border border-ink/10 bg-white p-6 sm:p-8">
-          <p className="text-sm font-medium uppercase tracking-wide text-ink/50">Brief form</p>
+          <p className="text-sm font-medium uppercase tracking-wide text-ink/50">Inbox status</p>
           <p className="mt-3 text-lg font-semibold text-ink">Briefs paused</p>
           <p className="mt-3 leading-relaxed text-ink/70">
-            New briefs are not being accepted right now. If you already sent one, check it on
-            the status page.
+            This form is not accepting briefs right now. When it is live again, send one here and
+            track the reply on the status page.
           </p>
           <p className="mt-4 text-sm text-ink/60">
             Do not send passwords, API keys, or customer lists in a brief.
@@ -157,7 +157,7 @@ export function IntakeForm({ connected }: { connected: boolean }) {
           <p className="text-lg font-semibold text-ink">Brief received</p>
           <p className="mt-3 leading-relaxed text-ink/70">
             A yes or no and, if yes, a fixed quote will show on the status page. Save this full
-            reference. This browser keeps it and shows the original received time from this
+            reference — this browser keeps it and shows the original received time from this
             device.
           </p>
           <p className="mt-4 break-all font-mono text-sm text-ink">{status.id}</p>
