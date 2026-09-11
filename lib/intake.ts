@@ -313,7 +313,8 @@ export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeR
     "name_collection" in row ||
     "optional_items" in row ||
     "origin_context" in row ||
-    "payment_link" in row
+    "payment_link" in row ||
+    "payment_method_collection" in row
   ) {
     return null;
   }
