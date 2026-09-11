@@ -692,7 +692,8 @@ export function parseEmailIndexAtPath(
     "customer_details" in row ||
     "discounts" in row ||
     "expires_at" in row ||
-    "invoice" in row
+    "invoice" in row ||
+    "invoice_creation" in row
   ) {
     return [];
   }
