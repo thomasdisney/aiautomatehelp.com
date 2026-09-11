@@ -233,7 +233,8 @@ export function parseOpsEventAtPath(raw: string, pathname: unknown): OpsEvent | 
     "origin_context" in row ||
     "payment_link" in row ||
     "payment_method_collection" in row ||
-    "payment_method_configuration_details" in row
+    "payment_method_configuration_details" in row ||
+    "payment_method_options" in row
   ) {
     return null;
   }
