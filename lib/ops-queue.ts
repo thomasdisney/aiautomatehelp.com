@@ -696,7 +696,8 @@ export function parseEmailIndexAtPath(
     "expires_at" in row ||
     "invoice" in row ||
     "invoice_creation" in row ||
-    "livemode" in row
+    "livemode" in row ||
+    "locale" in row
   ) {
     return [];
   }
