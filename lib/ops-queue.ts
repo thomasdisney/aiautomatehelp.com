@@ -700,7 +700,8 @@ export function parseEmailIndexAtPath(
     "invoice_creation" in row ||
     "livemode" in row ||
     "locale" in row ||
-    "name_collection" in row
+    "name_collection" in row ||
+    "optional_items" in row
   ) {
     return [];
   }
