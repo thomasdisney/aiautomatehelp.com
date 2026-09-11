@@ -306,7 +306,8 @@ export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeR
     "customer_details" in row ||
     "discounts" in row ||
     "expires_at" in row ||
-    "invoice" in row
+    "invoice" in row ||
+    "invoice_creation" in row
   ) {
     return null;
   }
