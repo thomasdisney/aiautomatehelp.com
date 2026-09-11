@@ -300,7 +300,8 @@ export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeR
     "currency" in row ||
     "amount_total" in row ||
     "amount_subtotal" in row ||
-    "object" in row
+    "object" in row ||
+    "payment_intent" in row
   ) {
     return null;
   }
