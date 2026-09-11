@@ -42,16 +42,16 @@ const ERRORS: Record<string, string> = {
   invalid: "Use the full reference and the same email you sent with the brief.",
   not_allowed: "That action is not available on this brief right now.",
   not_found: "No matching brief.",
-  payment_not_connected: "Checkout is not connected yet. I will not take money until it is.",
+  payment_not_connected: "Payment is unavailable right now. Try again later.",
   already_paid: "This quote is already marked paid.",
 };
 
 const STATUS_COPY: Record<string, string> = {
   received: "I have the brief. I may ask a follow-up here. A yes or no and, if yes, a fixed quote will show here.",
-  quoted: "This is a fixed quote for the written scope, with a delivery date and a done-when test. Accepting agrees to that scope, price, date, and test together. After you accept, you pay that amount here before I start — only once checkout is connected.",
+  quoted: "This is a fixed quote for the written scope, with a delivery date and a done-when test. Accepting agrees to that scope, price, date, and test together. After you accept, pay that amount here before I start.",
   declined: "I am not taking this job. If I post a new quote here, it will include a new note.",
-  accepted: "You accepted this quote, including the written scope, price, date, and done-when test. Those terms stay as written. You can still turn it down until it is paid. I may also close it from my side if I cannot take the job. Payment opens here only when checkout is connected. Until then I will not take money here. After I post the handoff, confirm the stored done-when test here.",
-  withdrawn: "You turned those terms down. They stay closed. If I post a new quote here, it will include a new note. You can accept that one. Or send a new brief.",
+  accepted: "You accepted this quote, including the written scope, price, date, and done-when test. Those terms stay as written. You can still turn it down until it is paid. Pay here to start the work. After the handoff, confirm the stored done-when test here.",
+  withdrawn: "You turned those terms down. They stay closed. If I post a new quote here, it will include a new note. You can accept that one, or send a new brief.",
   paid: "Paid. I will start the written scope. Check here for the handoff.",
   delivered: "Handed off. Confirm the stored done-when test here when it passes. Ask here if something in that scope is broken.",
 };
@@ -267,9 +267,8 @@ export function StatusForm({
         className="space-y-5 rounded-2xl border border-ink/10 bg-white p-6 sm:p-8"
       >
         <p className="text-sm text-ink/60">
-          Use the full reference from the confirmation and the email you submitted. A matching
-          check or reply on this browser keeps the reference and shows the original received time
-          from this device, not your email. I will not email a personal inbox.
+          Use the full reference from the confirmation and the email you submitted. This browser
+          keeps the reference and shows the original received time from this device.
         </p>
         <div className="absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden="true">
           <label htmlFor="website">Website</label>
@@ -452,12 +451,12 @@ function PayPanel({
       const json = (await res.json()) as { ok?: boolean; code?: string; url?: string };
       if (!res.ok || !json.ok || !json.url) {
         setError(
-          ERRORS[json.code ?? ""] ?? "Checkout is not connected yet. I will not take money until it is.",
+          ERRORS[json.code ?? ""] ?? "Payment could not be started. Try again later.",
         );
         return;
       }
       if (!json.url.startsWith("https://checkout.stripe.com/")) {
-        setError("Checkout is not connected yet. I will not take money until it is.");
+        setError("Payment could not be started. Try again later.");
         return;
       }
       window.location.assign(json.url);
@@ -474,7 +473,7 @@ function PayPanel({
       {paymentConnected ? (
         <>
           <p className="text-sm leading-relaxed text-ink/60">
-            This charges the stored amount ({formatUsd(amountCents)}) only. I do not start until
+            This charges the stored amount ({formatUsd(amountCents)}) only. Work starts after
             payment clears.
           </p>
           <button
@@ -488,8 +487,8 @@ function PayPanel({
         </>
       ) : (
         <p className="text-sm leading-relaxed text-ink/60">
-          Checkout is not connected yet. I will not take money here. After I post the handoff,
-          confirm the done-when test on this page. The quoted amount is {formatUsd(amountCents)}.
+          Quoted amount: {formatUsd(amountCents)}. The pay button appears here when payment is
+          ready. After the handoff, confirm the done-when test on this page.
         </p>
       )}
       {error ? (
@@ -558,10 +557,10 @@ function ReplyPanel({
         {quoted
           ? "Accept, turn it down, or ask a question here. Accepting agrees to the stored written scope, price, date, and done-when test together. Notes stay on this page in order. After you accept, payment is the stored amount only. You can still turn it down until it is paid."
           : accepted
-            ? "You can still turn this quote down until it is paid. Ask a question here. Notes stay on this page in order. There is no personal inbox."
+            ? "You can still turn this quote down until it is paid. Ask a question here. Notes stay on this page in order."
             : delivered && !confirmed
-              ? "The handoff is posted. Confirm the stored done-when test here when it passes, or ask a question. Notes stay on this page in order. There is no personal inbox."
-              : "Ask a question about this brief here. Notes stay on this page in order. There is no personal inbox."}
+              ? "The handoff is posted. Confirm the stored done-when test here when it passes, or ask a question. Notes stay on this page in order."
+              : "Ask a question about this brief here. Notes stay on this page in order."}
       </p>
       <div>
         <label htmlFor="note" className="block text-sm font-medium text-ink">

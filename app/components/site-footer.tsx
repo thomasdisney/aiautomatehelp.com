@@ -7,7 +7,7 @@ export function SiteFooter() {
         <div>
           <p className="text-lg font-semibold">AutomateAI</p>
           <p className="mt-1 text-sm text-paper/70">
-            Support is on this site. There is no personal inbox, phone, or booking link.
+            Support is on this site — start a brief or check status here.
           </p>
         </div>
         <nav className="flex flex-wrap gap-5 text-sm text-paper/70" aria-label="Legal">

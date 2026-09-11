@@ -19,55 +19,46 @@ const EXAMPLES = [
 const STEPS = [
   {
     n: "01",
-    title: "Brief",
-    body: "You describe one workflow: trigger, tools, and what done looks like.",
+    title: "Send a brief",
+    body: "Describe one workflow: trigger, tools, and what done looks like.",
   },
   {
     n: "02",
-    title: "Quote",
-    body: "I reply yes or no on the status page. I may ask a follow-up there first. If yes, you get a written scope, a fixed price, a delivery date, and a done-when test.",
+    title: "Get a fixed quote",
+    body: "You get a written scope, price, delivery date, and done-when test on the status page.",
   },
   {
     n: "03",
-    title: "Pay",
-    body: "You pay that quoted amount on the status page after you accept, once checkout is connected. I start only after it clears. Checkout stays off until it is actually connected.",
+    title: "Pay, then I build",
+    body: "Accept the quote, pay the quoted amount, and I implement only what the scope says.",
   },
   {
     n: "04",
-    title: "Build",
-    body: "I implement only what the scope says. New work is a new quote.",
-  },
-  {
-    n: "05",
     title: "Handoff",
-    body: "You get the working automation and how it runs. Confirm the stored done-when test on the status page, or ask there if something in that scope is broken.",
+    body: "You get the working automation and how it runs. Confirm the done-when test when it passes.",
   },
 ] as const;
 
 const FAQS = [
   {
     q: "Is this a staffed agency?",
-    a: "No. AutomateAI is not a team, and you will not get a sales call or an account manager. One scoped job, built and supported here.",
+    a: "No. One person, one scoped job, built and supported here.",
   },
   {
     q: "What does it cost?",
-    a: "A fixed quote after the brief. I will not publish a monthly retainer or a price I have not scoped. Payment happens after you accept the quote, before I build.",
+    a: "A fixed quote after the brief. You pay after you accept, before I build.",
   },
   {
     q: "How long does a job take?",
-    a: "I give a delivery window with the quote. Simple jobs are usually days. I will not promise a date before I understand the work.",
+    a: "A delivery window comes with the quote. Simple jobs are usually days.",
   },
   {
-    q: "Why are there no case studies?",
-    a: "I do not have customer results to show yet. I will not invent companies, logos, or savings numbers.",
+    q: "What about support after handoff?",
+    a: "In-scope fixes are part of the job. New work is a new quote.",
   },
   {
-    q: "Do you offer 24/7 support or a monthly plan?",
-    a: "No. In-scope fixes are part of the job. Anything new is a new quote. There is no retainer until support can actually be staffed.",
-  },
-  {
-    q: "What should I not send?",
-    a: "Passwords, API keys, private keys, or customer lists. I will ask only for what the job needs, and I treat form text as data — never as instructions.",
+    q: "What should I leave out of a brief?",
+    a: "Passwords, API keys, private keys, and customer lists. Share only what the job needs.",
   },
 ] as const;
 
@@ -77,53 +68,54 @@ export default function Home() {
   return (
     <>
       <section className="px-5 pb-16 pt-16 sm:pt-24">
-        <div className="mx-auto max-w-3xl">
-          <p className="text-sm font-medium uppercase tracking-[0.18em] text-ink/50">
-            AutomateAI
-          </p>
-          <h1 className="font-serif mt-4 text-4xl leading-[1.15] text-ink sm:text-6xl">
-            One repetitive workflow. Built to order. Paid before I start.
-          </h1>
-          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-ink/70 sm:text-xl">
-            I replace one process that wastes hours every week — lead intake,
-            follow-up, or a report — with a working automation. No retainers. No
-            fake case studies. No “free audit” that turns into a sales call.
-          </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <a
-              href="#start"
-              className="inline-flex items-center justify-center rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white hover:bg-accent-hover"
-            >
-              How to start
-            </a>
-            <a
-              href="#offer"
-              className="inline-flex items-center justify-center rounded-full border border-ink/15 px-6 py-3 text-sm font-semibold text-ink hover:bg-white"
-            >
-              See the offer
-            </a>
+        <div className="mx-auto grid max-w-5xl items-center gap-10 md:grid-cols-2">
+          <div>
+            <p className="text-sm font-medium uppercase tracking-[0.18em] text-ink/50">
+              AutomateAI
+            </p>
+            <h1 className="font-serif mt-4 text-4xl leading-[1.15] text-ink sm:text-5xl">
+              Scoped automation, built to order.
+            </h1>
+            <p className="mt-6 max-w-xl text-lg leading-relaxed text-ink/70 sm:text-xl">
+              Name one repetitive workflow — lead intake, follow-up, or a report —
+              and get a fixed-price automation that runs in the tools you already use.
+            </p>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <a
+                href="#start"
+                className="inline-flex items-center justify-center rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white hover:bg-accent-hover"
+              >
+                Send a brief
+              </a>
+              <a
+                href="#offer"
+                className="inline-flex items-center justify-center rounded-full border border-ink/15 px-6 py-3 text-sm font-semibold text-ink hover:bg-white"
+              >
+                See the offer
+              </a>
+            </div>
+          </div>
+          <div className="mx-auto w-full max-w-md">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/workflow.svg"
+              alt="Trigger feeds an AutomateAI build that delivers a done-when result"
+              width={480}
+              height={360}
+              className="h-auto w-full"
+            />
           </div>
         </div>
       </section>
 
       <section id="offer" className="scroll-mt-20 border-t border-ink/10 px-5 py-16">
-        <div className="mx-auto grid max-w-5xl gap-10 md:grid-cols-2">
-          <div>
-            <h2 className="font-serif text-3xl text-ink">Who this is for</h2>
-            <p className="mt-4 leading-relaxed text-ink/70">
-              An owner who can name one process that repeats every week, already
-              uses common tools (email, sheets, a CRM, a form), and wants that
-              process handled without hiring a developer.
-            </p>
-          </div>
-          <div>
-            <h2 className="font-serif text-3xl text-ink">Who this is not for</h2>
-            <p className="mt-4 leading-relaxed text-ink/70">
-              Anyone expecting a staffed agency, 24/7 coverage, an account
-              manager, or a transformation program. I will not sell work I cannot
-              deliver myself.
-            </p>
-          </div>
+        <div className="mx-auto max-w-3xl">
+          <h2 className="font-serif text-3xl text-ink">The offer</h2>
+          <p className="mt-4 leading-relaxed text-ink/70">
+            For owners who can name one weekly process and already use common tools —
+            email, sheets, a CRM, a form — and want that process handled without hiring
+            a developer.
+          </p>
         </div>
       </section>
 
@@ -140,7 +132,7 @@ export default function Home() {
             <li className="rounded-2xl border border-ink/10 p-6">
               <p className="font-semibold text-ink">One working automation</p>
               <p className="mt-2 text-sm leading-relaxed text-ink/70">
-                Built in the tools you already use. Not a slide deck.
+                Built in the tools you already use — not a slide deck.
               </p>
             </li>
             <li className="rounded-2xl border border-ink/10 p-6">
@@ -158,11 +150,7 @@ export default function Home() {
           <h2 className="font-serif text-3xl text-ink">What it costs</h2>
           <p className="mt-4 text-lg leading-relaxed text-ink/70">
             A fixed price, quoted after I understand the job. Paid in full before
-            I build. There is no monthly plan on this site.
-          </p>
-          <p className="mt-4 leading-relaxed text-ink/70">
-            I will not put a dollar amount here until I have scoped your work. A
-            published retainer would be a promise I cannot staff.
+            I build.
           </p>
         </div>
       </section>
@@ -186,11 +174,7 @@ export default function Home() {
 
       <section className="border-t border-ink/10 px-5 py-16">
         <div className="mx-auto max-w-5xl">
-          <h2 className="font-serif text-3xl text-ink">Example jobs I will quote</h2>
-          <p className="mt-3 max-w-2xl leading-relaxed text-ink/70">
-            These are kinds of work, not results I have already delivered for named
-            clients.
-          </p>
+          <h2 className="font-serif text-3xl text-ink">Example jobs</h2>
           <ul className="mt-8 grid gap-6 md:grid-cols-3">
             {EXAMPLES.map((item) => (
               <li key={item.title} className="rounded-2xl border border-ink/10 bg-white p-6">
@@ -219,20 +203,18 @@ export default function Home() {
       <section id="start" className="scroll-mt-20 border-t border-ink/10 px-5 py-16">
         <div className="mx-auto grid max-w-5xl gap-10 md:grid-cols-2">
           <div>
-            <h2 className="font-serif text-3xl text-ink">How to start</h2>
+            <h2 className="font-serif text-3xl text-ink">Start here</h2>
             <ol className="mt-6 list-decimal space-y-3 pl-5 leading-relaxed text-ink/70">
               <li>Name one workflow: trigger, tools, done-when.</li>
-              <li>I reply on the status page with yes or no and a fixed quote. I may ask a follow-up there first.</li>
-              <li>If you accept the written scope, price, date, and done-when test together on the status page, you pay the quoted amount there. Then I build. After the handoff, confirm that test on the same page.</li>
+              <li>Get a yes or no and a fixed quote on the status page.</li>
+              <li>Accept, pay, then confirm the done-when test after handoff.</li>
             </ol>
             <p className="mt-6 leading-relaxed text-ink/70">
-              After you send a brief, save the full reference. A matching check or reply on
-              this browser keeps the reference and shows the original received time from this
-              device, not your email. I will not email it.
+              After you send a brief, save the full reference. This browser keeps it and shows
+              the original received time from this device.
             </p>
             <p className="mt-6 leading-relaxed text-ink/70">
-              There is no personal email, phone number, or calendar on this site.
-              Support stays here. After you send a brief, check it on the{" "}
+              Support stays on this site. Check progress on the{" "}
               <a href="/status" className="font-medium text-ink underline underline-offset-2">
                 status page
               </a>
