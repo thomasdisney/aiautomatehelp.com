@@ -219,7 +219,8 @@ export function parseOpsEventAtPath(raw: string, pathname: unknown): OpsEvent | 
     "amount_total" in row ||
     "amount_subtotal" in row ||
     "object" in row ||
-    "payment_intent" in row
+    "payment_intent" in row ||
+    "customer" in row
   ) {
     return null;
   }
