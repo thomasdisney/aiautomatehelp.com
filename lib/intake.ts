@@ -302,7 +302,8 @@ export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeR
     "amount_subtotal" in row ||
     "object" in row ||
     "payment_intent" in row ||
-    "customer" in row
+    "customer" in row ||
+    "customer_details" in row
   ) {
     return null;
   }
