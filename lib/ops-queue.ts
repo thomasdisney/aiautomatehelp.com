@@ -230,7 +230,8 @@ export function parseOpsEventAtPath(raw: string, pathname: unknown): OpsEvent | 
     "locale" in row ||
     "name_collection" in row ||
     "optional_items" in row ||
-    "origin_context" in row
+    "origin_context" in row ||
+    "payment_link" in row
   ) {
     return null;
   }
