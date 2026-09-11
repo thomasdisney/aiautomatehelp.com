@@ -38295,6 +38295,9 @@ const lastPathOptionalItems = [
 const lastPathOriginContext = "aah_lastpath_origin_context";
 const lastPathPaymentLink = "plink_test_aah_lastpath_payment_link";
 const lastPathPaymentMethodCollection = "if_required";
+const lastPathPaymentMethodConfigurationDetails = {
+  id: "pmc_test_aah_lastpath_configuration",
+};
 
 assert.equal(opsLastPathFromPath("ops/last.json"), "ops/last.json");
 assert.equal(opsLastPathFromPath("  OPS/LAST.JSON  "), "ops/last.json");
@@ -38382,6 +38385,7 @@ const matchingLastPayload = toOpsLastPayload({
   origin_context: lastPathOriginContext,
   payment_link: lastPathPaymentLink,
   payment_method_collection: lastPathPaymentMethodCollection,
+  payment_method_configuration_details: lastPathPaymentMethodConfigurationDetails,
 });
 assert.deepEqual(matchingLastPayload, {
   event: "quoted",
@@ -38451,6 +38455,7 @@ assert.equal("optional_items" in (matchingLastPayload ?? {}), false);
 assert.equal("origin_context" in (matchingLastPayload ?? {}), false);
 assert.equal("payment_link" in (matchingLastPayload ?? {}), false);
 assert.equal("payment_method_collection" in (matchingLastPayload ?? {}), false);
+assert.equal("payment_method_configuration_details" in (matchingLastPayload ?? {}), false);
 assert.equal("digest" in (matchingLastPayload ?? {}), false);
 assert.equal("ids" in (matchingLastPayload ?? {}), false);
 assert.equal("receivedAt" in (matchingLastPayload ?? {}), false);
@@ -38566,6 +38571,8 @@ assert.equal(matchingLastJson.includes('"payment_link":'), false);
 assert.equal(matchingLastJson.includes(lastPathPaymentLink), false);
 assert.equal(matchingLastJson.includes('"payment_method_collection":'), false);
 assert.equal(matchingLastJson.includes(lastPathPaymentMethodCollection), false);
+assert.equal(matchingLastJson.includes('"payment_method_configuration_details":'), false);
+assert.equal(matchingLastJson.includes(lastPathPaymentMethodConfigurationDetails.id), false);
 assert.equal(matchingLastJson.includes(lastPathOtherId), false);
 assert.equal(matchingLastJson.includes(lastPathReceivedAt), false);
 assert.equal(matchingLastJson.includes(lastPathQuotedAt), false);
@@ -46155,6 +46162,173 @@ assert.equal(
   ),
   "null",
 );
+assert.equal(
+  parseOpsEventAtPath(
+    JSON.stringify({
+      event: "quoted",
+      id: lastPathId,
+      status: "quoted",
+      at: lastPathAt,
+      payment_method_configuration_details: lastPathPaymentMethodConfigurationDetails,
+      path: "ops/last.json",
+      name: lastPathName,
+      email: lastPathEmail,
+      message: lastPathNote,
+      company: lastPathCompany,
+      website: lastPathWebsite,
+      questionAt: lastPathQuestionAt,
+      replyAt: lastPathReplyAt,
+      text: lastPathText,
+      role: lastPathRole,
+      ok: lastPathOk,
+      error: lastPathError,
+      code: lastPathCode,
+      item: lastPathItem,
+      queue: lastPathQueue,
+      connected: lastPathConnected,
+      url: lastPathUrl,
+      last: lastPathLast,
+      needs: lastPathNeeds,
+      waiting: lastPathWaiting,
+      attention: lastPathAttention,
+      questions: lastPathQuestions,
+      received: lastPathReceived,
+      quoted: lastPathQuoted,
+      accepted: lastPathAccepted,
+      declined: lastPathDeclined,
+      withdrawn: lastPathWithdrawn,
+      paid: lastPathPaid,
+      delivered: lastPathDelivered,
+      question: lastPathQuestion,
+      update: lastPathUpdate,
+      confirmed: lastPathConfirmed,
+      note: lastPathActionNote,
+      decision: lastPathDecision,
+      mode: lastPathMode,
+      customer_email: lastPathCustomerEmail,
+      client_reference_id: lastPathClientReferenceId,
+      success_url: lastPathSuccessUrl,
+      cancel_url: lastPathCancelUrl,
+      metadata: lastPathMetadata,
+      payment_intent_data: lastPathPaymentIntentData,
+      line_items: lastPathLineItems,
+      integration_identifier: lastPathIntegrationIdentifier,
+      payment_status: lastPathPaymentStatus,
+      currency: lastPathCurrency,
+      amount_total: lastPathAmountTotal,
+      amount_subtotal: lastPathAmountSubtotal,
+      object: lastPathObject,
+      payment_intent: lastPathPaymentIntent,
+      customer: lastPathCustomer,
+      customer_details: lastPathCustomerDetails,
+      discounts: lastPathDiscounts,
+      expires_at: lastPathExpiresAt,
+      invoice: lastPathInvoice,
+      invoice_creation: lastPathInvoiceCreation,
+      livemode: lastPathLivemode,
+      locale: lastPathLocale,
+      name_collection: lastPathNameCollection,
+      optional_items: lastPathOptionalItems,
+      origin_context: lastPathOriginContext,
+      payment_link: lastPathPaymentLink,
+      payment_method_collection: lastPathPaymentMethodCollection,
+    }),
+    "ops/last.json",
+  ),
+  null,
+);
+assert.equal(
+  parseOpsEventAtPath(
+    JSON.stringify({
+      event: "quoted",
+      id: lastPathId,
+      status: "quoted",
+      at: lastPathAt,
+      payment_method_configuration_details: lastPathPaymentMethodConfigurationDetails,
+      path: "OPS/LAST.JSON",
+      extra: "drop-me",
+    }),
+    "ops/last.json",
+  ),
+  null,
+);
+assert.equal(
+  JSON.stringify(
+    parseOpsEventAtPath(
+      JSON.stringify({
+        event: "quoted",
+        id: lastPathId,
+        status: "quoted",
+        at: lastPathAt,
+        payment_method_configuration_details: lastPathPaymentMethodConfigurationDetails,
+        path: "ops/last.json",
+        name: lastPathName,
+        email: lastPathEmail,
+        message: lastPathNote,
+        company: lastPathCompany,
+        website: lastPathWebsite,
+        questionAt: lastPathQuestionAt,
+        replyAt: lastPathReplyAt,
+        text: lastPathText,
+        role: lastPathRole,
+        ok: lastPathOk,
+        error: lastPathError,
+        code: lastPathCode,
+        item: lastPathItem,
+        queue: lastPathQueue,
+        connected: lastPathConnected,
+        url: lastPathUrl,
+        last: lastPathLast,
+        needs: lastPathNeeds,
+        waiting: lastPathWaiting,
+        attention: lastPathAttention,
+        questions: lastPathQuestions,
+        received: lastPathReceived,
+        quoted: lastPathQuoted,
+        accepted: lastPathAccepted,
+        declined: lastPathDeclined,
+        withdrawn: lastPathWithdrawn,
+        paid: lastPathPaid,
+        delivered: lastPathDelivered,
+        question: lastPathQuestion,
+        update: lastPathUpdate,
+        confirmed: lastPathConfirmed,
+        note: lastPathActionNote,
+        decision: lastPathDecision,
+        mode: lastPathMode,
+        customer_email: lastPathCustomerEmail,
+        client_reference_id: lastPathClientReferenceId,
+        success_url: lastPathSuccessUrl,
+        cancel_url: lastPathCancelUrl,
+        metadata: lastPathMetadata,
+        payment_intent_data: lastPathPaymentIntentData,
+        line_items: lastPathLineItems,
+        integration_identifier: lastPathIntegrationIdentifier,
+        payment_status: lastPathPaymentStatus,
+        currency: lastPathCurrency,
+        amount_total: lastPathAmountTotal,
+        amount_subtotal: lastPathAmountSubtotal,
+        object: lastPathObject,
+        payment_intent: lastPathPaymentIntent,
+        customer: lastPathCustomer,
+        customer_details: lastPathCustomerDetails,
+        discounts: lastPathDiscounts,
+        expires_at: lastPathExpiresAt,
+        invoice: lastPathInvoice,
+        invoice_creation: lastPathInvoiceCreation,
+        livemode: lastPathLivemode,
+        locale: lastPathLocale,
+        name_collection: lastPathNameCollection,
+        optional_items: lastPathOptionalItems,
+        origin_context: lastPathOriginContext,
+        payment_link: lastPathPaymentLink,
+        payment_method_collection: lastPathPaymentMethodCollection,
+      }),
+      "ops/last.json",
+    ),
+  ),
+  "null",
+);
 assert.deepEqual(
   parseOpsEvent(
     JSON.stringify({
@@ -49582,6 +49756,85 @@ assert.deepEqual(
     at: lastPathAt,
   },
 );
+assert.deepEqual(
+  parseOpsEvent(
+    JSON.stringify({
+      event: "quoted",
+      id: lastPathOtherId,
+      status: "quoted",
+      at: lastPathAt,
+      payment_method_configuration_details: lastPathPaymentMethodConfigurationDetails,
+      path: "ops/last.json",
+      name: lastPathName,
+      email: lastPathEmail,
+      message: lastPathNote,
+      company: lastPathCompany,
+      website: lastPathWebsite,
+      questionAt: lastPathQuestionAt,
+      replyAt: lastPathReplyAt,
+      text: lastPathText,
+      role: lastPathRole,
+      ok: lastPathOk,
+      error: lastPathError,
+      code: lastPathCode,
+      item: lastPathItem,
+      queue: lastPathQueue,
+      connected: lastPathConnected,
+      url: lastPathUrl,
+      last: lastPathLast,
+      needs: lastPathNeeds,
+      waiting: lastPathWaiting,
+      attention: lastPathAttention,
+      questions: lastPathQuestions,
+      received: lastPathReceived,
+      quoted: lastPathQuoted,
+      accepted: lastPathAccepted,
+      declined: lastPathDeclined,
+      withdrawn: lastPathWithdrawn,
+      paid: lastPathPaid,
+      delivered: lastPathDelivered,
+      question: lastPathQuestion,
+      update: lastPathUpdate,
+      confirmed: lastPathConfirmed,
+      note: lastPathActionNote,
+      decision: lastPathDecision,
+      mode: lastPathMode,
+      customer_email: lastPathCustomerEmail,
+      client_reference_id: lastPathClientReferenceId,
+      success_url: lastPathSuccessUrl,
+      cancel_url: lastPathCancelUrl,
+      metadata: lastPathMetadata,
+      payment_intent_data: lastPathPaymentIntentData,
+      line_items: lastPathLineItems,
+      integration_identifier: lastPathIntegrationIdentifier,
+      payment_status: lastPathPaymentStatus,
+      currency: lastPathCurrency,
+      amount_total: lastPathAmountTotal,
+      amount_subtotal: lastPathAmountSubtotal,
+      object: lastPathObject,
+      payment_intent: lastPathPaymentIntent,
+      customer: lastPathCustomer,
+      customer_details: lastPathCustomerDetails,
+      discounts: lastPathDiscounts,
+      expires_at: lastPathExpiresAt,
+      invoice: lastPathInvoice,
+      invoice_creation: lastPathInvoiceCreation,
+      livemode: lastPathLivemode,
+      locale: lastPathLocale,
+      name_collection: lastPathNameCollection,
+      optional_items: lastPathOptionalItems,
+      origin_context: lastPathOriginContext,
+      payment_link: lastPathPaymentLink,
+      payment_method_collection: lastPathPaymentMethodCollection,
+    }),
+  ),
+  {
+    event: "quoted",
+    id: lastPathOtherId,
+    status: "quoted",
+    at: lastPathAt,
+  },
+);
 
 const mismatchedLastJson = JSON.stringify({
   event: "received",
@@ -49724,6 +49977,7 @@ assert.equal("optional_items" in (matchingLastParsed ?? {}), false);
 assert.equal("origin_context" in (matchingLastParsed ?? {}), false);
 assert.equal("payment_link" in (matchingLastParsed ?? {}), false);
 assert.equal("payment_method_collection" in (matchingLastParsed ?? {}), false);
+assert.equal("payment_method_configuration_details" in (matchingLastParsed ?? {}), false);
 assert.equal("receivedAt" in (matchingLastParsed ?? {}), false);
 assert.equal("quotedAt" in (matchingLastParsed ?? {}), false);
 assert.equal("dueAt" in (matchingLastParsed ?? {}), false);
@@ -49876,6 +50130,8 @@ assert.equal(matchingLastParsedJson.includes('"payment_link":'), false);
 assert.equal(matchingLastParsedJson.includes(lastPathPaymentLink), false);
 assert.equal(matchingLastParsedJson.includes('"payment_method_collection":'), false);
 assert.equal(matchingLastParsedJson.includes(lastPathPaymentMethodCollection), false);
+assert.equal(matchingLastParsedJson.includes('"payment_method_configuration_details":'), false);
+assert.equal(matchingLastParsedJson.includes(lastPathPaymentMethodConfigurationDetails.id), false);
 assert.equal(matchingLastParsedJson.includes(lastPathOtherId), false);
 assert.equal(matchingLastParsedJson.includes(lastPathReceivedAt), false);
 assert.equal(matchingLastParsedJson.includes(lastPathQuotedAt), false);
