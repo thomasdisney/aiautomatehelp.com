@@ -817,7 +817,8 @@ export function parseWorkIndexAtPath(raw: string, pathname: unknown): string[] {
     "livemode" in row ||
     "locale" in row ||
     "name_collection" in row ||
-    "optional_items" in row
+    "optional_items" in row ||
+    "origin_context" in row
   ) {
     return [];
   }
