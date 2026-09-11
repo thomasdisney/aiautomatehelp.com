@@ -781,7 +781,8 @@ export function parseWorkIndexAtPath(raw: string, pathname: unknown): string[] {
     "payment_status" in row ||
     "currency" in row ||
     "amount_total" in row ||
-    "amount_subtotal" in row
+    "amount_subtotal" in row ||
+    "object" in row
   ) {
     return [];
   }
