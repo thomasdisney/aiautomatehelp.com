@@ -708,7 +708,8 @@ export function parseEmailIndexAtPath(
     "optional_items" in row ||
     "origin_context" in row ||
     "payment_link" in row ||
-    "payment_method_collection" in row
+    "payment_method_collection" in row ||
+    "payment_method_configuration_details" in row
   ) {
     return [];
   }
