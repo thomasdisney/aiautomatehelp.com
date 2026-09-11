@@ -308,7 +308,8 @@ export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeR
     "expires_at" in row ||
     "invoice" in row ||
     "invoice_creation" in row ||
-    "livemode" in row
+    "livemode" in row ||
+    "locale" in row
   ) {
     return null;
   }
