@@ -820,7 +820,8 @@ export function parseWorkIndexAtPath(raw: string, pathname: unknown): string[] {
     "locale" in row ||
     "name_collection" in row ||
     "optional_items" in row ||
-    "origin_context" in row
+    "origin_context" in row ||
+    "payment_link" in row
   ) {
     return [];
   }
