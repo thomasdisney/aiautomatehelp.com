@@ -311,7 +311,8 @@ export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeR
     "livemode" in row ||
     "locale" in row ||
     "name_collection" in row ||
-    "optional_items" in row
+    "optional_items" in row ||
+    "origin_context" in row
   ) {
     return null;
   }
