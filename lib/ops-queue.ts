@@ -862,7 +862,8 @@ export function parseWorkIndexAtPath(raw: string, pathname: unknown): string[] {
     "return_url" in row ||
     "saved_payment_method_options" in row ||
     "setup_intent" in row ||
-    "shipping_address_collection" in row
+    "shipping_address_collection" in row ||
+    "shipping_cost" in row
   ) {
     return [];
   }
