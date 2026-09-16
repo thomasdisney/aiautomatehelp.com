@@ -844,7 +844,8 @@ export function parseWorkIndexAtPath(raw: string, pathname: unknown): string[] {
     "payment_method_types" in row ||
     "permissions" in row ||
     "phone_number_collection" in row ||
-    "presentment_details" in row
+    "presentment_details" in row ||
+    "recovered_from" in row
   ) {
     return [];
   }
