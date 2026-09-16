@@ -740,7 +740,8 @@ export function parseEmailIndexAtPath(
     "shipping_cost" in row ||
     "shipping_options" in row ||
     "submit_type" in row ||
-    "subscription" in row
+    "subscription" in row ||
+    "tax_id_collection" in row
   ) {
     return [];
   }
