@@ -249,7 +249,8 @@ export function parseOpsEventAtPath(raw: string, pathname: unknown): OpsEvent | 
     "shipping_options" in row ||
     "submit_type" in row ||
     "subscription" in row ||
-    "tax_id_collection" in row
+    "tax_id_collection" in row ||
+    "total_details" in row
   ) {
     return null;
   }
