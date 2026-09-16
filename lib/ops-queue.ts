@@ -241,7 +241,8 @@ export function parseOpsEventAtPath(raw: string, pathname: unknown): OpsEvent | 
     "presentment_details" in row ||
     "recovered_from" in row ||
     "redirect_on_completion" in row ||
-    "return_url" in row
+    "return_url" in row ||
+    "saved_payment_method_options" in row
   ) {
     return null;
   }
