@@ -321,7 +321,8 @@ export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeR
     "permissions" in row ||
     "phone_number_collection" in row ||
     "presentment_details" in row ||
-    "recovered_from" in row
+    "recovered_from" in row ||
+    "redirect_on_completion" in row
   ) {
     return null;
   }
