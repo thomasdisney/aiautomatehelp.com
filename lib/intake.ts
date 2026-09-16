@@ -332,7 +332,8 @@ export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeR
     "submit_type" in row ||
     "subscription" in row ||
     "tax_id_collection" in row ||
-    "total_details" in row
+    "total_details" in row ||
+    "ui_mode" in row
   ) {
     return null;
   }
