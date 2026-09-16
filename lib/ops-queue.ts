@@ -243,7 +243,8 @@ export function parseOpsEventAtPath(raw: string, pathname: unknown): OpsEvent | 
     "redirect_on_completion" in row ||
     "return_url" in row ||
     "saved_payment_method_options" in row ||
-    "setup_intent" in row
+    "setup_intent" in row ||
+    "shipping_address_collection" in row
   ) {
     return null;
   }
