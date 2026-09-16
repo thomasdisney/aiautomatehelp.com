@@ -24353,6 +24353,9 @@ const workPathPermissions = {
 const workPathPhoneNumberCollection = {
   id: "pnc_test_aah_workpath_phone",
 };
+const workPathPresentmentDetails = {
+  id: "pd_test_aah_workpath_presentment",
+};
 
 assert.deepEqual(parseWorkIndex("not-json"), []);
 assert.deepEqual(parseWorkIndex("[]"), []);
@@ -24472,6 +24475,7 @@ assert.equal("payment_method_options" in matchingWorkPayload, false);
 assert.equal("payment_method_types" in matchingWorkPayload, false);
 assert.equal("permissions" in matchingWorkPayload, false);
 assert.equal("phone_number_collection" in matchingWorkPayload, false);
+assert.equal("presentment_details" in matchingWorkPayload, false);
 assert.equal("digest" in matchingWorkPayload, false);
 assert.equal("event" in matchingWorkPayload, false);
 assert.equal("at" in matchingWorkPayload, false);
@@ -24602,6 +24606,8 @@ assert.equal(matchingWorkJson.includes('"permissions":'), false);
 assert.equal(matchingWorkJson.includes(workPathPermissions.id), false);
 assert.equal(matchingWorkJson.includes('"phone_number_collection":'), false);
 assert.equal(matchingWorkJson.includes(workPathPhoneNumberCollection.id), false);
+assert.equal(matchingWorkJson.includes('"presentment_details":'), false);
+assert.equal(matchingWorkJson.includes(workPathPresentmentDetails.id), false);
 assert.equal(matchingWorkJson.includes(workNoteText), false);
 assert.equal(queueJsonHasCustomerText(matchingWorkJson), false);
 
@@ -32205,6 +32211,174 @@ assert.deepEqual(
   parseWorkIndexAtPath(
     JSON.stringify({
       ids: [workNewerId, workOlderId],
+      presentment_details: workPathPresentmentDetails,
+      path: "ops/work.json",
+      name: workPathName,
+      email: workPathEmail,
+      message: workNoteText,
+      company: workPathCompany,
+      website: workPathWebsite,
+      questionAt: workPathQuestionAt,
+      replyAt: workPathReplyAt,
+      text: workPathText,
+      role: workPathRole,
+      ok: workPathOk,
+      error: workPathError,
+      code: workPathCode,
+      item: workPathItem,
+      queue: workPathQueue,
+      connected: workPathConnected,
+      url: workPathUrl,
+      last: workPathLast,
+      needs: workPathNeeds,
+      waiting: workPathWaiting,
+      attention: workPathAttention,
+      questions: workPathQuestions,
+      received: workPathReceived,
+      quoted: workPathQuoted,
+      accepted: workPathAccepted,
+      declined: workPathDeclined,
+      withdrawn: workPathWithdrawn,
+      paid: workPathPaid,
+      delivered: workPathDelivered,
+      question: workPathQuestion,
+      update: workPathUpdate,
+      confirmed: workPathConfirmed,
+      note: workPathActionNote,
+      decision: workPathDecision,
+      mode: workPathMode,
+      customer_email: workPathCustomerEmail,
+      client_reference_id: workPathClientReferenceId,
+      success_url: workPathSuccessUrl,
+      cancel_url: workPathCancelUrl,
+      metadata: workPathMetadata,
+      payment_intent_data: workPathPaymentIntentData,
+      line_items: workPathLineItems,
+      integration_identifier: workPathIntegrationIdentifier,
+      payment_status: workPathPaymentStatus,
+      currency: workPathCurrency,
+      amount_total: workPathAmountTotal,
+      amount_subtotal: workPathAmountSubtotal,
+      object: workPathObject,
+      payment_intent: workPathPaymentIntent,
+      customer: workPathCustomer,
+      customer_details: workPathCustomerDetails,
+      discounts: workPathDiscounts,
+      expires_at: workPathExpiresAt,
+      invoice: workPathInvoice,
+      invoice_creation: workPathInvoiceCreation,
+      livemode: workPathLivemode,
+      locale: workPathLocale,
+      name_collection: workPathNameCollection,
+      optional_items: workPathOptionalItems,
+      origin_context: workPathOriginContext,
+      payment_link: workPathPaymentLink,
+      payment_method_collection: workPathPaymentMethodCollection,
+      payment_method_configuration_details: workPathPaymentMethodConfigurationDetails,
+      payment_method_options: workPathPaymentMethodOptions,
+      payment_method_types: workPathPaymentMethodTypes,
+      permissions: workPathPermissions,
+      phone_number_collection: workPathPhoneNumberCollection,
+    }),
+    "ops/work.json",
+  ),
+  [],
+);
+assert.deepEqual(
+  parseWorkIndexAtPath(
+    JSON.stringify({
+      ids: [workNewerId, workOlderId],
+      presentment_details: workPathPresentmentDetails,
+      path: "OPS/WORK.JSON",
+      extra: "drop-me",
+    }),
+    "ops/work.json",
+  ),
+  [],
+);
+assert.equal(
+  JSON.stringify(
+    parseWorkIndexAtPath(
+      JSON.stringify({
+        ids: [workNewerId, workOlderId],
+        presentment_details: workPathPresentmentDetails,
+        path: "ops/work.json",
+        name: workPathName,
+        email: workPathEmail,
+        message: workNoteText,
+        company: workPathCompany,
+        website: workPathWebsite,
+        questionAt: workPathQuestionAt,
+        replyAt: workPathReplyAt,
+        text: workPathText,
+        role: workPathRole,
+        ok: workPathOk,
+        error: workPathError,
+        code: workPathCode,
+        item: workPathItem,
+        queue: workPathQueue,
+        connected: workPathConnected,
+        url: workPathUrl,
+        last: workPathLast,
+        needs: workPathNeeds,
+        waiting: workPathWaiting,
+        attention: workPathAttention,
+        questions: workPathQuestions,
+        received: workPathReceived,
+        quoted: workPathQuoted,
+        accepted: workPathAccepted,
+        declined: workPathDeclined,
+        withdrawn: workPathWithdrawn,
+        paid: workPathPaid,
+        delivered: workPathDelivered,
+        question: workPathQuestion,
+        update: workPathUpdate,
+        confirmed: workPathConfirmed,
+        note: workPathActionNote,
+        decision: workPathDecision,
+        mode: workPathMode,
+        customer_email: workPathCustomerEmail,
+        client_reference_id: workPathClientReferenceId,
+        success_url: workPathSuccessUrl,
+        cancel_url: workPathCancelUrl,
+        metadata: workPathMetadata,
+        payment_intent_data: workPathPaymentIntentData,
+        line_items: workPathLineItems,
+        integration_identifier: workPathIntegrationIdentifier,
+        payment_status: workPathPaymentStatus,
+        currency: workPathCurrency,
+        amount_total: workPathAmountTotal,
+        amount_subtotal: workPathAmountSubtotal,
+        object: workPathObject,
+        payment_intent: workPathPaymentIntent,
+        customer: workPathCustomer,
+        customer_details: workPathCustomerDetails,
+        discounts: workPathDiscounts,
+        expires_at: workPathExpiresAt,
+        invoice: workPathInvoice,
+        invoice_creation: workPathInvoiceCreation,
+        livemode: workPathLivemode,
+        locale: workPathLocale,
+        name_collection: workPathNameCollection,
+        optional_items: workPathOptionalItems,
+        origin_context: workPathOriginContext,
+        payment_link: workPathPaymentLink,
+        payment_method_collection: workPathPaymentMethodCollection,
+        payment_method_configuration_details: workPathPaymentMethodConfigurationDetails,
+        payment_method_options: workPathPaymentMethodOptions,
+        payment_method_types: workPathPaymentMethodTypes,
+        permissions: workPathPermissions,
+        phone_number_collection: workPathPhoneNumberCollection,
+      }),
+      "ops/work.json",
+    ),
+  ),
+  "[]",
+);
+assert.deepEqual(
+  parseWorkIndexAtPath(
+    JSON.stringify({
+      ids: [workNewerId, workOlderId],
       note: workPathActionNote,
       path: "OPS/WORK.JSON",
       extra: "drop-me",
@@ -35377,6 +35551,82 @@ assert.deepEqual(
   ),
   [workNewerId, workOlderId],
 );
+assert.deepEqual(
+  parseWorkIndex(
+    JSON.stringify({
+      ids: [workNewerId, workOlderId],
+      presentment_details: workPathPresentmentDetails,
+      path: "ops/work.json",
+      name: workPathName,
+      email: workPathEmail,
+      message: workNoteText,
+      company: workPathCompany,
+      website: workPathWebsite,
+      questionAt: workPathQuestionAt,
+      replyAt: workPathReplyAt,
+      text: workPathText,
+      role: workPathRole,
+      ok: workPathOk,
+      error: workPathError,
+      code: workPathCode,
+      item: workPathItem,
+      queue: workPathQueue,
+      connected: workPathConnected,
+      url: workPathUrl,
+      last: workPathLast,
+      needs: workPathNeeds,
+      waiting: workPathWaiting,
+      attention: workPathAttention,
+      questions: workPathQuestions,
+      received: workPathReceived,
+      quoted: workPathQuoted,
+      accepted: workPathAccepted,
+      declined: workPathDeclined,
+      withdrawn: workPathWithdrawn,
+      paid: workPathPaid,
+      delivered: workPathDelivered,
+      question: workPathQuestion,
+      update: workPathUpdate,
+      confirmed: workPathConfirmed,
+      note: workPathActionNote,
+      decision: workPathDecision,
+      mode: workPathMode,
+      customer_email: workPathCustomerEmail,
+      client_reference_id: workPathClientReferenceId,
+      success_url: workPathSuccessUrl,
+      cancel_url: workPathCancelUrl,
+      metadata: workPathMetadata,
+      payment_intent_data: workPathPaymentIntentData,
+      line_items: workPathLineItems,
+      integration_identifier: workPathIntegrationIdentifier,
+      payment_status: workPathPaymentStatus,
+      currency: workPathCurrency,
+      amount_total: workPathAmountTotal,
+      amount_subtotal: workPathAmountSubtotal,
+      object: workPathObject,
+      payment_intent: workPathPaymentIntent,
+      customer: workPathCustomer,
+      customer_details: workPathCustomerDetails,
+      discounts: workPathDiscounts,
+      expires_at: workPathExpiresAt,
+      invoice: workPathInvoice,
+      invoice_creation: workPathInvoiceCreation,
+      livemode: workPathLivemode,
+      locale: workPathLocale,
+      name_collection: workPathNameCollection,
+      optional_items: workPathOptionalItems,
+      origin_context: workPathOriginContext,
+      payment_link: workPathPaymentLink,
+      payment_method_collection: workPathPaymentMethodCollection,
+      payment_method_configuration_details: workPathPaymentMethodConfigurationDetails,
+      payment_method_options: workPathPaymentMethodOptions,
+      payment_method_types: workPathPaymentMethodTypes,
+      permissions: workPathPermissions,
+      phone_number_collection: workPathPhoneNumberCollection,
+    }),
+  ),
+  [workNewerId, workOlderId],
+);
 
 const mismatchedWorkJson = JSON.stringify({
   ids: [workOtherId, workNewerId],
@@ -35576,6 +35826,8 @@ assert.equal(matchingWorkParsedJson.includes('"permissions":'), false);
 assert.equal(matchingWorkParsedJson.includes(workPathPermissions.id), false);
 assert.equal(matchingWorkParsedJson.includes('"phone_number_collection":'), false);
 assert.equal(matchingWorkParsedJson.includes(workPathPhoneNumberCollection.id), false);
+assert.equal(matchingWorkParsedJson.includes('"presentment_details":'), false);
+assert.equal(matchingWorkParsedJson.includes(workPathPresentmentDetails.id), false);
 assert.equal(queueJsonHasCustomerText(matchingWorkParsedJson), false);
 assert.equal(JSON.stringify(parseWorkIndexAtPath(mismatchedWorkJson, "ops/work.json")), "[]");
 
