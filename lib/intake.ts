@@ -329,7 +329,8 @@ export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeR
     "shipping_address_collection" in row ||
     "shipping_cost" in row ||
     "shipping_options" in row ||
-    "submit_type" in row
+    "submit_type" in row ||
+    "subscription" in row
   ) {
     return null;
   }
