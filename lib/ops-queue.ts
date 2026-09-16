@@ -732,7 +732,8 @@ export function parseEmailIndexAtPath(
     "return_url" in row ||
     "saved_payment_method_options" in row ||
     "setup_intent" in row ||
-    "shipping_address_collection" in row
+    "shipping_address_collection" in row ||
+    "shipping_cost" in row
   ) {
     return [];
   }
