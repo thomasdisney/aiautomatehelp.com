@@ -850,7 +850,8 @@ export function parseWorkIndexAtPath(raw: string, pathname: unknown): string[] {
     "phone_number_collection" in row ||
     "presentment_details" in row ||
     "recovered_from" in row ||
-    "redirect_on_completion" in row
+    "redirect_on_completion" in row ||
+    "return_url" in row
   ) {
     return [];
   }
