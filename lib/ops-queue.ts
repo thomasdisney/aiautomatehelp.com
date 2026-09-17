@@ -764,7 +764,8 @@ export function parseEmailIndexAtPath(
     "automatic_tax" in row ||
     "billing_address_collection" in row ||
     "branding_settings" in row ||
-    "client_secret" in row
+    "client_secret" in row ||
+    "collected_information" in row
   ) {
     return [];
   }
