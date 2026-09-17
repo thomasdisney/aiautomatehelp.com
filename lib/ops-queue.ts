@@ -760,7 +760,8 @@ export function parseEmailIndexAtPath(
     "after_expiration" in row ||
     "allow_promotion_codes" in row ||
     "automatic_tax" in row ||
-    "billing_address_collection" in row
+    "billing_address_collection" in row ||
+    "branding_settings" in row
   ) {
     return [];
   }
