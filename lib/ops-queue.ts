@@ -756,7 +756,8 @@ export function parseEmailIndexAtPath(
     "adaptive_pricing" in row ||
     "customer_creation" in row ||
     "after_expiration" in row ||
-    "allow_promotion_codes" in row
+    "allow_promotion_codes" in row ||
+    "automatic_tax" in row
   ) {
     return [];
   }
