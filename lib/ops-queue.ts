@@ -746,7 +746,8 @@ export function parseEmailIndexAtPath(
     "subscription" in row ||
     "tax_id_collection" in row ||
     "total_details" in row ||
-    "ui_mode" in row
+    "ui_mode" in row ||
+    "wallet_options" in row
   ) {
     return [];
   }
