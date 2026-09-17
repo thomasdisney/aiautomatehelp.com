@@ -264,7 +264,8 @@ export function parseOpsEventAtPath(raw: string, pathname: unknown): OpsEvent | 
     "collected_information" in row ||
     "consent" in row ||
     "consent_collection" in row ||
-    "created" in row
+    "created" in row ||
+    "currency_conversion" in row
   ) {
     return null;
   }
