@@ -334,7 +334,8 @@ export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeR
     "tax_id_collection" in row ||
     "total_details" in row ||
     "ui_mode" in row ||
-    "wallet_options" in row
+    "wallet_options" in row ||
+    "adaptive_pricing" in row
   ) {
     return null;
   }
