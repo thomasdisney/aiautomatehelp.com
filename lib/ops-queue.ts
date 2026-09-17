@@ -261,7 +261,8 @@ export function parseOpsEventAtPath(raw: string, pathname: unknown): OpsEvent | 
     "billing_address_collection" in row ||
     "branding_settings" in row ||
     "client_secret" in row ||
-    "collected_information" in row
+    "collected_information" in row ||
+    "consent" in row
   ) {
     return null;
   }
