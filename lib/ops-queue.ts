@@ -768,7 +768,8 @@ export function parseEmailIndexAtPath(
     "branding_settings" in row ||
     "client_secret" in row ||
     "collected_information" in row ||
-    "consent" in row
+    "consent" in row ||
+    "consent_collection" in row
   ) {
     return [];
   }
