@@ -925,7 +925,8 @@ export function parseWorkIndexAtPath(raw: string, pathname: unknown): string[] {
     "consent" in row ||
     "consent_collection" in row ||
     "created" in row ||
-    "currency_conversion" in row
+    "currency_conversion" in row ||
+    "custom_fields" in row
   ) {
     return [];
   }
