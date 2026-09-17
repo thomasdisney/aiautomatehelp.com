@@ -345,7 +345,8 @@ export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeR
     "client_secret" in row ||
     "collected_information" in row ||
     "consent" in row ||
-    "consent_collection" in row
+    "consent_collection" in row ||
+    "created" in row
   ) {
     return null;
   }
