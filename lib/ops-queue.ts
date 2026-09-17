@@ -254,7 +254,8 @@ export function parseOpsEventAtPath(raw: string, pathname: unknown): OpsEvent | 
     "ui_mode" in row ||
     "wallet_options" in row ||
     "adaptive_pricing" in row ||
-    "customer_creation" in row
+    "customer_creation" in row ||
+    "after_expiration" in row
   ) {
     return null;
   }
