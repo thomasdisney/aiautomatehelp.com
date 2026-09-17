@@ -259,7 +259,8 @@ export function parseOpsEventAtPath(raw: string, pathname: unknown): OpsEvent | 
     "allow_promotion_codes" in row ||
     "automatic_tax" in row ||
     "billing_address_collection" in row ||
-    "branding_settings" in row
+    "branding_settings" in row ||
+    "client_secret" in row
   ) {
     return null;
   }
