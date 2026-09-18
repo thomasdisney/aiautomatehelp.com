@@ -230,13 +230,26 @@ export function intakePathFromPath(pathname: unknown): string | null {
   return id ? intakeBlobPath(id) : null;
 }
 
+export function pickAllowedBlobKeys(
+  row: Record<string, unknown>,
+  allowed: ReadonlySet<string>,
+): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const key of Object.keys(row)) {
+    if (allowed.has(key)) out[key] = row[key];
+  }
+  return out;
+}
+
 export function toIntakePathPayload(
   record: IntakeRecord,
 ): (IntakeRecord & { path: string }) | null {
   const id = typeof record.id === "string" ? record.id.trim().toLowerCase() : "";
   const path = intakeBlobPath(id);
   if (!path) return null;
-  return { ...record, id, path };
+  return pickAllowedBlobKeys({ ...record, id, path }, INTAKE_PATH_KEYS) as IntakeRecord & {
+    path: string;
+  };
 }
 
 export function blobRowHasSnakeCaseKey(row: Record<string, unknown>): boolean {

@@ -99542,4 +99542,30 @@ assert.equal("receipturl" in (toIntakePathPayload(record) ?? {}), false);
 assert.equal("extra" in (toIntakePathPayload(record) ?? {}), false);
 assert.equal((toIntakePathPayload(record) ?? {}).path, `intake/${id}.json`);
 
+const dirtyIntakeWrite = toIntakePathPayload({
+  ...record,
+  receipturl: "https://pay.example.test/receipts/hosted",
+  extra: "drop-me",
+});
+assert.equal("receipturl" in (dirtyIntakeWrite ?? {}), false);
+assert.equal("extra" in (dirtyIntakeWrite ?? {}), false);
+assert.equal(dirtyIntakeWrite?.path, `intake/${id}.json`);
+assert.equal(dirtyIntakeWrite?.id, id);
+assert.equal(
+  parseIntakeRecordAtPath(JSON.stringify(dirtyIntakeWrite), `intake/${id}.json`)?.id,
+  id,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      receipturl: "https://pay.example.test/receipts/hosted",
+      extra: "drop-me",
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  ),
+  null,
+);
+
 console.log("intake checks ok");

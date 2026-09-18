@@ -141,6 +141,8 @@ async function persistBlob(record: IntakeRecord): Promise<boolean> {
 }
 
 async function persistWebhook(record: IntakeRecord, webhook: string): Promise<boolean> {
+  const payload = toIntakePathPayload(record);
+  if (!payload) return false;
   const url = new URL(webhook);
   if (url.protocol !== "https:") return false;
   const controller = new AbortController();
@@ -150,9 +152,9 @@ async function persistWebhook(record: IntakeRecord, webhook: string): Promise<bo
       method: "POST",
       headers: {
         "content-type": "application/json",
-        "x-intake-id": record.id,
+        "x-intake-id": payload.id,
       },
-      body: JSON.stringify(record),
+      body: JSON.stringify(payload),
       signal: controller.signal,
     });
     return res.ok;
