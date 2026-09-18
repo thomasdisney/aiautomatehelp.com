@@ -3,7 +3,7 @@ import { Geist, Source_Serif_4 } from "next/font/google";
 import { SiteFooter } from "@/app/components/site-footer";
 import { SiteHeader } from "@/app/components/site-header";
 import { paymentConfigured } from "@/lib/payment";
-import { siteMetaDescription } from "@/lib/site-copy";
+import { jsonLdDescription, siteMetaDescription } from "@/lib/site-copy";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -57,8 +57,7 @@ export default function RootLayout({
     "@type": "ProfessionalService",
     name: "AutomateAI",
     url: siteUrl,
-    description:
-      "Scoped AI automation built to order for small businesses. Fixed quote after a brief.",
+    description: jsonLdDescription(paymentConfigured()),
   };
 
   return (

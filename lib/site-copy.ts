@@ -4,6 +4,12 @@ export function siteMetaDescription(paymentConnected = false): string {
     : "One repetitive workflow at a time. Fixed quote after a brief. Checkout is not open on this site yet.";
 }
 
+export function jsonLdDescription(paymentConnected = false): string {
+  return paymentConnected
+    ? "Scoped AI automation built to order for small businesses. Fixed quote after a brief. Paid before I start."
+    : "Scoped AI automation built to order for small businesses. Fixed quote after a brief. Checkout is not open on this site yet.";
+}
+
 export function termsOfferCopy(paymentConnected = false): string {
   const offer =
     "A quote is an offer for one written scope at a fixed price, with a delivery date and a done-when test. You accept the written scope, price, date, and test together. After you accept, that scope, price, date, and test stay on the brief.";

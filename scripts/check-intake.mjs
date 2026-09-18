@@ -43,6 +43,7 @@ import {
 } from "../lib/status.ts";
 import {
   siteMetaDescription,
+  jsonLdDescription,
   termsOfferCopy,
   termsScopeCopy,
   priceFaqCopy,
@@ -364,6 +365,17 @@ assert.equal(
   privacySharingDisconnected.includes("Checkout is not open on this site yet."),
   true,
 );
+
+const jsonLdConnected = jsonLdDescription(true);
+const jsonLdDisconnected = jsonLdDescription(false);
+assert.equal(
+  jsonLdConnected.includes("Scoped AI automation built to order for small businesses."),
+  true,
+);
+assert.equal(jsonLdConnected.includes("Paid before I start."), true);
+assert.equal(jsonLdDisconnected.includes("Paid before I start"), false);
+assert.equal(jsonLdDisconnected.includes("Checkout is not open on this site yet."), true);
+assert.equal(jsonLdDisconnected.includes("payment processors"), false);
 
 const doneWhenText = "A test submit creates one new row in the named sheet.";
 const laterDoneWhen = "A weekly PDF lands in the named inbox every Monday.";
