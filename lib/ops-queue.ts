@@ -276,7 +276,8 @@ export function parseOpsEventAtPath(raw: string, pathname: unknown): OpsEvent | 
     "payment_method_data" in row ||
     "setup_intent_data" in row ||
     "subscription_data" in row ||
-    "receipt_email" in row
+    "receipt_email" in row ||
+    "receipt_number" in row
   ) {
     return null;
   }
