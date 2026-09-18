@@ -780,7 +780,8 @@ export function parseEmailIndexAtPath(
     "currency_conversion" in row ||
     "custom_fields" in row ||
     "custom_text" in row ||
-    "customer_account" in row
+    "customer_account" in row ||
+    "customer_update" in row
   ) {
     return [];
   }
