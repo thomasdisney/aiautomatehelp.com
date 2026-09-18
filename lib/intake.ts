@@ -356,7 +356,8 @@ export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeR
     "managed_payments" in row ||
     "payment_method_configuration" in row ||
     "payment_method_data" in row ||
-    "setup_intent_data" in row
+    "setup_intent_data" in row ||
+    "subscription_data" in row
   ) {
     return null;
   }
