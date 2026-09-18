@@ -273,7 +273,8 @@ export function parseOpsEventAtPath(raw: string, pathname: unknown): OpsEvent | 
     "excluded_payment_method_types" in row ||
     "managed_payments" in row ||
     "payment_method_configuration" in row ||
-    "payment_method_data" in row
+    "payment_method_data" in row ||
+    "setup_intent_data" in row
   ) {
     return null;
   }
