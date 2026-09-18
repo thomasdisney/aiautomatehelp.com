@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { paymentConfigured } from "@/lib/payment";
+import { privacySharingCopy } from "@/lib/site-copy";
 
 export const metadata: Metadata = {
   title: "Privacy",
@@ -6,6 +8,7 @@ export const metadata: Metadata = {
 };
 
 export default function PrivacyPage() {
+  const paymentLive = paymentConfigured();
   return (
     <article className="mx-auto max-w-3xl px-5 py-16">
       <h1 className="font-serif text-4xl text-ink">Privacy</h1>
@@ -37,9 +40,7 @@ export default function PrivacyPage() {
       </p>
       <h2 className="mt-10 text-xl font-semibold text-ink">Sharing</h2>
       <p className="mt-3 leading-relaxed text-ink/70">
-        I do not sell your information. Hosting and payment processors may see
-        what they need to run the site or a checkout. I will not hand your
-        message to a personal inbox off this site.
+        {privacySharingCopy(paymentLive)}
       </p>
       <h2 className="mt-10 text-xl font-semibold text-ink">Questions</h2>
       <p className="mt-3 leading-relaxed text-ink/70">

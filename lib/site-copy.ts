@@ -29,3 +29,10 @@ export function priceFaqCopy(paymentConnected = false): string {
     ? "A fixed quote after the brief. You pay after you accept, before I build."
     : "A fixed quote after the brief. Checkout is not open on this site yet. I may build and hand off after you accept. When checkout opens, pay the stored amount on the status page.";
 }
+
+export function privacySharingCopy(paymentConnected = false): string {
+  if (paymentConnected) {
+    return "I do not sell your information. Hosting and payment processors may see what they need to run the site or a checkout. I will not hand your message to a personal inbox off this site.";
+  }
+  return "I do not sell your information. Hosting may see what it needs to run the site. Checkout is not open on this site yet. I will not hand your message to a personal inbox off this site.";
+}

@@ -46,6 +46,7 @@ import {
   termsOfferCopy,
   termsScopeCopy,
   priceFaqCopy,
+  privacySharingCopy,
 } from "../lib/site-copy.ts";
 import {
   emptyQueue,
@@ -350,6 +351,17 @@ assert.equal(priceFaqDisconnected.includes("Checkout is not open on this site ye
 assert.equal(priceFaqDisconnected.includes("I may build and hand off after you accept."), true);
 assert.equal(
   priceFaqDisconnected.includes("pay the stored amount on the status page"),
+  true,
+);
+
+const privacySharingConnected = privacySharingCopy(true);
+const privacySharingDisconnected = privacySharingCopy(false);
+assert.equal(privacySharingConnected.includes("payment processors may see"), true);
+assert.equal(privacySharingConnected.includes("or a checkout"), true);
+assert.equal(privacySharingDisconnected.includes("payment processors"), false);
+assert.equal(privacySharingDisconnected.includes("a checkout"), false);
+assert.equal(
+  privacySharingDisconnected.includes("Checkout is not open on this site yet."),
   true,
 );
 
