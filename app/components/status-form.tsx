@@ -13,6 +13,7 @@ import {
   subscribeBriefReceipts,
 } from "@/lib/brief-receipt";
 import { FIELD_LIMITS, parseDueAt, parseThread, type ThreadEntry } from "@/lib/intake";
+import { customerStatusCopy } from "@/lib/status";
 
 type Found = {
   kind: "found";
@@ -44,16 +45,6 @@ const ERRORS: Record<string, string> = {
   not_found: "No matching brief.",
   payment_not_connected: "Payment is unavailable right now. Try again later.",
   already_paid: "This quote is already marked paid.",
-};
-
-const STATUS_COPY: Record<string, string> = {
-  received: "I have the brief. I may ask a follow-up here. A yes or no and, if yes, a fixed quote will show here.",
-  quoted: "This is a fixed quote for the written scope, with a delivery date and a done-when test. Accepting agrees to that scope, price, date, and test together. After you accept, pay that amount here before I start.",
-  declined: "I am not taking this job. If I post a new quote here, it will include a new note.",
-  accepted: "You accepted this quote, including the written scope, price, date, and done-when test. Those terms stay as written. You can still turn it down until it is paid. Pay here to start the work. After the handoff, confirm the stored done-when test here.",
-  withdrawn: "You turned those terms down. They stay closed. If I post a new quote here, it will include a new note. You can accept that one, or send a new brief.",
-  paid: "Paid. I will start the written scope. Check here for the handoff.",
-  delivered: "Handed off. Confirm the stored done-when test here when it passes. Ask here if something in that scope is broken.",
 };
 
 function formatUsd(cents: number): string {
@@ -343,7 +334,7 @@ export function StatusForm({
             <p className="text-sm font-medium uppercase tracking-wide text-ink/50">Status</p>
             <p className="mt-2 text-lg font-semibold text-ink">{result.status}</p>
             <p className="mt-3 leading-relaxed text-ink/70">
-              {STATUS_COPY[result.status] ?? "This brief is on file. Check back here for updates."}
+              {customerStatusCopy(result.status, paymentConnected)}
             </p>
             {result.amountCents ? (
               <p className="mt-4 text-lg font-semibold text-ink">{formatUsd(result.amountCents)}</p>
@@ -469,7 +460,9 @@ function PayPanel({
 
   return (
     <div className="space-y-3 rounded-2xl border border-ink/10 bg-white p-6 sm:p-8">
-      <p className="text-sm font-medium text-ink">Pay this quote</p>
+      <p className="text-sm font-medium text-ink">
+        {paymentConnected ? "Pay this quote" : "Quoted amount"}
+      </p>
       {paymentConnected ? (
         <>
           <p className="text-sm leading-relaxed text-ink/60">
@@ -487,8 +480,8 @@ function PayPanel({
         </>
       ) : (
         <p className="text-sm leading-relaxed text-ink/60">
-          Quoted amount: {formatUsd(amountCents)}. The pay button appears here when payment is
-          ready. After the handoff, confirm the done-when test on this page.
+          Quoted amount: {formatUsd(amountCents)}. Payment is not open on this page yet. After
+          the handoff, confirm the done-when test on this page.
         </p>
       )}
       {error ? (

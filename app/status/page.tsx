@@ -16,18 +16,18 @@ export default async function StatusPage({
   const params = await searchParams;
   const ref = typeof params.ref === "string" ? params.ref.trim().toLowerCase() : "";
   const initialId = intakeBlobPath(ref) ? ref : "";
+  const paymentConnected = paymentConfigured();
 
   return (
     <article className="mx-auto max-w-3xl px-5 py-16">
       <h1 className="font-serif text-4xl text-ink">Check a brief</h1>
       <p className="mt-6 leading-relaxed text-ink/70">
-        Enter the reference from your confirmation and the same email. You can see the
-        quote, accept or decline, pay after you accept, ask a question, or confirm the
-        done-when test after handoff. This browser keeps the reference and shows the
-        original received time from this device.
+        {paymentConnected
+          ? "Enter the reference from your confirmation and the same email. You can see the quote, accept or decline, pay after you accept, ask a question, or confirm the done-when test after handoff. This browser keeps the reference and shows the original received time from this device."
+          : "Enter the reference from your confirmation and the same email. You can see the quote, accept or decline, ask a question, or confirm the done-when test after handoff. Payment is not open on this page yet. This browser keeps the reference and shows the original received time from this device."}
       </p>
       <div className="mt-10">
-        <StatusForm initialId={initialId} paymentConnected={paymentConfigured()} />
+        <StatusForm initialId={initialId} paymentConnected={paymentConnected} />
       </div>
     </article>
   );

@@ -38,6 +38,7 @@ import {
   parseInboxId,
   parseInboxFind,
   quoteTermsMatch,
+  customerStatusCopy,
 } from "../lib/status.ts";
 import {
   emptyQueue,
@@ -278,6 +279,26 @@ assert.deepEqual(publicView, {
 assert.equal("message" in publicView, false);
 assert.equal("email" in publicView, false);
 assert.equal("name" in publicView, false);
+
+const quotedCopyConnected = customerStatusCopy("quoted", true);
+const quotedCopyDisconnected = customerStatusCopy("quoted", false);
+const acceptedCopyConnected = customerStatusCopy("accepted", true);
+const acceptedCopyDisconnected = customerStatusCopy("accepted", false);
+assert.equal(
+  quotedCopyConnected.includes("After you accept, pay that amount here before I start."),
+  true,
+);
+assert.equal(quotedCopyDisconnected.includes("pay that amount here"), false);
+assert.equal(quotedCopyDisconnected.includes("Pay here"), false);
+assert.equal(quotedCopyDisconnected.includes("Payment is not open on this page yet."), true);
+assert.equal(acceptedCopyConnected.includes("Pay here to start the work."), true);
+assert.equal(acceptedCopyDisconnected.includes("Pay here"), false);
+assert.equal(acceptedCopyDisconnected.includes("pay that amount here"), false);
+assert.equal(acceptedCopyDisconnected.includes("Payment is not open on this page yet."), true);
+assert.equal(customerStatusCopy("received", false), customerStatusCopy("received", true));
+assert.equal(customerStatusCopy("received", false).includes("Pay here"), false);
+assert.equal(customerStatusCopy("paid", true).includes("Paid."), true);
+assert.equal(customerStatusCopy("unknown", false).includes("on file"), true);
 
 const doneWhenText = "A test submit creates one new row in the named sheet.";
 const laterDoneWhen = "A weekly PDF lands in the named inbox every Monday.";

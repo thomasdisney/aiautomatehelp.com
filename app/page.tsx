@@ -1,5 +1,6 @@
 import { IntakeForm } from "@/app/components/intake-form";
 import { intakeStoreConfigured } from "@/lib/intake-store";
+import { paymentConfigured } from "@/lib/payment";
 
 const EXAMPLES = [
   {
@@ -29,8 +30,8 @@ const STEPS = [
   },
   {
     n: "03",
-    title: "Pay, then I build",
-    body: "Accept the quote, pay the quoted amount, and I implement only what the scope says.",
+    title: "Accept, then I build",
+    body: "Accept the quote on the status page. I implement only what the scope says. Payment opens there when checkout is ready.",
   },
   {
     n: "04",
@@ -46,7 +47,7 @@ const FAQS = [
   },
   {
     q: "What does it cost?",
-    a: "A fixed quote after the brief. You pay after you accept, before I build.",
+    a: "A fixed quote after the brief. Checkout is not open on this site yet. When it is, you pay after you accept, before I build.",
   },
   {
     q: "How long does a job take?",
@@ -64,6 +65,29 @@ const FAQS = [
 
 export default function Home() {
   const intakeLive = intakeStoreConfigured();
+  const paymentLive = paymentConfigured();
+  const steps = paymentLive
+    ? [
+        STEPS[0],
+        STEPS[1],
+        {
+          n: "03",
+          title: "Pay, then I build",
+          body: "Accept the quote, pay the quoted amount, and I implement only what the scope says.",
+        },
+        STEPS[3],
+      ]
+    : STEPS;
+  const faqs = paymentLive
+    ? FAQS.map((item) =>
+        item.q === "What does it cost?"
+          ? {
+              q: item.q,
+              a: "A fixed quote after the brief. You pay after you accept, before I build.",
+            }
+          : item,
+      )
+    : FAQS;
 
   return (
     <>
@@ -149,8 +173,9 @@ export default function Home() {
         <div className="mx-auto max-w-3xl">
           <h2 className="font-serif text-3xl text-ink">What it costs</h2>
           <p className="mt-4 text-lg leading-relaxed text-ink/70">
-            A fixed price, quoted after I understand the job. Paid in full before
-            I build.
+            {paymentLive
+              ? "A fixed price, quoted after I understand the job. Paid in full before I build."
+              : "A fixed price, quoted after I understand the job. Checkout is not open on this site yet."}
           </p>
         </div>
       </section>
@@ -159,7 +184,7 @@ export default function Home() {
         <div className="mx-auto max-w-3xl">
           <h2 className="font-serif text-3xl text-ink">How it works</h2>
           <ol className="mt-10 space-y-8">
-            {STEPS.map((step) => (
+            {steps.map((step) => (
               <li key={step.n} className="flex gap-5">
                 <span className="font-serif w-10 shrink-0 text-xl text-accent">{step.n}</span>
                 <div>
@@ -190,7 +215,7 @@ export default function Home() {
         <div className="mx-auto max-w-3xl">
           <h2 className="font-serif text-3xl text-ink">Questions</h2>
           <dl className="mt-8 space-y-6">
-            {FAQS.map((item) => (
+            {faqs.map((item) => (
               <div key={item.q} className="border-b border-ink/10 pb-6">
                 <dt className="font-semibold text-ink">{item.q}</dt>
                 <dd className="mt-2 leading-relaxed text-ink/70">{item.a}</dd>
@@ -207,7 +232,11 @@ export default function Home() {
             <ol className="mt-6 list-decimal space-y-3 pl-5 leading-relaxed text-ink/70">
               <li>Name one workflow: trigger, tools, done-when.</li>
               <li>Get a yes or no and a fixed quote on the status page.</li>
-              <li>Accept, pay, then confirm the done-when test after handoff.</li>
+              <li>
+                {paymentLive
+                  ? "Accept, pay, then confirm the done-when test after handoff."
+                  : "Accept the quote on the status page, then confirm the done-when test after handoff."}
+              </li>
             </ol>
             <p className="mt-6 leading-relaxed text-ink/70">
               After you send a brief, save the full reference. This browser keeps it and shows

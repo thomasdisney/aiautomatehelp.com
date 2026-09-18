@@ -127,6 +127,37 @@ export function emailsMatch(left: string, right: string): boolean {
   return timingSafeEqualString(left.trim().toLowerCase(), right.trim().toLowerCase());
 }
 
+const STATUS_COPY: Record<IntakeStatus, string> = {
+  received:
+    "I have the brief. I may ask a follow-up here. A yes or no and, if yes, a fixed quote will show here.",
+  quoted:
+    "This is a fixed quote for the written scope, with a delivery date and a done-when test. Accepting agrees to that scope, price, date, and test together.",
+  declined: "I am not taking this job. If I post a new quote here, it will include a new note.",
+  accepted:
+    "You accepted this quote, including the written scope, price, date, and done-when test. Those terms stay as written.",
+  withdrawn:
+    "You turned those terms down. They stay closed. If I post a new quote here, it will include a new note. You can accept that one, or send a new brief.",
+  paid: "Paid. I will start the written scope. Check here for the handoff.",
+  delivered:
+    "Handed off. Confirm the stored done-when test here when it passes. Ask here if something in that scope is broken.",
+};
+
+export function customerStatusCopy(status: string, paymentConnected = false): string {
+  if (status === "quoted") {
+    return paymentConnected
+      ? `${STATUS_COPY.quoted} After you accept, pay that amount here before I start.`
+      : `${STATUS_COPY.quoted} Payment is not open on this page yet. I'll post an update here when you can pay.`;
+  }
+  if (status === "accepted") {
+    return paymentConnected
+      ? `${STATUS_COPY.accepted} You can still turn it down until it is paid. Pay here to start the work. After the handoff, confirm the stored done-when test here.`
+      : `${STATUS_COPY.accepted} You can still turn it down. Payment is not open on this page yet. I'll post an update here when you can pay.`;
+  }
+  const parsed = parseIntakeStatus(status);
+  if (!parsed) return "This brief is on file. Check back here for updates.";
+  return STATUS_COPY[parsed];
+}
+
 export function toPublicStatus(record: IntakeRecord): PublicStatus {
   const view: PublicStatus = {
     id: record.id,
