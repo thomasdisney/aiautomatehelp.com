@@ -99608,4 +99608,52 @@ assert.equal(
   false,
 );
 
+const dirtyNestedThreadBlob = {
+  ...record,
+  path: `INTAKE/${id}.JSON`,
+  thread: [
+    {
+      role: "customer",
+      text: "Need a quote for the inbox",
+      at: record.receivedAt,
+      receipturl: "https://pay.example.test/receipts/hosted",
+      extra: "drop-me",
+    },
+  ],
+};
+assert.equal(
+  parseIntakeRecordAtPath(JSON.stringify(dirtyNestedThreadBlob), `intake/${id}.json`),
+  null,
+);
+assert.equal(parseIntakeRecord(JSON.stringify(dirtyNestedThreadBlob))?.id, id);
+assert.equal(
+  parseIntakeRecord(JSON.stringify(dirtyNestedThreadBlob))?.thread?.[0]?.text,
+  "Need a quote for the inbox",
+);
+assert.equal(
+  "receipturl" in (parseIntakeRecord(JSON.stringify(dirtyNestedThreadBlob))?.thread?.[0] ?? {}),
+  false,
+);
+assert.equal(
+  "extra" in (parseIntakeRecord(JSON.stringify(dirtyNestedThreadBlob))?.thread?.[0] ?? {}),
+  false,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      path: `INTAKE/${id}.JSON`,
+      thread: [
+        {
+          role: "customer",
+          text: "Need a quote for the inbox",
+          at: record.receivedAt,
+        },
+      ],
+    }),
+    `intake/${id}.json`,
+  )?.id,
+  id,
+);
+
 console.log("intake checks ok");

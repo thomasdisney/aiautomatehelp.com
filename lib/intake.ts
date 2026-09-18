@@ -330,6 +330,26 @@ export function blobRowHasUnknownKey(
   return Object.keys(row).some((key) => !allowed.has(key));
 }
 
+export const THREAD_ENTRY_KEYS: ReadonlySet<string> = new Set(["role", "text", "at"]);
+
+export function blobThreadHasDisallowedKeys(thread: unknown): boolean {
+  if (!Array.isArray(thread)) return false;
+  for (const item of thread) {
+    if (!item || typeof item !== "object" || Array.isArray(item)) continue;
+    const row = item as Record<string, unknown>;
+    if (
+      blobRowHasUnknownKey(row, THREAD_ENTRY_KEYS) ||
+      blobRowHasSnakeCaseKey(row) ||
+      blobRowHasUnexpectedCamelKey(row) ||
+      blobRowHasKebabCaseKey(row) ||
+      blobRowHasDottedKey(row)
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeRecord | null {
   const expectedPath = intakePathFromPath(pathname);
   if (!expectedPath) return null;
@@ -460,6 +480,7 @@ export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeR
   ) {
     return null;
   }
+  if (blobThreadHasDisallowedKeys(row.thread)) return null;
   const path = typeof row.path === "string" ? row.path.trim().toLowerCase() : "";
   if (path !== expectedPath) return null;
   const parsed = parseIntakeRecord(raw);
