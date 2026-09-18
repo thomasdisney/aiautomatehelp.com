@@ -333,7 +333,8 @@ export function blobRowHasUnknownKey(
 export const THREAD_ENTRY_KEYS: ReadonlySet<string> = new Set(["role", "text", "at"]);
 
 export function blobThreadHasDisallowedKeys(thread: unknown): boolean {
-  if (!Array.isArray(thread)) return false;
+  if (thread === undefined) return false;
+  if (!Array.isArray(thread)) return true;
   for (const item of thread) {
     if (!item || typeof item !== "object" || Array.isArray(item)) continue;
     const row = item as Record<string, unknown>;

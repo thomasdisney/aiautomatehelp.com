@@ -99656,4 +99656,90 @@ assert.equal(
   id,
 );
 
+const dirtyObjectThreadBlob = {
+  ...record,
+  path: `INTAKE/${id}.JSON`,
+  thread: {
+    role: "customer",
+    text: "Need a quote for the inbox",
+    at: record.receivedAt,
+    receipturl: "https://pay.example.test/receipts/hosted",
+    extra: "drop-me",
+  },
+};
+assert.equal(
+  parseIntakeRecordAtPath(JSON.stringify(dirtyObjectThreadBlob), `intake/${id}.json`),
+  null,
+);
+assert.equal(parseIntakeRecord(JSON.stringify(dirtyObjectThreadBlob))?.id, id);
+assert.deepEqual(parseIntakeRecord(JSON.stringify(dirtyObjectThreadBlob))?.thread, []);
+assert.equal(
+  "receipturl" in (parseIntakeRecord(JSON.stringify(dirtyObjectThreadBlob)) ?? {}),
+  false,
+);
+assert.equal(
+  "extra" in (parseIntakeRecord(JSON.stringify(dirtyObjectThreadBlob)) ?? {}),
+  false,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      path: `INTAKE/${id}.JSON`,
+      thread: {
+        extra: "drop-me",
+      },
+    }),
+    `intake/${id}.json`,
+  ),
+  null,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      path: `INTAKE/${id}.JSON`,
+      thread: "https://pay.example.test/receipts/hosted",
+    }),
+    `intake/${id}.json`,
+  ),
+  null,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      path: `INTAKE/${id}.JSON`,
+      thread: null,
+    }),
+    `intake/${id}.json`,
+  ),
+  null,
+);
+
+const dirtyObjectThreadWrite = toIntakePathPayload({
+  ...record,
+  thread: {
+    role: "customer",
+    text: "Need a quote for the inbox",
+    at: record.receivedAt,
+    receipturl: "https://pay.example.test/receipts/hosted",
+    extra: "drop-me",
+  },
+});
+const dirtyObjectThreadJson = JSON.stringify(dirtyObjectThreadWrite);
+assert.equal(Array.isArray(dirtyObjectThreadWrite?.thread), true);
+assert.deepEqual(dirtyObjectThreadWrite?.thread, []);
+assert.equal(dirtyObjectThreadJson.includes("receipturl"), false);
+assert.equal(dirtyObjectThreadJson.includes("drop-me"), false);
+assert.equal(dirtyObjectThreadJson.includes("Need a quote for the inbox"), false);
+assert.equal(
+  parseIntakeRecordAtPath(dirtyObjectThreadJson, `intake/${id}.json`)?.id,
+  id,
+);
+assert.deepEqual(
+  parseIntakeRecordAtPath(dirtyObjectThreadJson, `intake/${id}.json`)?.thread,
+  [],
+);
+
 console.log("intake checks ok");
