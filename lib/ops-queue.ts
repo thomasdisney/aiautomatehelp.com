@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import {
   blobRowHasSnakeCaseKey,
+  blobRowHasUnexpectedCamelKey,
   hydrateThread,
   intakeBlobPath,
   intakeIdFromBlobPath,
@@ -151,6 +152,7 @@ export function parseOpsEventAtPath(raw: string, pathname: unknown): OpsEvent | 
   const row = value as Record<string, unknown>;
   if (
     blobRowHasSnakeCaseKey(row) ||
+    blobRowHasUnexpectedCamelKey(row) ||
     !("path" in row) ||
     "ids" in row ||
     "digest" in row ||
@@ -672,6 +674,7 @@ export function parseEmailIndexAtPath(
   const row = value as Record<string, unknown>;
   if (
     blobRowHasSnakeCaseKey(row) ||
+    blobRowHasUnexpectedCamelKey(row) ||
     !("path" in row) ||
     !("digest" in row) ||
     "event" in row ||
@@ -837,6 +840,7 @@ export function parseWorkIndexAtPath(raw: string, pathname: unknown): string[] {
   const row = value as Record<string, unknown>;
   if (
     blobRowHasSnakeCaseKey(row) ||
+    blobRowHasUnexpectedCamelKey(row) ||
     !("path" in row) ||
     "digest" in row ||
     "event" in row ||

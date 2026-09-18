@@ -243,6 +243,35 @@ export function blobRowHasSnakeCaseKey(row: Record<string, unknown>): boolean {
   return Object.keys(row).some((key) => key.includes("_"));
 }
 
+export const INTAKE_PATH_CAMEL_KEYS: ReadonlySet<string> = new Set([
+  "receivedAt",
+  "quoteText",
+  "customerReply",
+  "customerReplyAt",
+  "updateText",
+  "updateAt",
+  "amountCents",
+  "paidAt",
+  "paymentRef",
+  "dueAt",
+  "operatorNote",
+  "doneWhen",
+  "confirmedAt",
+  "acceptedAt",
+  "deliveredAt",
+  "withdrawnAt",
+  "declinedAt",
+  "quotedAt",
+  "notedAt",
+]);
+
+export function blobRowHasUnexpectedCamelKey(
+  row: Record<string, unknown>,
+  allowed: ReadonlySet<string> = new Set(),
+): boolean {
+  return Object.keys(row).some((key) => /[A-Z]/.test(key) && !allowed.has(key));
+}
+
 export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeRecord | null {
   const expectedPath = intakePathFromPath(pathname);
   if (!expectedPath) return null;
@@ -258,6 +287,7 @@ export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeR
   const row = value as Record<string, unknown>;
   if (
     blobRowHasSnakeCaseKey(row) ||
+    blobRowHasUnexpectedCamelKey(row, INTAKE_PATH_CAMEL_KEYS) ||
     !("path" in row) ||
     "event" in row ||
     "digest" in row ||
