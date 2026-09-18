@@ -270,7 +270,8 @@ export function parseOpsEventAtPath(raw: string, pathname: unknown): OpsEvent | 
     "custom_text" in row ||
     "customer_account" in row ||
     "customer_update" in row ||
-    "excluded_payment_method_types" in row
+    "excluded_payment_method_types" in row ||
+    "managed_payments" in row
   ) {
     return null;
   }
