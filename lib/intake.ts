@@ -272,6 +272,10 @@ export function blobRowHasUnexpectedCamelKey(
   return Object.keys(row).some((key) => /[A-Z]/.test(key) && !allowed.has(key));
 }
 
+export function blobRowHasKebabCaseKey(row: Record<string, unknown>): boolean {
+  return Object.keys(row).some((key) => key.includes("-"));
+}
+
 export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeRecord | null {
   const expectedPath = intakePathFromPath(pathname);
   if (!expectedPath) return null;
@@ -288,6 +292,7 @@ export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeR
   if (
     blobRowHasSnakeCaseKey(row) ||
     blobRowHasUnexpectedCamelKey(row, INTAKE_PATH_CAMEL_KEYS) ||
+    blobRowHasKebabCaseKey(row) ||
     !("path" in row) ||
     "event" in row ||
     "digest" in row ||
