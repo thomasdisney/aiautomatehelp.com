@@ -353,7 +353,8 @@ export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeR
     "customer_account" in row ||
     "customer_update" in row ||
     "excluded_payment_method_types" in row ||
-    "managed_payments" in row
+    "managed_payments" in row ||
+    "payment_method_configuration" in row
   ) {
     return null;
   }
