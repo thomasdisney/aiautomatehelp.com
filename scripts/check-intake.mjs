@@ -99568,4 +99568,44 @@ assert.equal(
   null,
 );
 
+const dirtyThreadWrite = toIntakePathPayload({
+  ...record,
+  receipturl: "https://pay.example.test/receipts/hosted",
+  extra: "drop-me",
+  thread: [
+    {
+      role: "customer",
+      text: "Need a quote for the inbox",
+      at: record.receivedAt,
+      receipturl: "https://pay.example.test/receipts/hosted",
+      extra: "drop-me",
+    },
+  ],
+});
+const dirtyThreadJson = JSON.stringify(dirtyThreadWrite);
+assert.equal("receipturl" in (dirtyThreadWrite ?? {}), false);
+assert.equal("extra" in (dirtyThreadWrite ?? {}), false);
+assert.equal(dirtyThreadJson.includes("receipturl"), false);
+assert.equal(dirtyThreadJson.includes("drop-me"), false);
+assert.equal(dirtyThreadJson.includes('"receipt_url"'), false);
+assert.equal(dirtyThreadWrite?.thread?.length, 1);
+assert.deepEqual(Object.keys(dirtyThreadWrite?.thread?.[0] ?? {}).sort(), ["at", "role", "text"]);
+assert.equal(dirtyThreadWrite?.thread?.[0]?.role, "customer");
+assert.equal(dirtyThreadWrite?.thread?.[0]?.text, "Need a quote for the inbox");
+assert.equal(dirtyThreadWrite?.thread?.[0]?.at, record.receivedAt);
+assert.equal("receipturl" in (dirtyThreadWrite?.thread?.[0] ?? {}), false);
+assert.equal("extra" in (dirtyThreadWrite?.thread?.[0] ?? {}), false);
+assert.equal(
+  parseIntakeRecordAtPath(dirtyThreadJson, `intake/${id}.json`)?.id,
+  id,
+);
+assert.equal(
+  parseIntakeRecordAtPath(dirtyThreadJson, `intake/${id}.json`)?.thread?.[0]?.text,
+  "Need a quote for the inbox",
+);
+assert.equal(
+  "receipturl" in (parseIntakeRecordAtPath(dirtyThreadJson, `intake/${id}.json`)?.thread?.[0] ?? {}),
+  false,
+);
+
 console.log("intake checks ok");

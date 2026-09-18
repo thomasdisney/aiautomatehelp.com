@@ -247,9 +247,9 @@ export function toIntakePathPayload(
   const id = typeof record.id === "string" ? record.id.trim().toLowerCase() : "";
   const path = intakeBlobPath(id);
   if (!path) return null;
-  return pickAllowedBlobKeys({ ...record, id, path }, INTAKE_PATH_KEYS) as IntakeRecord & {
-    path: string;
-  };
+  const payload = pickAllowedBlobKeys({ ...record, id, path }, INTAKE_PATH_KEYS);
+  payload.thread = parseThread(payload.thread);
+  return payload as IntakeRecord & { path: string };
 }
 
 export function blobRowHasSnakeCaseKey(row: Record<string, unknown>): boolean {
