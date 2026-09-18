@@ -158,6 +158,29 @@ export function customerStatusCopy(status: string, paymentConnected = false): st
   return STATUS_COPY[parsed];
 }
 
+export function customerReplyIntroCopy(
+  status: string,
+  paymentConnected = false,
+  confirmed = false,
+): string {
+  if (status === "quoted") {
+    const base =
+      "Accept, turn it down, or ask a question here. Accepting agrees to the stored written scope, price, date, and done-when test together. Notes stay on this page in order.";
+    return paymentConnected
+      ? `${base} After you accept, payment is the stored amount only. You can still turn it down until it is paid.`
+      : `${base} Payment is not open on this page yet. You can still turn it down.`;
+  }
+  if (status === "accepted") {
+    return paymentConnected
+      ? "You can still turn this quote down until it is paid. Ask a question here. Notes stay on this page in order."
+      : "You can still turn this quote down. Payment is not open on this page yet. Ask a question here. Notes stay on this page in order.";
+  }
+  if (status === "delivered" && !confirmed) {
+    return "The handoff is posted. Confirm the stored done-when test here when it passes, or ask a question. Notes stay on this page in order.";
+  }
+  return "Ask a question about this brief here. Notes stay on this page in order.";
+}
+
 export function toPublicStatus(record: IntakeRecord): PublicStatus {
   const view: PublicStatus = {
     id: record.id,

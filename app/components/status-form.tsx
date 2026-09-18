@@ -13,7 +13,7 @@ import {
   subscribeBriefReceipts,
 } from "@/lib/brief-receipt";
 import { FIELD_LIMITS, parseDueAt, parseThread, type ThreadEntry } from "@/lib/intake";
-import { customerStatusCopy } from "@/lib/status";
+import { customerReplyIntroCopy, customerStatusCopy } from "@/lib/status";
 
 type Found = {
   kind: "found";
@@ -398,6 +398,7 @@ export function StatusForm({
             accepted={result.status === "accepted"}
             delivered={result.status === "delivered"}
             confirmed={Boolean(result.confirmedAt)}
+            paymentConnected={paymentConnected}
             amountCents={result.amountCents}
             dueAt={result.dueAt}
             doneWhen={result.doneWhen}
@@ -498,6 +499,7 @@ function ReplyPanel({
   accepted,
   delivered,
   confirmed,
+  paymentConnected,
   amountCents,
   dueAt,
   doneWhen,
@@ -510,6 +512,7 @@ function ReplyPanel({
   accepted: boolean;
   delivered: boolean;
   confirmed: boolean;
+  paymentConnected: boolean;
   amountCents?: number;
   dueAt?: string;
   doneWhen?: string;
@@ -547,13 +550,11 @@ function ReplyPanel({
     <div className="space-y-4 rounded-2xl border border-ink/10 bg-white p-6 sm:p-8">
       <p className="text-sm font-medium text-ink">Reply on this brief</p>
       <p className="text-sm leading-relaxed text-ink/60">
-        {quoted
-          ? "Accept, turn it down, or ask a question here. Accepting agrees to the stored written scope, price, date, and done-when test together. Notes stay on this page in order. After you accept, payment is the stored amount only. You can still turn it down until it is paid."
-          : accepted
-            ? "You can still turn this quote down until it is paid. Ask a question here. Notes stay on this page in order."
-            : delivered && !confirmed
-              ? "The handoff is posted. Confirm the stored done-when test here when it passes, or ask a question. Notes stay on this page in order."
-              : "Ask a question about this brief here. Notes stay on this page in order."}
+        {customerReplyIntroCopy(
+          quoted ? "quoted" : accepted ? "accepted" : delivered ? "delivered" : "other",
+          paymentConnected,
+          confirmed,
+        )}
       </p>
       <div>
         <label htmlFor="note" className="block text-sm font-medium text-ink">

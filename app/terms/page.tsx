@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
+import { paymentConfigured } from "@/lib/payment";
+import { termsOfferCopy, termsScopeCopy } from "@/lib/site-copy";
 
 export const metadata: Metadata = {
   title: "Terms",
-  description: "Terms for using AutomateAI and buying a scoped job.",
+  description: "Terms for using AutomateAI and a scoped job.",
 };
 
 export default function TermsPage() {
+  const paymentLive = paymentConfigured();
   return (
     <article className="mx-auto max-w-3xl px-5 py-16">
       <h1 className="font-serif text-4xl text-ink">Terms</h1>
@@ -13,26 +16,9 @@ export default function TermsPage() {
         These terms cover aiautomatehelp.com and scoped work sold as AutomateAI.
       </p>
       <h2 className="mt-10 text-xl font-semibold text-ink">The offer</h2>
-      <p className="mt-3 leading-relaxed text-ink/70">
-        A quote is an offer for one written scope at a fixed price, with a
-        delivery date and a done-when test. You accept the written scope,
-        price, date, and test together. After you accept, that scope, price,
-        date, and test stay on the brief.
-        You can turn the quote down until it is paid. Turning it down closes
-        those terms; a later quote on the same brief is a new offer and shows
-        as a new note on the status page. If you asked a question before I
-        quote, that quote includes a new note on the status page. After
-        payment, the job is on. New work is a new quote. Work starts after
-        payment. After I post the handoff, you confirm the stored done-when
-        test on the status page. There is no monthly retainer on this site
-        unless we later agree to one in writing.
-      </p>
+      <p className="mt-3 leading-relaxed text-ink/70">{termsOfferCopy(paymentLive)}</p>
       <h2 className="mt-10 text-xl font-semibold text-ink">Scope</h2>
-      <p className="mt-3 leading-relaxed text-ink/70">
-        I build what the scope says. New requests are a new quote. I may decline
-        a job, including after you accept, until it is paid. If I decline, the
-        no and the reason show on the status page.
-      </p>
+      <p className="mt-3 leading-relaxed text-ink/70">{termsScopeCopy(paymentLive)}</p>
       <h2 className="mt-10 text-xl font-semibold text-ink">Your materials</h2>
       <p className="mt-3 leading-relaxed text-ink/70">
         Do not send secrets in a form. You must have the right to give me the

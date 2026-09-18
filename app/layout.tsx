@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Source_Serif_4 } from "next/font/google";
 import { SiteFooter } from "@/app/components/site-footer";
 import { SiteHeader } from "@/app/components/site-header";
+import { paymentConfigured } from "@/lib/payment";
+import { siteMetaDescription } from "@/lib/site-copy";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -16,33 +18,34 @@ const sourceSerif = Source_Serif_4({
 
 const siteUrl = "https://www.aiautomatehelp.com";
 
-export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
-  title: {
-    default: "AutomateAI — scoped automation, built to order",
-    template: "%s · AutomateAI",
-  },
-  description:
-    "One repetitive workflow at a time. Fixed quote after a brief. Paid before I start.",
-  alternates: {
-    canonical: "/",
-  },
-  openGraph: {
-    title: "AutomateAI — scoped automation, built to order",
-    description:
-      "One repetitive workflow at a time. Fixed quote after a brief. Paid before I start.",
-    url: siteUrl,
-    siteName: "AutomateAI",
-    type: "website",
-  },
-  robots: {
-    index: true,
-    follow: true,
-  },
-  icons: {
-    icon: "/icon.svg",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const description = siteMetaDescription(paymentConfigured());
+  return {
+    metadataBase: new URL(siteUrl),
+    title: {
+      default: "AutomateAI — scoped automation, built to order",
+      template: "%s · AutomateAI",
+    },
+    description,
+    alternates: {
+      canonical: "/",
+    },
+    openGraph: {
+      title: "AutomateAI — scoped automation, built to order",
+      description,
+      url: siteUrl,
+      siteName: "AutomateAI",
+      type: "website",
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
+    icons: {
+      icon: "/icon.svg",
+    },
+  };
+}
 
 export default function RootLayout({
   children,

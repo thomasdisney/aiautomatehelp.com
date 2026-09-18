@@ -39,7 +39,13 @@ import {
   parseInboxFind,
   quoteTermsMatch,
   customerStatusCopy,
+  customerReplyIntroCopy,
 } from "../lib/status.ts";
+import {
+  siteMetaDescription,
+  termsOfferCopy,
+  termsScopeCopy,
+} from "../lib/site-copy.ts";
 import {
   emptyQueue,
   customerEventAt,
@@ -299,6 +305,40 @@ assert.equal(customerStatusCopy("received", false), customerStatusCopy("received
 assert.equal(customerStatusCopy("received", false).includes("Pay here"), false);
 assert.equal(customerStatusCopy("paid", true).includes("Paid."), true);
 assert.equal(customerStatusCopy("unknown", false).includes("on file"), true);
+
+const quotedReplyConnected = customerReplyIntroCopy("quoted", true);
+const quotedReplyDisconnected = customerReplyIntroCopy("quoted", false);
+const acceptedReplyConnected = customerReplyIntroCopy("accepted", true);
+const acceptedReplyDisconnected = customerReplyIntroCopy("accepted", false);
+assert.equal(quotedReplyConnected.includes("payment is the stored amount only"), true);
+assert.equal(quotedReplyConnected.includes("until it is paid"), true);
+assert.equal(quotedReplyDisconnected.includes("payment is the stored amount"), false);
+assert.equal(quotedReplyDisconnected.includes("until it is paid"), false);
+assert.equal(quotedReplyDisconnected.includes("Payment is not open on this page yet."), true);
+assert.equal(acceptedReplyConnected.includes("until it is paid"), true);
+assert.equal(acceptedReplyDisconnected.includes("until it is paid"), false);
+assert.equal(acceptedReplyDisconnected.includes("Payment is not open on this page yet."), true);
+assert.equal(
+  customerReplyIntroCopy("delivered", false, false).includes("handoff is posted"),
+  true,
+);
+assert.equal(customerReplyIntroCopy("received", false).includes("until it is paid"), false);
+
+const metaConnected = siteMetaDescription(true);
+const metaDisconnected = siteMetaDescription(false);
+assert.equal(metaConnected.includes("Paid before I start."), true);
+assert.equal(metaDisconnected.includes("Paid before I start"), false);
+assert.equal(metaDisconnected.includes("Checkout is not open on this site yet."), true);
+
+const termsOfferConnected = termsOfferCopy(true);
+const termsOfferDisconnected = termsOfferCopy(false);
+assert.equal(termsOfferConnected.includes("Work starts after payment."), true);
+assert.equal(termsOfferDisconnected.includes("Work starts after payment"), false);
+assert.equal(termsOfferDisconnected.includes("until it is paid"), false);
+assert.equal(termsOfferDisconnected.includes("Checkout is not open on this site yet."), true);
+assert.equal(termsScopeCopy(true).includes("until it is paid"), true);
+assert.equal(termsScopeCopy(false).includes("until it is paid"), false);
+assert.equal(termsScopeCopy(false).includes("until I post the handoff"), true);
 
 const doneWhenText = "A test submit creates one new row in the named sheet.";
 const laterDoneWhen = "A weekly PDF lands in the named inbox every Monday.";
