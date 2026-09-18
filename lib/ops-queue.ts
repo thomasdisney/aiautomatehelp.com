@@ -961,7 +961,8 @@ export function parseWorkIndexAtPath(raw: string, pathname: unknown): string[] {
     "setup_intent_data" in row ||
     "subscription_data" in row ||
     "receipt_email" in row ||
-    "receipt_number" in row
+    "receipt_number" in row ||
+    "receipt_url" in row
   ) {
     return [];
   }
