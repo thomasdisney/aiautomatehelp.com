@@ -42,3 +42,7 @@ export function privacySharingCopy(paymentConnected = false): string {
   }
   return "I do not sell your information. Hosting may see what it needs to run the site. Checkout is not open on this site yet. I will not hand your message to a personal inbox off this site.";
 }
+
+export function noOutboundEmailCopy(): string {
+  return "This email identifies the brief on the status page. I will not send mail here.";
+}

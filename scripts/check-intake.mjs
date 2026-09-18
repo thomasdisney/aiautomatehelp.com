@@ -48,6 +48,7 @@ import {
   termsScopeCopy,
   priceFaqCopy,
   privacySharingCopy,
+  noOutboundEmailCopy,
 } from "../lib/site-copy.ts";
 import {
   emptyQueue,
@@ -376,6 +377,13 @@ assert.equal(jsonLdConnected.includes("Paid before I start."), true);
 assert.equal(jsonLdDisconnected.includes("Paid before I start"), false);
 assert.equal(jsonLdDisconnected.includes("Checkout is not open on this site yet."), true);
 assert.equal(jsonLdDisconnected.includes("payment processors"), false);
+
+const noOutboundEmail = noOutboundEmailCopy();
+assert.equal(noOutboundEmail.includes("I will not send mail here."), true);
+assert.equal(noOutboundEmail.includes("status page"), true);
+assert.equal(noOutboundEmail.includes("check your email"), false);
+assert.equal(noOutboundEmail.includes("confirmation email"), false);
+assert.equal(noOutboundEmail.toLowerCase().includes("mailto"), false);
 
 const doneWhenText = "A test submit creates one new row in the named sheet.";
 const laterDoneWhen = "A weekly PDF lands in the named inbox every Monday.";

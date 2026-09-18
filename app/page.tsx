@@ -1,7 +1,7 @@
 import { IntakeForm } from "@/app/components/intake-form";
 import { intakeStoreConfigured } from "@/lib/intake-store";
 import { paymentConfigured } from "@/lib/payment";
-import { priceFaqCopy } from "@/lib/site-copy";
+import { noOutboundEmailCopy, priceFaqCopy } from "@/lib/site-copy";
 
 const EXAMPLES = [
   {
@@ -238,8 +238,8 @@ export default function Home() {
               </li>
             </ol>
             <p className="mt-6 leading-relaxed text-ink/70">
-              After you send a brief, save the full reference. This browser keeps it and shows
-              the original received time from this device.
+              After you send a brief, save the full reference. {noOutboundEmailCopy()} This
+              browser keeps it and shows the original received time from this device.
             </p>
             <p className="mt-6 leading-relaxed text-ink/70">
               Support stays on this site. Check progress on the{" "}

@@ -15,6 +15,7 @@ import {
   toPublicIntakeCreate,
 } from "@/lib/brief-receipt";
 import { FIELD_LIMITS } from "@/lib/intake";
+import { noOutboundEmailCopy } from "@/lib/site-copy";
 
 type Status =
   | { kind: "idle" }
@@ -156,9 +157,9 @@ export function IntakeForm({ connected }: { connected: boolean }) {
         <div className="rounded-2xl border border-ink/10 bg-white p-6 sm:p-8" role="status">
           <p className="text-lg font-semibold text-ink">Brief received</p>
           <p className="mt-3 leading-relaxed text-ink/70">
-            A yes or no and, if yes, a fixed quote will show on the status page. Save this full
-            reference — this browser keeps it and shows the original received time from this
-            device.
+            {noOutboundEmailCopy()} A yes or no and, if yes, a fixed quote will show on the
+            status page. Save this full reference — this browser keeps it and shows the original
+            received time from this device.
           </p>
           <p className="mt-4 break-all font-mono text-sm text-ink">{status.id}</p>
           {status.receivedAt ? (
@@ -193,7 +194,7 @@ export function IntakeForm({ connected }: { connected: boolean }) {
         className="space-y-5 rounded-2xl border border-ink/10 bg-white p-6 sm:p-8"
       >
         <p className="text-sm text-ink/60">
-          Describe one workflow. Do not send secrets.
+          Describe one workflow. Do not send secrets. {noOutboundEmailCopy()}
         </p>
         <div className="absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden="true">
           <label htmlFor="website">Website</label>
