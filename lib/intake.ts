@@ -239,6 +239,10 @@ export function toIntakePathPayload(
   return { ...record, id, path };
 }
 
+export function blobRowHasSnakeCaseKey(row: Record<string, unknown>): boolean {
+  return Object.keys(row).some((key) => key.includes("_"));
+}
+
 export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeRecord | null {
   const expectedPath = intakePathFromPath(pathname);
   if (!expectedPath) return null;
@@ -253,6 +257,7 @@ export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeR
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
   const row = value as Record<string, unknown>;
   if (
+    blobRowHasSnakeCaseKey(row) ||
     !("path" in row) ||
     "event" in row ||
     "digest" in row ||

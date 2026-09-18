@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import {
+  blobRowHasSnakeCaseKey,
   hydrateThread,
   intakeBlobPath,
   intakeIdFromBlobPath,
@@ -149,6 +150,7 @@ export function parseOpsEventAtPath(raw: string, pathname: unknown): OpsEvent | 
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
   const row = value as Record<string, unknown>;
   if (
+    blobRowHasSnakeCaseKey(row) ||
     !("path" in row) ||
     "ids" in row ||
     "digest" in row ||
@@ -669,6 +671,7 @@ export function parseEmailIndexAtPath(
   if (!value || typeof value !== "object" || Array.isArray(value)) return [];
   const row = value as Record<string, unknown>;
   if (
+    blobRowHasSnakeCaseKey(row) ||
     !("path" in row) ||
     !("digest" in row) ||
     "event" in row ||
@@ -833,6 +836,7 @@ export function parseWorkIndexAtPath(raw: string, pathname: unknown): string[] {
   if (!value || typeof value !== "object" || Array.isArray(value)) return [];
   const row = value as Record<string, unknown>;
   if (
+    blobRowHasSnakeCaseKey(row) ||
     !("path" in row) ||
     "digest" in row ||
     "event" in row ||
