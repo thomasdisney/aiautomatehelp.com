@@ -277,7 +277,8 @@ export function parseOpsEventAtPath(raw: string, pathname: unknown): OpsEvent | 
     "setup_intent_data" in row ||
     "subscription_data" in row ||
     "receipt_email" in row ||
-    "receipt_number" in row
+    "receipt_number" in row ||
+    "receipt_url" in row
   ) {
     return null;
   }
