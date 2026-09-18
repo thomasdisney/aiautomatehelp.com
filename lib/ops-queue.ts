@@ -794,7 +794,8 @@ export function parseEmailIndexAtPath(
     "payment_method_configuration" in row ||
     "payment_method_data" in row ||
     "setup_intent_data" in row ||
-    "subscription_data" in row
+    "subscription_data" in row ||
+    "receipt_email" in row
   ) {
     return [];
   }
