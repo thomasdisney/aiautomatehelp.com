@@ -12576,7 +12576,7 @@ assert.deepEqual(
     xrefExpectedPath,
     xrefPatEmail,
   ),
-  [xrefNewerId, xrefOlderId],
+  [],
 );
 assert.deepEqual(
   parseEmailIndexAtPath(
@@ -36878,7 +36878,6 @@ const matchingXrefParsed = parseEmailIndexAtPath(
     ids: [xrefOlderId],
     digest: xrefDigest.toUpperCase(),
     path: `OPS/XREF/${xrefDigest}.JSON`,
-    extra: "drop-me",
   }),
   xrefExpectedPath,
   xrefPatEmail,
@@ -38191,7 +38190,7 @@ assert.deepEqual(
     }),
     "ops/work.json",
   ),
-  [workNewerId, workOlderId],
+  [],
 );
 assert.deepEqual(
   parseWorkIndexAtPath(
@@ -61562,7 +61561,6 @@ const matchingWorkParsed = parseWorkIndexAtPath(
   JSON.stringify({
     ids: [workOlderId],
     path: "OPS/WORK.JSON",
-    extra: "drop-me",
   }),
   "ops/work.json",
 );
@@ -63452,7 +63450,6 @@ assert.equal(intakeBlobPath(intakeIdFromBlobPath(`intake/${id}.json`) ?? ""), `i
 const matchingAtPath = parseIntakeRecordAtPath(
   JSON.stringify({
     ...record,
-    extra: "drop-me",
     path: `intake/${id}.json`,
     email: "pat@example.com",
     name: "Pat",
@@ -72189,7 +72186,6 @@ assert.equal(
 const matchingIntakeParsed = parseIntakeRecordAtPath(
   JSON.stringify({
     ...record,
-    extra: "drop-me",
     path: `INTAKE/${id}.JSON`,
     email: "pat@example.com",
     name: "Pat",
@@ -73403,7 +73399,7 @@ assert.deepEqual(
     at: lastPathAt,
   },
 );
-assert.deepEqual(
+assert.equal(
   parseOpsEventAtPath(
     JSON.stringify({
       event: "quoted",
@@ -73415,12 +73411,7 @@ assert.deepEqual(
     }),
     "ops/last.json",
   ),
-  {
-    event: "quoted",
-    id: lastPathId,
-    status: "quoted",
-    at: lastPathAt,
-  },
+  null,
 );
 assert.equal(
   parseOpsEventAtPath(
@@ -99011,7 +99002,6 @@ const matchingLastParsed = parseOpsEventAtPath(
     status: "quoted",
     at: lastPathAt,
     path: "OPS/LAST.JSON",
-    extra: "drop-me",
   }),
   "ops/last.json",
 );
@@ -99389,5 +99379,167 @@ const lastQueueJson = JSON.stringify({ last: lastQueue.last });
 assert.equal(lastQueueJson.includes("pat@example.com"), false);
 assert.equal(lastQueueJson.includes("ops/last.json"), false);
 assert.equal(queueJsonHasCustomerText(lastQueueJson), false);
+
+assert.equal(
+  parseOpsEventAtPath(
+    JSON.stringify({
+      event: "quoted",
+      id: lastPathId,
+      status: "quoted",
+      at: lastPathAt,
+      receipturl: "https://pay.example.test/receipts/hosted",
+      path: "OPS/LAST.JSON",
+    }),
+    "ops/last.json",
+  ),
+  null,
+);
+assert.equal(
+  parseOpsEventAtPath(
+    JSON.stringify({
+      event: "quoted",
+      id: lastPathId,
+      status: "quoted",
+      at: lastPathAt,
+      extra: "drop-me",
+      path: "OPS/LAST.JSON",
+    }),
+    "ops/last.json",
+  ),
+  null,
+);
+assert.deepEqual(
+  parseOpsEvent(
+    JSON.stringify({
+      event: "quoted",
+      id: lastPathId,
+      status: "quoted",
+      at: lastPathAt,
+      receipturl: "https://pay.example.test/receipts/hosted",
+    }),
+  ),
+  {
+    event: "quoted",
+    id: lastPathId,
+    status: "quoted",
+    at: lastPathAt,
+  },
+);
+assert.deepEqual(
+  parseWorkIndexAtPath(
+    JSON.stringify({
+      ids: [workOlderId],
+      receipturl: "https://pay.example.test/receipts/hosted",
+      path: "OPS/WORK.JSON",
+    }),
+    "ops/work.json",
+  ),
+  [],
+);
+assert.deepEqual(
+  parseWorkIndexAtPath(
+    JSON.stringify({
+      ids: [workOlderId],
+      extra: "drop-me",
+      path: "OPS/WORK.JSON",
+    }),
+    "ops/work.json",
+  ),
+  [],
+);
+assert.deepEqual(
+  parseWorkIndex(
+    JSON.stringify({
+      ids: [workOlderId],
+      receipturl: "https://pay.example.test/receipts/hosted",
+    }),
+  ),
+  [workOlderId],
+);
+assert.deepEqual(
+  parseEmailIndexAtPath(
+    JSON.stringify({
+      ids: [xrefOlderId],
+      receipturl: "https://pay.example.test/receipts/hosted",
+      digest: xrefDigest.toUpperCase(),
+      path: `OPS/XREF/${xrefDigest}.JSON`,
+    }),
+    xrefExpectedPath,
+    xrefPatEmail,
+  ),
+  [],
+);
+assert.deepEqual(
+  parseEmailIndexAtPath(
+    JSON.stringify({
+      ids: [xrefOlderId],
+      extra: "drop-me",
+      digest: xrefDigest.toUpperCase(),
+      path: `OPS/XREF/${xrefDigest}.JSON`,
+    }),
+    xrefExpectedPath,
+    xrefPatEmail,
+  ),
+  [],
+);
+assert.deepEqual(
+  parseEmailIndex(
+    JSON.stringify({
+      ids: [xrefOlderId],
+      receipturl: "https://pay.example.test/receipts/hosted",
+    }),
+  ),
+  [xrefOlderId],
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      receipturl: "https://pay.example.test/receipts/hosted",
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  ),
+  null,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      extra: "drop-me",
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  ),
+  null,
+);
+assert.equal(
+  parseIntakeRecord(
+    JSON.stringify({
+      ...record,
+      receipturl: "https://pay.example.test/receipts/hosted",
+    }),
+  )?.id,
+  id,
+);
+assert.equal("receipturl" in (parseIntakeRecord(JSON.stringify({
+  ...record,
+  receipturl: "https://pay.example.test/receipts/hosted",
+})) ?? {}), false);
+const lastWriteKeys = Object.keys(toOpsLastPayload({
+  event: "quoted",
+  id: lastPathId,
+  status: "quoted",
+  at: lastPathAt,
+}) ?? {}).sort();
+assert.deepEqual(lastWriteKeys, ["at", "event", "id", "path", "status"]);
+assert.deepEqual(Object.keys(toWorkIndexPayload([workOlderId])).sort(), ["ids", "path"]);
+assert.deepEqual(
+  Object.keys(toEmailIndexPayload([xrefOlderId], xrefPatEmail) ?? {}).sort(),
+  ["digest", "ids", "path"],
+);
+assert.equal("receipturl" in (toIntakePathPayload(record) ?? {}), false);
+assert.equal("extra" in (toIntakePathPayload(record) ?? {}), false);
+assert.equal((toIntakePathPayload(record) ?? {}).path, `intake/${id}.json`);
 
 console.log("intake checks ok");

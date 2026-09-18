@@ -280,6 +280,43 @@ export function blobRowHasDottedKey(row: Record<string, unknown>): boolean {
   return Object.keys(row).some((key) => key.includes("."));
 }
 
+export const INTAKE_PATH_KEYS: ReadonlySet<string> = new Set([
+  "id",
+  "receivedAt",
+  "status",
+  "quoteText",
+  "customerReply",
+  "customerReplyAt",
+  "updateText",
+  "updateAt",
+  "amountCents",
+  "paidAt",
+  "paymentRef",
+  "dueAt",
+  "thread",
+  "operatorNote",
+  "doneWhen",
+  "confirmedAt",
+  "acceptedAt",
+  "deliveredAt",
+  "withdrawnAt",
+  "declinedAt",
+  "quotedAt",
+  "notedAt",
+  "name",
+  "email",
+  "company",
+  "message",
+  "path",
+]);
+
+export function blobRowHasUnknownKey(
+  row: Record<string, unknown>,
+  allowed: ReadonlySet<string>,
+): boolean {
+  return Object.keys(row).some((key) => !allowed.has(key));
+}
+
 export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeRecord | null {
   const expectedPath = intakePathFromPath(pathname);
   if (!expectedPath) return null;
@@ -294,6 +331,7 @@ export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeR
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
   const row = value as Record<string, unknown>;
   if (
+    blobRowHasUnknownKey(row, INTAKE_PATH_KEYS) ||
     blobRowHasSnakeCaseKey(row) ||
     blobRowHasUnexpectedCamelKey(row, INTAKE_PATH_CAMEL_KEYS) ||
     blobRowHasKebabCaseKey(row) ||

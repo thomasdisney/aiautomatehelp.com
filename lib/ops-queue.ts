@@ -4,6 +4,7 @@ import {
   blobRowHasUnexpectedCamelKey,
   blobRowHasKebabCaseKey,
   blobRowHasDottedKey,
+  blobRowHasUnknownKey,
   hydrateThread,
   intakeBlobPath,
   intakeIdFromBlobPath,
@@ -70,6 +71,22 @@ export function opsLastPath(): string {
 export function opsWorkPath(): string {
   return "ops/work.json";
 }
+
+export const OPS_LAST_PATH_KEYS: ReadonlySet<string> = new Set([
+  "event",
+  "id",
+  "status",
+  "at",
+  "path",
+]);
+
+export const OPS_WORK_PATH_KEYS: ReadonlySet<string> = new Set(["ids", "path"]);
+
+export const OPS_XREF_PATH_KEYS: ReadonlySet<string> = new Set([
+  "ids",
+  "digest",
+  "path",
+]);
 
 export function opsWorkPathFromPath(pathname: unknown): string | null {
   if (typeof pathname !== "string") return null;
@@ -153,6 +170,7 @@ export function parseOpsEventAtPath(raw: string, pathname: unknown): OpsEvent | 
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
   const row = value as Record<string, unknown>;
   if (
+    blobRowHasUnknownKey(row, OPS_LAST_PATH_KEYS) ||
     blobRowHasSnakeCaseKey(row) ||
     blobRowHasUnexpectedCamelKey(row) ||
     blobRowHasKebabCaseKey(row) ||
@@ -677,6 +695,7 @@ export function parseEmailIndexAtPath(
   if (!value || typeof value !== "object" || Array.isArray(value)) return [];
   const row = value as Record<string, unknown>;
   if (
+    blobRowHasUnknownKey(row, OPS_XREF_PATH_KEYS) ||
     blobRowHasSnakeCaseKey(row) ||
     blobRowHasUnexpectedCamelKey(row) ||
     blobRowHasKebabCaseKey(row) ||
@@ -845,6 +864,7 @@ export function parseWorkIndexAtPath(raw: string, pathname: unknown): string[] {
   if (!value || typeof value !== "object" || Array.isArray(value)) return [];
   const row = value as Record<string, unknown>;
   if (
+    blobRowHasUnknownKey(row, OPS_WORK_PATH_KEYS) ||
     blobRowHasSnakeCaseKey(row) ||
     blobRowHasUnexpectedCamelKey(row) ||
     blobRowHasKebabCaseKey(row) ||
