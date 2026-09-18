@@ -3,6 +3,7 @@ import {
   blobRowHasSnakeCaseKey,
   blobRowHasUnexpectedCamelKey,
   blobRowHasKebabCaseKey,
+  blobRowHasDottedKey,
   hydrateThread,
   intakeBlobPath,
   intakeIdFromBlobPath,
@@ -155,6 +156,7 @@ export function parseOpsEventAtPath(raw: string, pathname: unknown): OpsEvent | 
     blobRowHasSnakeCaseKey(row) ||
     blobRowHasUnexpectedCamelKey(row) ||
     blobRowHasKebabCaseKey(row) ||
+    blobRowHasDottedKey(row) ||
     !("path" in row) ||
     "ids" in row ||
     "digest" in row ||
@@ -678,6 +680,7 @@ export function parseEmailIndexAtPath(
     blobRowHasSnakeCaseKey(row) ||
     blobRowHasUnexpectedCamelKey(row) ||
     blobRowHasKebabCaseKey(row) ||
+    blobRowHasDottedKey(row) ||
     !("path" in row) ||
     !("digest" in row) ||
     "event" in row ||
@@ -845,6 +848,7 @@ export function parseWorkIndexAtPath(raw: string, pathname: unknown): string[] {
     blobRowHasSnakeCaseKey(row) ||
     blobRowHasUnexpectedCamelKey(row) ||
     blobRowHasKebabCaseKey(row) ||
+    blobRowHasDottedKey(row) ||
     !("path" in row) ||
     "digest" in row ||
     "event" in row ||

@@ -29343,6 +29343,43 @@ assert.deepEqual(
   parseEmailIndexAtPath(
     JSON.stringify({
       ids: [xrefNewerId, xrefOlderId],
+      "hosted.invoice.url": "https://pay.example.test/invoices/hosted",
+      digest: xrefDigest.toUpperCase(),
+      path: `OPS/XREF/${xrefDigest}.JSON`,
+      extra: "drop-me",
+    }),
+    xrefExpectedPath,
+    xrefPatEmail,
+  ),
+  [],
+);
+assert.deepEqual(
+  parseEmailIndexAtPath(
+    JSON.stringify({
+      ids: [xrefNewerId, xrefOlderId],
+      "drop.me": "drop-me",
+      digest: xrefDigest.toUpperCase(),
+      path: `OPS/XREF/${xrefDigest}.JSON`,
+      extra: "drop-me",
+    }),
+    xrefExpectedPath,
+    xrefPatEmail,
+  ),
+  [],
+);
+assert.deepEqual(
+  parseEmailIndex(
+    JSON.stringify({
+      ids: [xrefNewerId, xrefOlderId],
+      "hosted.invoice.url": "https://pay.example.test/invoices/hosted",
+    }),
+  ),
+  [xrefNewerId, xrefOlderId],
+);
+assert.deepEqual(
+  parseEmailIndexAtPath(
+    JSON.stringify({
+      ids: [xrefNewerId, xrefOlderId],
       receipt_url: xrefPathReceiptUrl,
       digest: xrefDigest,
       path: xrefExpectedPath,
@@ -53978,6 +54015,39 @@ assert.deepEqual(
   parseWorkIndexAtPath(
     JSON.stringify({
       ids: [workNewerId, workOlderId],
+      "hosted.invoice.url": "https://pay.example.test/invoices/hosted",
+      path: "OPS/WORK.JSON",
+      extra: "drop-me",
+    }),
+    "ops/work.json",
+  ),
+  [],
+);
+assert.deepEqual(
+  parseWorkIndexAtPath(
+    JSON.stringify({
+      ids: [workNewerId, workOlderId],
+      "drop.me": "drop-me",
+      path: "OPS/WORK.JSON",
+      extra: "drop-me",
+    }),
+    "ops/work.json",
+  ),
+  [],
+);
+assert.deepEqual(
+  parseWorkIndex(
+    JSON.stringify({
+      ids: [workNewerId, workOlderId],
+      "hosted.invoice.url": "https://pay.example.test/invoices/hosted",
+    }),
+  ),
+  [workNewerId, workOlderId],
+);
+assert.deepEqual(
+  parseWorkIndexAtPath(
+    JSON.stringify({
+      ids: [workNewerId, workOlderId],
       receipt_url: workPathReceiptUrl,
       path: "ops/work.json",
       name: workPathName,
@@ -72057,6 +72127,49 @@ assert.equal(
       JSON.stringify({
         ...record,
         "hosted-invoice-url": "https://pay.example.test/invoices/hosted",
+      }),
+    ) ?? {}),
+  false,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      "hosted.invoice.url": "https://pay.example.test/invoices/hosted",
+      path: `INTAKE/${id}.JSON`,
+      extra: "drop-me",
+    }),
+    `intake/${id}.json`,
+  ),
+  null,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      "drop.me": "drop-me",
+      path: `INTAKE/${id}.JSON`,
+      extra: "drop-me",
+    }),
+    `intake/${id}.json`,
+  ),
+  null,
+);
+assert.equal(
+  parseIntakeRecord(
+    JSON.stringify({
+      ...record,
+      "hosted.invoice.url": "https://pay.example.test/invoices/hosted",
+    }),
+  )?.id,
+  id,
+);
+assert.equal(
+  "hosted.invoice.url" in
+    (parseIntakeRecord(
+      JSON.stringify({
+        ...record,
+        "hosted.invoice.url": "https://pay.example.test/invoices/hosted",
       }),
     ) ?? {}),
   false,
@@ -90518,6 +90631,53 @@ assert.deepEqual(
       status: "quoted",
       at: lastPathAt,
       "hosted-invoice-url": "https://pay.example.test/invoices/hosted",
+    }),
+  ),
+  {
+    event: "quoted",
+    id: lastPathId,
+    status: "quoted",
+    at: lastPathAt,
+  },
+);
+assert.equal(
+  parseOpsEventAtPath(
+    JSON.stringify({
+      event: "quoted",
+      id: lastPathId,
+      status: "quoted",
+      at: lastPathAt,
+      "hosted.invoice.url": "https://pay.example.test/invoices/hosted",
+      path: "OPS/LAST.JSON",
+      extra: "drop-me",
+    }),
+    "ops/last.json",
+  ),
+  null,
+);
+assert.equal(
+  parseOpsEventAtPath(
+    JSON.stringify({
+      event: "quoted",
+      id: lastPathId,
+      status: "quoted",
+      at: lastPathAt,
+      "drop.me": "drop-me",
+      path: "OPS/LAST.JSON",
+      extra: "drop-me",
+    }),
+    "ops/last.json",
+  ),
+  null,
+);
+assert.deepEqual(
+  parseOpsEvent(
+    JSON.stringify({
+      event: "quoted",
+      id: lastPathId,
+      status: "quoted",
+      at: lastPathAt,
+      "hosted.invoice.url": "https://pay.example.test/invoices/hosted",
     }),
   ),
   {
