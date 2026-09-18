@@ -23,3 +23,9 @@ export function termsScopeCopy(paymentConnected = false): string {
   }
   return "I build what the scope says. New requests are a new quote. I may decline a job, including after you accept, until I post the handoff. If I decline, the no and the reason show on the status page.";
 }
+
+export function priceFaqCopy(paymentConnected = false): string {
+  return paymentConnected
+    ? "A fixed quote after the brief. You pay after you accept, before I build."
+    : "A fixed quote after the brief. Checkout is not open on this site yet. I may build and hand off after you accept. When checkout opens, pay the stored amount on the status page.";
+}

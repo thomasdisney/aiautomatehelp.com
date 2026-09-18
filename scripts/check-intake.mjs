@@ -45,6 +45,7 @@ import {
   siteMetaDescription,
   termsOfferCopy,
   termsScopeCopy,
+  priceFaqCopy,
 } from "../lib/site-copy.ts";
 import {
   emptyQueue,
@@ -339,6 +340,18 @@ assert.equal(termsOfferDisconnected.includes("Checkout is not open on this site 
 assert.equal(termsScopeCopy(true).includes("until it is paid"), true);
 assert.equal(termsScopeCopy(false).includes("until it is paid"), false);
 assert.equal(termsScopeCopy(false).includes("until I post the handoff"), true);
+
+const priceFaqConnected = priceFaqCopy(true);
+const priceFaqDisconnected = priceFaqCopy(false);
+assert.equal(priceFaqConnected.includes("You pay after you accept, before I build."), true);
+assert.equal(priceFaqDisconnected.includes("before I build"), false);
+assert.equal(priceFaqDisconnected.includes("pay after you accept"), false);
+assert.equal(priceFaqDisconnected.includes("Checkout is not open on this site yet."), true);
+assert.equal(priceFaqDisconnected.includes("I may build and hand off after you accept."), true);
+assert.equal(
+  priceFaqDisconnected.includes("pay the stored amount on the status page"),
+  true,
+);
 
 const doneWhenText = "A test submit creates one new row in the named sheet.";
 const laterDoneWhen = "A weekly PDF lands in the named inbox every Monday.";

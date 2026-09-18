@@ -1,6 +1,7 @@
 import { IntakeForm } from "@/app/components/intake-form";
 import { intakeStoreConfigured } from "@/lib/intake-store";
 import { paymentConfigured } from "@/lib/payment";
+import { priceFaqCopy } from "@/lib/site-copy";
 
 const EXAMPLES = [
   {
@@ -47,7 +48,7 @@ const FAQS = [
   },
   {
     q: "What does it cost?",
-    a: "A fixed quote after the brief. Checkout is not open on this site yet. When it is, you pay after you accept, before I build.",
+    a: priceFaqCopy(false),
   },
   {
     q: "How long does a job take?",
@@ -78,16 +79,14 @@ export default function Home() {
         STEPS[3],
       ]
     : STEPS;
-  const faqs = paymentLive
-    ? FAQS.map((item) =>
-        item.q === "What does it cost?"
-          ? {
-              q: item.q,
-              a: "A fixed quote after the brief. You pay after you accept, before I build.",
-            }
-          : item,
-      )
-    : FAQS;
+  const faqs = FAQS.map((item) =>
+    item.q === "What does it cost?"
+      ? {
+          q: item.q,
+          a: priceFaqCopy(paymentLive),
+        }
+      : item,
+  );
 
   return (
     <>
