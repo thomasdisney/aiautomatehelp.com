@@ -13,7 +13,7 @@ import {
   subscribeBriefReceipts,
 } from "@/lib/brief-receipt";
 import { FIELD_LIMITS, parseDueAt, parseThread, type ThreadEntry } from "@/lib/intake";
-import { noOutboundEmailCopy } from "@/lib/site-copy";
+import { statusLookupCopy } from "@/lib/site-copy";
 import { customerReplyIntroCopy, customerStatusCopy } from "@/lib/status";
 
 type Found = {
@@ -258,11 +258,7 @@ export function StatusForm({
         onSubmit={onSubmit}
         className="space-y-5 rounded-2xl border border-ink/10 bg-white p-6 sm:p-8"
       >
-        <p className="text-sm text-ink/60">
-          Use the full reference from the confirmation and the email you submitted.{" "}
-          {noOutboundEmailCopy()} This browser keeps the reference and shows the original
-          received time from this device.
-        </p>
+        <p className="text-sm text-ink/60">{statusLookupCopy()}</p>
         <div className="absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden="true">
           <label htmlFor="website">Website</label>
           <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" />

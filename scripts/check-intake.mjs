@@ -49,6 +49,8 @@ import {
   priceFaqCopy,
   privacySharingCopy,
   noOutboundEmailCopy,
+  statusIntroCopy,
+  statusLookupCopy,
 } from "../lib/site-copy.ts";
 import {
   emptyQueue,
@@ -384,6 +386,28 @@ assert.equal(noOutboundEmail.includes("status page"), true);
 assert.equal(noOutboundEmail.includes("check your email"), false);
 assert.equal(noOutboundEmail.includes("confirmation email"), false);
 assert.equal(noOutboundEmail.toLowerCase().includes("mailto"), false);
+
+const statusIntroConnected = statusIntroCopy(true);
+const statusIntroDisconnected = statusIntroCopy(false);
+assert.equal(statusIntroDisconnected.includes("from your confirmation"), false);
+assert.equal(statusIntroDisconnected.includes("confirmation"), false);
+assert.equal(statusIntroDisconnected.includes("saved reference"), true);
+assert.equal(statusIntroDisconnected.includes("I will not send mail here."), true);
+assert.equal(statusIntroDisconnected.includes("Payment is not open on this page yet."), true);
+assert.equal(statusIntroDisconnected.includes("pay after you accept"), false);
+assert.equal(statusIntroDisconnected.includes("confirm the done-when test"), true);
+assert.equal(statusIntroConnected.includes("from your confirmation"), false);
+assert.equal(statusIntroConnected.includes("confirmation"), false);
+assert.equal(statusIntroConnected.includes("pay after you accept"), true);
+assert.equal(statusIntroConnected.includes("I will not send mail here."), true);
+
+const statusLookup = statusLookupCopy();
+assert.equal(statusLookup.includes("from the confirmation"), false);
+assert.equal(statusLookup.includes("confirmation"), false);
+assert.equal(statusLookup.includes("saved reference"), true);
+assert.equal(statusLookup.includes("I will not send mail here."), true);
+assert.equal(statusLookup.includes("check your email"), false);
+assert.equal(statusLookup.toLowerCase().includes("mailto"), false);
 
 const doneWhenText = "A test submit creates one new row in the named sheet.";
 const laterDoneWhen = "A weekly PDF lands in the named inbox every Monday.";

@@ -46,3 +46,16 @@ export function privacySharingCopy(paymentConnected = false): string {
 export function noOutboundEmailCopy(): string {
   return "This email identifies the brief on the status page. I will not send mail here.";
 }
+
+export function statusIntroCopy(paymentConnected = false): string {
+  const lookup =
+    "Enter the saved reference and the same email you used on the brief.";
+  const actions = paymentConnected
+    ? "You can see the quote, accept or decline, pay after you accept, ask a question, or confirm the done-when test after handoff."
+    : "You can see the quote, accept or decline, ask a question, or confirm the done-when test after handoff. Payment is not open on this page yet.";
+  return `${lookup} ${actions} ${noOutboundEmailCopy()} This browser keeps the reference and shows the original received time from this device.`;
+}
+
+export function statusLookupCopy(): string {
+  return `Use the full saved reference and the same email you used on the brief. ${noOutboundEmailCopy()} This browser keeps the reference and shows the original received time from this device.`;
+}
