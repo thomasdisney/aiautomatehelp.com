@@ -343,7 +343,8 @@ export function blobThreadHasDisallowedKeys(thread: unknown): boolean {
       blobRowHasSnakeCaseKey(row) ||
       blobRowHasUnexpectedCamelKey(row) ||
       blobRowHasKebabCaseKey(row) ||
-      blobRowHasDottedKey(row)
+      blobRowHasDottedKey(row) ||
+      !parseThreadEntry(item)
     ) {
       return true;
     }

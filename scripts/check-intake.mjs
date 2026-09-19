@@ -99863,4 +99863,154 @@ assert.deepEqual(
   [],
 );
 
+const dirtyNestedValueThreadBlob = {
+  ...record,
+  path: `INTAKE/${id}.JSON`,
+  thread: [
+    {
+      role: "customer",
+      text: {
+        receipturl: "https://pay.example.test/receipts/hosted",
+        extra: "drop-me",
+      },
+      at: record.receivedAt,
+    },
+  ],
+};
+assert.equal(
+  parseIntakeRecordAtPath(JSON.stringify(dirtyNestedValueThreadBlob), `intake/${id}.json`),
+  null,
+);
+assert.equal(parseIntakeRecord(JSON.stringify(dirtyNestedValueThreadBlob))?.id, id);
+assert.deepEqual(parseIntakeRecord(JSON.stringify(dirtyNestedValueThreadBlob))?.thread, []);
+assert.equal(
+  "receipturl" in (parseIntakeRecord(JSON.stringify(dirtyNestedValueThreadBlob)) ?? {}),
+  false,
+);
+assert.equal(
+  "extra" in (parseIntakeRecord(JSON.stringify(dirtyNestedValueThreadBlob)) ?? {}),
+  false,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      path: `INTAKE/${id}.JSON`,
+      thread: [
+        {
+          role: "customer",
+          text: "Need a quote for the inbox",
+          at: record.receivedAt,
+        },
+        {
+          role: "customer",
+          text: {
+            receipturl: "https://pay.example.test/receipts/hosted",
+            extra: "drop-me",
+          },
+          at: record.receivedAt,
+        },
+      ],
+    }),
+    `intake/${id}.json`,
+  ),
+  null,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      path: `INTAKE/${id}.JSON`,
+      thread: [
+        {
+          role: {
+            receipturl: "https://pay.example.test/receipts/hosted",
+            extra: "drop-me",
+          },
+          text: "Need a quote for the inbox",
+          at: record.receivedAt,
+        },
+      ],
+    }),
+    `intake/${id}.json`,
+  ),
+  null,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      path: `INTAKE/${id}.JSON`,
+      thread: [
+        {
+          role: "customer",
+          text: "Need a quote for the inbox",
+          at: {
+            receipturl: "https://pay.example.test/receipts/hosted",
+            extra: "drop-me",
+          },
+        },
+      ],
+    }),
+    `intake/${id}.json`,
+  ),
+  null,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      path: `INTAKE/${id}.JSON`,
+      thread: [{}],
+    }),
+    `intake/${id}.json`,
+  ),
+  null,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      path: `INTAKE/${id}.JSON`,
+      thread: [
+        {
+          role: "customer",
+          text: "Need a quote for the inbox",
+          at: record.receivedAt,
+        },
+      ],
+    }),
+    `intake/${id}.json`,
+  )?.id,
+  id,
+);
+
+const dirtyNestedValueThreadWrite = toIntakePathPayload({
+  ...record,
+  thread: [
+    {
+      role: "customer",
+      text: {
+        receipturl: "https://pay.example.test/receipts/hosted",
+        extra: "drop-me",
+      },
+      at: record.receivedAt,
+    },
+  ],
+});
+const dirtyNestedValueThreadJson = JSON.stringify(dirtyNestedValueThreadWrite);
+assert.equal(Array.isArray(dirtyNestedValueThreadWrite?.thread), true);
+assert.deepEqual(dirtyNestedValueThreadWrite?.thread, []);
+assert.equal(dirtyNestedValueThreadJson.includes("receipturl"), false);
+assert.equal(dirtyNestedValueThreadJson.includes("drop-me"), false);
+assert.equal(dirtyNestedValueThreadJson.includes("Need a quote for the inbox"), false);
+assert.equal(
+  parseIntakeRecordAtPath(dirtyNestedValueThreadJson, `intake/${id}.json`)?.id,
+  id,
+);
+assert.deepEqual(
+  parseIntakeRecordAtPath(dirtyNestedValueThreadJson, `intake/${id}.json`)?.thread,
+  [],
+);
+
 console.log("intake checks ok");
