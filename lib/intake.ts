@@ -101,6 +101,24 @@ export function dueAtInRange(dueAt: string, now: Date = new Date()): boolean {
   return parsed >= min && parsed <= max;
 }
 
+const INTAKE_AT_RE = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.\d{3}Z$/;
+
+export function parseIntakeAt(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const raw = value.trim();
+  if (!raw || raw.length > 40) return null;
+  if (!INTAKE_AT_RE.test(raw)) return null;
+  const utc = Date.parse(raw);
+  if (!Number.isFinite(utc)) return null;
+  if (new Date(utc).toISOString() !== raw) return null;
+  return raw;
+}
+
+export function blobIntakeReceivedAtHasDisallowedValue(receivedAt: unknown): boolean {
+  if (receivedAt === undefined) return false;
+  return parseIntakeAt(receivedAt) === null;
+}
+
 export function parseIntake(body: unknown): IntakeParse {
   if (!body || typeof body !== "object") return { ok: false, error: "invalid" };
   const raw = body as Record<string, unknown>;
@@ -251,7 +269,9 @@ export function toIntakePathPayload(
   payload.thread = parseThread(payload.thread);
   const parsed = parseIntakeRecord(JSON.stringify(payload));
   if (!parsed) return null;
-  return { ...parsed, path };
+  const receivedAt = parseIntakeAt(parsed.receivedAt);
+  if (!receivedAt) return null;
+  return { ...parsed, receivedAt, path };
 }
 
 export function blobRowHasSnakeCaseKey(row: Record<string, unknown>): boolean {
@@ -499,6 +519,7 @@ export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeR
   }
   if (blobRowHasDisallowedNestedValue(row, INTAKE_PATH_ARRAY_KEYS)) return null;
   if (blobThreadHasDisallowedKeys(row.thread)) return null;
+  if (blobIntakeReceivedAtHasDisallowedValue(row.receivedAt)) return null;
   const path = typeof row.path === "string" ? row.path.trim().toLowerCase() : "";
   if (path !== expectedPath) return null;
   const parsed = parseIntakeRecord(raw);

@@ -100513,4 +100513,63 @@ assert.deepEqual(
   },
 );
 
+const dirtyNonTimestampReceivedAtBlob = {
+  ...record,
+  receivedAt: "https://pay.example.test/receipts/hosted",
+  path: `INTAKE/${id}.JSON`,
+};
+assert.equal(
+  parseIntakeRecordAtPath(JSON.stringify(dirtyNonTimestampReceivedAtBlob), `intake/${id}.json`),
+  null,
+);
+assert.equal(parseIntakeRecord(JSON.stringify(dirtyNonTimestampReceivedAtBlob))?.id, id);
+assert.equal(
+  parseIntakeRecord(JSON.stringify(dirtyNonTimestampReceivedAtBlob))?.receivedAt,
+  "https://pay.example.test/receipts/hosted",
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      receivedAt: "not-a-timestamp",
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  ),
+  null,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      receivedAt: record.receivedAt,
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.id,
+  id,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      receivedAt: record.receivedAt,
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.receivedAt,
+  record.receivedAt,
+);
+
+const dirtyNonTimestampReceivedAtWrite = toIntakePathPayload({
+  ...record,
+  receivedAt: "https://pay.example.test/receipts/hosted",
+});
+const dirtyNonTimestampReceivedAtJson = JSON.stringify(dirtyNonTimestampReceivedAtWrite);
+assert.equal(dirtyNonTimestampReceivedAtWrite, null);
+assert.equal(dirtyNonTimestampReceivedAtJson.includes("receipts/hosted"), false);
+assert.deepEqual(toIntakePathPayload(record)?.receivedAt, record.receivedAt);
+assert.equal(toIntakePathPayload(record)?.path, `intake/${id}.json`);
+assert.equal(JSON.stringify(toIntakePathPayload(record)).includes("receipts/hosted"), false);
+
 console.log("intake checks ok");
