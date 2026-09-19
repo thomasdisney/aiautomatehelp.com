@@ -100136,4 +100136,172 @@ assert.equal(
   "",
 );
 
+const dirtyNestedValueWorkIdsBlob = {
+  ids: [
+    workOlderId,
+    {
+      receipturl: "https://pay.example.test/receipts/hosted",
+      extra: "drop-me",
+    },
+  ],
+  path: "OPS/WORK.JSON",
+};
+assert.deepEqual(
+  parseWorkIndexAtPath(JSON.stringify(dirtyNestedValueWorkIdsBlob), "ops/work.json"),
+  [],
+);
+assert.deepEqual(parseWorkIndex(JSON.stringify(dirtyNestedValueWorkIdsBlob)), [workOlderId]);
+assert.equal(
+  "receipturl" in (parseWorkIndex(JSON.stringify(dirtyNestedValueWorkIdsBlob)) ?? {}),
+  false,
+);
+assert.deepEqual(
+  parseWorkIndexAtPath(
+    JSON.stringify({
+      ids: [
+        {
+          receipturl: "https://pay.example.test/receipts/hosted",
+          extra: "drop-me",
+        },
+      ],
+      path: "OPS/WORK.JSON",
+    }),
+    "ops/work.json",
+  ),
+  [],
+);
+assert.deepEqual(
+  parseWorkIndexAtPath(
+    JSON.stringify({
+      ids: {
+        receipturl: "https://pay.example.test/receipts/hosted",
+        extra: "drop-me",
+      },
+      path: "OPS/WORK.JSON",
+    }),
+    "ops/work.json",
+  ),
+  [],
+);
+assert.deepEqual(
+  parseWorkIndexAtPath(
+    JSON.stringify({
+      ids: [
+        workOlderId,
+        [
+          {
+            receipturl: "https://pay.example.test/receipts/hosted",
+            extra: "drop-me",
+          },
+        ],
+      ],
+      path: "OPS/WORK.JSON",
+    }),
+    "ops/work.json",
+  ),
+  [],
+);
+assert.deepEqual(
+  parseWorkIndexAtPath(
+    JSON.stringify({
+      ids: [workOlderId],
+      path: "OPS/WORK.JSON",
+    }),
+    "ops/work.json",
+  ),
+  [workOlderId],
+);
+
+const dirtyNestedValueWorkWrite = toWorkIndexPayload([
+  workOlderId,
+  {
+    receipturl: "https://pay.example.test/receipts/hosted",
+    extra: "drop-me",
+  },
+]);
+const dirtyNestedValueWorkJson = JSON.stringify(dirtyNestedValueWorkWrite);
+assert.deepEqual(dirtyNestedValueWorkWrite.ids, [workOlderId]);
+assert.equal(dirtyNestedValueWorkJson.includes("receipturl"), false);
+assert.equal(dirtyNestedValueWorkJson.includes("drop-me"), false);
+assert.deepEqual(
+  parseWorkIndexAtPath(dirtyNestedValueWorkJson, "ops/work.json"),
+  [workOlderId],
+);
+
+const dirtyNestedValueXrefIdsBlob = {
+  ids: [
+    xrefOlderId,
+    {
+      receipturl: "https://pay.example.test/receipts/hosted",
+      extra: "drop-me",
+    },
+  ],
+  digest: xrefDigest.toUpperCase(),
+  path: `OPS/XREF/${xrefDigest}.JSON`,
+};
+assert.deepEqual(
+  parseEmailIndexAtPath(
+    JSON.stringify(dirtyNestedValueXrefIdsBlob),
+    xrefExpectedPath,
+    xrefPatEmail,
+  ),
+  [],
+);
+assert.deepEqual(parseEmailIndex(JSON.stringify(dirtyNestedValueXrefIdsBlob)), [xrefOlderId]);
+assert.equal(
+  "receipturl" in (parseEmailIndex(JSON.stringify(dirtyNestedValueXrefIdsBlob)) ?? {}),
+  false,
+);
+assert.deepEqual(
+  parseEmailIndexAtPath(
+    JSON.stringify({
+      ids: [
+        xrefOlderId,
+        [
+          {
+            receipturl: "https://pay.example.test/receipts/hosted",
+            extra: "drop-me",
+          },
+        ],
+      ],
+      digest: xrefDigest.toUpperCase(),
+      path: `OPS/XREF/${xrefDigest}.JSON`,
+    }),
+    xrefExpectedPath,
+    xrefPatEmail,
+  ),
+  [],
+);
+assert.deepEqual(
+  parseEmailIndexAtPath(
+    JSON.stringify({
+      ids: [xrefOlderId],
+      digest: xrefDigest.toUpperCase(),
+      path: `OPS/XREF/${xrefDigest}.JSON`,
+    }),
+    xrefExpectedPath,
+    xrefPatEmail,
+  ),
+  [xrefOlderId],
+);
+
+const dirtyNestedValueXrefWrite = toEmailIndexPayload(
+  [
+    xrefOlderId,
+    {
+      receipturl: "https://pay.example.test/receipts/hosted",
+      extra: "drop-me",
+    },
+  ],
+  xrefPatEmail,
+);
+const dirtyNestedValueXrefJson = JSON.stringify(dirtyNestedValueXrefWrite);
+assert.deepEqual(dirtyNestedValueXrefWrite?.ids, [xrefOlderId]);
+assert.equal(dirtyNestedValueXrefJson.includes("receipturl"), false);
+assert.equal(dirtyNestedValueXrefJson.includes("drop-me"), false);
+assert.deepEqual(
+  parseEmailIndexAtPath(dirtyNestedValueXrefJson, xrefExpectedPath, xrefPatEmail),
+  [xrefOlderId],
+);
+
 console.log("intake checks ok");

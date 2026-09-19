@@ -629,6 +629,15 @@ function parseIndexId(value: unknown): string | null {
   return intakeBlobPath(id) ? id : null;
 }
 
+export function blobIdsHasDisallowedNestedValue(ids: unknown): boolean {
+  if (ids === undefined) return false;
+  if (!Array.isArray(ids)) return true;
+  for (const item of ids) {
+    if (item !== null && typeof item === "object") return true;
+  }
+  return false;
+}
+
 export function parseIdIndex(raw: string, max = EMAIL_INDEX_MAX_IDS): string[] {
   const cap = Number.isInteger(max) ? Math.min(Math.max(max, 0), INTAKE_LIST_META_MAX) : 0;
   if (!cap) return [];
@@ -834,6 +843,7 @@ export function parseEmailIndexAtPath(
   ) {
     return [];
   }
+  if (blobIdsHasDisallowedNestedValue(row.ids)) return [];
   const path = typeof row.path === "string" ? row.path.trim().toLowerCase() : "";
   if (path !== expectedPath) return [];
   const digest = typeof row.digest === "string" ? row.digest.trim().toLowerCase() : "";
@@ -1003,6 +1013,7 @@ export function parseWorkIndexAtPath(raw: string, pathname: unknown): string[] {
   ) {
     return [];
   }
+  if (blobIdsHasDisallowedNestedValue(row.ids)) return [];
   const path = typeof row.path === "string" ? row.path.trim().toLowerCase() : "";
   if (path !== expected) return [];
   return parseIdIndex(raw, WORK_INDEX_MAX_IDS);
