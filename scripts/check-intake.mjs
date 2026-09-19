@@ -100304,4 +100304,139 @@ assert.deepEqual(
   [xrefOlderId],
 );
 
+const dirtyNonIdWorkIdsBlob = {
+  ids: [workOlderId, "https://pay.example.test/receipts/hosted"],
+  path: "OPS/WORK.JSON",
+};
+assert.deepEqual(
+  parseWorkIndexAtPath(JSON.stringify(dirtyNonIdWorkIdsBlob), "ops/work.json"),
+  [],
+);
+assert.deepEqual(parseWorkIndex(JSON.stringify(dirtyNonIdWorkIdsBlob)), [workOlderId]);
+assert.equal(
+  JSON.stringify(parseWorkIndex(JSON.stringify(dirtyNonIdWorkIdsBlob))).includes(
+    "receipts/hosted",
+  ),
+  false,
+);
+assert.deepEqual(
+  parseWorkIndexAtPath(
+    JSON.stringify({
+      ids: [workOlderId, null],
+      path: "OPS/WORK.JSON",
+    }),
+    "ops/work.json",
+  ),
+  [],
+);
+assert.deepEqual(
+  parseWorkIndexAtPath(
+    JSON.stringify({
+      ids: [workOlderId, 123],
+      path: "OPS/WORK.JSON",
+    }),
+    "ops/work.json",
+  ),
+  [],
+);
+assert.deepEqual(
+  parseWorkIndexAtPath(
+    JSON.stringify({
+      ids: [workOlderId, false],
+      path: "OPS/WORK.JSON",
+    }),
+    "ops/work.json",
+  ),
+  [],
+);
+assert.deepEqual(
+  parseWorkIndexAtPath(
+    JSON.stringify({
+      ids: [workOlderId, "../etc/passwd", "not-a-uuid"],
+      path: "OPS/WORK.JSON",
+    }),
+    "ops/work.json",
+  ),
+  [],
+);
+assert.deepEqual(
+  parseWorkIndexAtPath(
+    JSON.stringify({
+      ids: [workOlderId],
+      path: "OPS/WORK.JSON",
+    }),
+    "ops/work.json",
+  ),
+  [workOlderId],
+);
+
+const dirtyNonIdWorkWrite = toWorkIndexPayload([
+  workOlderId,
+  "https://pay.example.test/receipts/hosted",
+  null,
+  123,
+]);
+const dirtyNonIdWorkJson = JSON.stringify(dirtyNonIdWorkWrite);
+assert.deepEqual(dirtyNonIdWorkWrite.ids, [workOlderId]);
+assert.equal(dirtyNonIdWorkJson.includes("receipts/hosted"), false);
+assert.equal(dirtyNonIdWorkJson.includes("null"), false);
+assert.deepEqual(parseWorkIndexAtPath(dirtyNonIdWorkJson, "ops/work.json"), [workOlderId]);
+
+const dirtyNonIdXrefIdsBlob = {
+  ids: [xrefOlderId, "https://pay.example.test/receipts/hosted"],
+  digest: xrefDigest.toUpperCase(),
+  path: `OPS/XREF/${xrefDigest}.JSON`,
+};
+assert.deepEqual(
+  parseEmailIndexAtPath(
+    JSON.stringify(dirtyNonIdXrefIdsBlob),
+    xrefExpectedPath,
+    xrefPatEmail,
+  ),
+  [],
+);
+assert.deepEqual(parseEmailIndex(JSON.stringify(dirtyNonIdXrefIdsBlob)), [xrefOlderId]);
+assert.equal(
+  JSON.stringify(parseEmailIndex(JSON.stringify(dirtyNonIdXrefIdsBlob))).includes(
+    "receipts/hosted",
+  ),
+  false,
+);
+assert.deepEqual(
+  parseEmailIndexAtPath(
+    JSON.stringify({
+      ids: [xrefOlderId, null, 123, "not-a-uuid"],
+      digest: xrefDigest.toUpperCase(),
+      path: `OPS/XREF/${xrefDigest}.JSON`,
+    }),
+    xrefExpectedPath,
+    xrefPatEmail,
+  ),
+  [],
+);
+assert.deepEqual(
+  parseEmailIndexAtPath(
+    JSON.stringify({
+      ids: [xrefOlderId],
+      digest: xrefDigest.toUpperCase(),
+      path: `OPS/XREF/${xrefDigest}.JSON`,
+    }),
+    xrefExpectedPath,
+    xrefPatEmail,
+  ),
+  [xrefOlderId],
+);
+
+const dirtyNonIdXrefWrite = toEmailIndexPayload(
+  [xrefOlderId, "https://pay.example.test/receipts/hosted", null, 123],
+  xrefPatEmail,
+);
+const dirtyNonIdXrefJson = JSON.stringify(dirtyNonIdXrefWrite);
+assert.deepEqual(dirtyNonIdXrefWrite?.ids, [xrefOlderId]);
+assert.equal(dirtyNonIdXrefJson.includes("receipts/hosted"), false);
+assert.deepEqual(
+  parseEmailIndexAtPath(dirtyNonIdXrefJson, xrefExpectedPath, xrefPatEmail),
+  [xrefOlderId],
+);
+
 console.log("intake checks ok");

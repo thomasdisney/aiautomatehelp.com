@@ -633,7 +633,7 @@ export function blobIdsHasDisallowedNestedValue(ids: unknown): boolean {
   if (ids === undefined) return false;
   if (!Array.isArray(ids)) return true;
   for (const item of ids) {
-    if (item !== null && typeof item === "object") return true;
+    if (parseIndexId(item) === null) return true;
   }
   return false;
 }
