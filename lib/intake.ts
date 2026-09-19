@@ -336,7 +336,7 @@ export function blobThreadHasDisallowedKeys(thread: unknown): boolean {
   if (thread === undefined) return false;
   if (!Array.isArray(thread)) return true;
   for (const item of thread) {
-    if (!item || typeof item !== "object" || Array.isArray(item)) continue;
+    if (!item || typeof item !== "object" || Array.isArray(item)) return true;
     const row = item as Record<string, unknown>;
     if (
       blobRowHasUnknownKey(row, THREAD_ENTRY_KEYS) ||
