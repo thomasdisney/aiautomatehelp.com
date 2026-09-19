@@ -100439,4 +100439,78 @@ assert.deepEqual(
   [xrefOlderId],
 );
 
+const dirtyNonTimestampLastAtBlob = {
+  event: "quoted",
+  id: lastPathId,
+  status: "quoted",
+  at: "https://pay.example.test/receipts/hosted",
+  path: "OPS/LAST.JSON",
+};
+assert.equal(
+  parseOpsEventAtPath(JSON.stringify(dirtyNonTimestampLastAtBlob), "ops/last.json"),
+  null,
+);
+assert.deepEqual(parseOpsEvent(JSON.stringify(dirtyNonTimestampLastAtBlob)), {
+  event: "quoted",
+  id: lastPathId,
+  status: "quoted",
+  at: "https://pay.example.test/receipts/hosted",
+});
+assert.equal(
+  parseOpsEventAtPath(
+    JSON.stringify({
+      event: "quoted",
+      id: lastPathId,
+      status: "quoted",
+      at: "not-a-timestamp",
+      path: "OPS/LAST.JSON",
+    }),
+    "ops/last.json",
+  ),
+  null,
+);
+assert.deepEqual(
+  parseOpsEventAtPath(
+    JSON.stringify({
+      event: "quoted",
+      id: lastPathId,
+      status: "quoted",
+      at: lastPathAt,
+      path: "OPS/LAST.JSON",
+    }),
+    "ops/last.json",
+  ),
+  {
+    event: "quoted",
+    id: lastPathId,
+    status: "quoted",
+    at: lastPathAt,
+  },
+);
+
+const dirtyNonTimestampLastWrite = toOpsLastPayload({
+  event: "quoted",
+  id: lastPathId,
+  status: "quoted",
+  at: "https://pay.example.test/receipts/hosted",
+});
+const dirtyNonTimestampLastJson = JSON.stringify(dirtyNonTimestampLastWrite);
+assert.equal(dirtyNonTimestampLastWrite, null);
+assert.equal(dirtyNonTimestampLastJson.includes("receipts/hosted"), false);
+assert.deepEqual(
+  toOpsLastPayload({
+    event: "quoted",
+    id: lastPathId,
+    status: "quoted",
+    at: lastPathAt,
+  }),
+  {
+    event: "quoted",
+    id: lastPathId,
+    status: "quoted",
+    at: lastPathAt,
+    path: "ops/last.json",
+  },
+);
+
 console.log("intake checks ok");

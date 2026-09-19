@@ -124,6 +124,24 @@ export function toOpsEvent(input: {
   return { event, id, status, at: atRaw };
 }
 
+const OPS_EVENT_AT_RE = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.\d{3}Z$/;
+
+export function parseOpsEventAt(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const raw = value.trim();
+  if (!raw || raw.length > 40) return null;
+  if (!OPS_EVENT_AT_RE.test(raw)) return null;
+  const utc = Date.parse(raw);
+  if (!Number.isFinite(utc)) return null;
+  if (new Date(utc).toISOString() !== raw) return null;
+  return raw;
+}
+
+export function blobLastAtHasDisallowedValue(at: unknown): boolean {
+  if (at === undefined) return false;
+  return parseOpsEventAt(at) === null;
+}
+
 export function parseOpsEvent(raw: string): OpsEvent | null {
   let value: unknown;
   try {
@@ -149,11 +167,13 @@ export function toOpsLastPayload(input: {
 }): (OpsEvent & { path: string }) | null {
   const event = toOpsEvent(input);
   if (!event) return null;
+  const at = parseOpsEventAt(event.at);
+  if (!at) return null;
   return {
     event: event.event,
     id: event.id,
     status: event.status,
-    at: event.at,
+    at,
     path: opsLastPath(),
   };
 }
@@ -308,6 +328,7 @@ export function parseOpsEventAtPath(raw: string, pathname: unknown): OpsEvent | 
   ) {
     return null;
   }
+  if (blobLastAtHasDisallowedValue(row.at)) return null;
   const path = typeof row.path === "string" ? row.path.trim().toLowerCase() : "";
   if (path !== expected) return null;
   return parseOpsEvent(raw);
