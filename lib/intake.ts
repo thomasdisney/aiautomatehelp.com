@@ -249,7 +249,9 @@ export function toIntakePathPayload(
   if (!path) return null;
   const payload = pickAllowedBlobKeys({ ...record, id, path }, INTAKE_PATH_KEYS);
   payload.thread = parseThread(payload.thread);
-  return payload as IntakeRecord & { path: string };
+  const parsed = parseIntakeRecord(JSON.stringify(payload));
+  if (!parsed) return null;
+  return { ...parsed, path };
 }
 
 export function blobRowHasSnakeCaseKey(row: Record<string, unknown>): boolean {
@@ -331,6 +333,19 @@ export function blobRowHasUnknownKey(
 }
 
 export const THREAD_ENTRY_KEYS: ReadonlySet<string> = new Set(["role", "text", "at"]);
+export const INTAKE_PATH_ARRAY_KEYS: ReadonlySet<string> = new Set(["thread"]);
+
+export function blobRowHasDisallowedNestedValue(
+  row: Record<string, unknown>,
+  arrayKeys: ReadonlySet<string> = new Set(),
+): boolean {
+  for (const [key, value] of Object.entries(row)) {
+    if (value === null || typeof value !== "object") continue;
+    if (arrayKeys.has(key) && Array.isArray(value)) continue;
+    return true;
+  }
+  return false;
+}
 
 export function blobThreadHasDisallowedKeys(thread: unknown): boolean {
   if (thread === undefined) return false;
@@ -482,6 +497,7 @@ export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeR
   ) {
     return null;
   }
+  if (blobRowHasDisallowedNestedValue(row, INTAKE_PATH_ARRAY_KEYS)) return null;
   if (blobThreadHasDisallowedKeys(row.thread)) return null;
   const path = typeof row.path === "string" ? row.path.trim().toLowerCase() : "";
   if (path !== expectedPath) return null;

@@ -100013,4 +100013,127 @@ assert.deepEqual(
   [],
 );
 
+const dirtyNestedValueQuoteTextBlob = {
+  ...record,
+  path: `INTAKE/${id}.JSON`,
+  quoteText: {
+    receipturl: "https://pay.example.test/receipts/hosted",
+    extra: "drop-me",
+  },
+};
+assert.equal(
+  parseIntakeRecordAtPath(JSON.stringify(dirtyNestedValueQuoteTextBlob), `intake/${id}.json`),
+  null,
+);
+assert.equal(parseIntakeRecord(JSON.stringify(dirtyNestedValueQuoteTextBlob))?.id, id);
+assert.equal(parseIntakeRecord(JSON.stringify(dirtyNestedValueQuoteTextBlob))?.quoteText, "");
+assert.equal(
+  "receipturl" in (parseIntakeRecord(JSON.stringify(dirtyNestedValueQuoteTextBlob)) ?? {}),
+  false,
+);
+assert.equal(
+  "extra" in (parseIntakeRecord(JSON.stringify(dirtyNestedValueQuoteTextBlob)) ?? {}),
+  false,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      path: `INTAKE/${id}.JSON`,
+      operatorNote: {
+        receipturl: "https://pay.example.test/receipts/hosted",
+        extra: "drop-me",
+      },
+    }),
+    `intake/${id}.json`,
+  ),
+  null,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      path: `INTAKE/${id}.JSON`,
+      amountCents: {
+        receipturl: "https://pay.example.test/receipts/hosted",
+        extra: "drop-me",
+      },
+    }),
+    `intake/${id}.json`,
+  ),
+  null,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      path: `INTAKE/${id}.JSON`,
+      company: {
+        receipturl: "https://pay.example.test/receipts/hosted",
+        extra: "drop-me",
+      },
+    }),
+    `intake/${id}.json`,
+  ),
+  null,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      path: `INTAKE/${id}.JSON`,
+      quoteText: [
+        {
+          receipturl: "https://pay.example.test/receipts/hosted",
+          extra: "drop-me",
+        },
+      ],
+    }),
+    `intake/${id}.json`,
+  ),
+  null,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      path: `INTAKE/${id}.JSON`,
+      quoteText: "Fixed price $800. Pay before I start.",
+    }),
+    `intake/${id}.json`,
+  )?.id,
+  id,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      path: `INTAKE/${id}.JSON`,
+      quoteText: "Fixed price $800. Pay before I start.",
+    }),
+    `intake/${id}.json`,
+  )?.quoteText,
+  "Fixed price $800. Pay before I start.",
+);
+
+const dirtyNestedValueQuoteTextWrite = toIntakePathPayload({
+  ...record,
+  quoteText: {
+    receipturl: "https://pay.example.test/receipts/hosted",
+    extra: "drop-me",
+  },
+});
+const dirtyNestedValueQuoteTextJson = JSON.stringify(dirtyNestedValueQuoteTextWrite);
+assert.equal(dirtyNestedValueQuoteTextWrite?.quoteText, "");
+assert.equal(dirtyNestedValueQuoteTextJson.includes("receipturl"), false);
+assert.equal(dirtyNestedValueQuoteTextJson.includes("drop-me"), false);
+assert.equal(
+  parseIntakeRecordAtPath(dirtyNestedValueQuoteTextJson, `intake/${id}.json`)?.id,
+  id,
+);
+assert.equal(
+  parseIntakeRecordAtPath(dirtyNestedValueQuoteTextJson, `intake/${id}.json`)?.quoteText,
+  "",
+);
+
 console.log("intake checks ok");
