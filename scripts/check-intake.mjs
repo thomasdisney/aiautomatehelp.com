@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
 import { bearerMatches, timingSafeEqualString } from "../lib/inbox-auth.ts";
 import {
   addUtcDays,
@@ -100571,5 +100572,26 @@ assert.equal(dirtyNonTimestampReceivedAtJson.includes("receipts/hosted"), false)
 assert.deepEqual(toIntakePathPayload(record)?.receivedAt, record.receivedAt);
 assert.equal(toIntakePathPayload(record)?.path, `intake/${id}.json`);
 assert.equal(JSON.stringify(toIntakePathPayload(record)).includes("receipts/hosted"), false);
+
+const publicAppFiles = [
+  "../app/page.tsx",
+  "../app/agent/page.tsx",
+  "../app/automation/page.tsx",
+  "../app/layout.tsx",
+  "../app/components/agent-setup.tsx",
+  "../app/components/site-header.tsx",
+  "../app/components/site-footer.tsx",
+  "../app/privacy/page.tsx",
+  "../app/terms/page.tsx",
+  "../app/status/page.tsx",
+];
+for (const rel of publicAppFiles) {
+  const text = readFileSync(new URL(rel, import.meta.url), "utf8").toLowerCase();
+  assert.equal(text.includes("thomasdisney"), false);
+  assert.equal(text.includes("gmail.com"), false);
+  assert.equal(text.includes("mailto:"), false);
+  assert.equal(text.includes("nubilith"), false);
+  assert.equal(text.includes("github.com/thomas"), false);
+}
 
 console.log("intake checks ok");

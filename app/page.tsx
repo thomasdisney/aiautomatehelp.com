@@ -31,20 +31,10 @@ export default function Home() {
           <AgentSetup />
           <p className="mt-5 text-xs text-ink/50">
             No account. The code is your agent&apos;s pairing secret; you set a
-            password on first connect.
+            password on first connect. Setup runs on the spare computer and
+            prints that code. Support stays on this site.
           </p>
         </div>
-
-        <p className="mt-8 text-sm text-ink/60">
-          <a
-            href="https://github.com/thomasdisney/opencode-companion"
-            target="_blank"
-            rel="noreferrer"
-            className="font-medium text-ink underline underline-offset-4 hover:text-ink/70"
-          >
-            GitHub — setup &amp; source
-          </a>
-        </p>
       </div>
     </main>
   );
