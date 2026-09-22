@@ -15,7 +15,7 @@ export function AgentSetup() {
       setError("Enter the brief code from your agent setup (letters and numbers).");
       return;
     }
-    window.location.href = `${AGENT_URL}/?code=${encodeURIComponent(c)}`;
+    window.location.href = `${AGENT_URL}/${encodeURIComponent(c)}`;
   }
 
   return (
