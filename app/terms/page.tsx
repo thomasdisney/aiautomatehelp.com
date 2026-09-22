@@ -27,7 +27,15 @@ export default function TermsPage() {
       </p>
       <h2 className="mt-10 text-xl font-semibold text-ink">No personal contact path</h2>
       <p className="mt-3 leading-relaxed text-ink/70">
-        Support is through this site. Published pages will not include a
+        Support is through this site. Use the start section on the{" "}
+        <a href="/automation#start" className="font-medium text-ink underline underline-offset-2">
+          automation page
+        </a>
+        , or the{" "}
+        <a href="/status" className="font-medium text-ink underline underline-offset-2">
+          status page
+        </a>{" "}
+        for a brief you already sent. Published pages will not include a
         personal email, phone number, or calendar.
       </p>
       <h2 className="mt-10 text-xl font-semibold text-ink">Site use</h2>

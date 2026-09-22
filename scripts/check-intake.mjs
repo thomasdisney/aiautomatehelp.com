@@ -100653,6 +100653,12 @@ const privacySource = readFileSync(
 );
 assert.equal(privacySource.includes('href="/automation#start"'), true);
 assert.equal(privacySource.includes("start section on the home page"), false);
+const termsPageSource = readFileSync(
+  new URL("../app/terms/page.tsx", import.meta.url),
+  "utf8",
+);
+assert.equal(termsPageSource.includes('href="/automation#start"'), true);
+assert.equal(termsPageSource.includes('href="/status"'), true);
 const sitemapSource = readFileSync(new URL("../app/sitemap.ts", import.meta.url), "utf8");
 assert.equal(sitemapSource.includes("${site}/automation"), true);
 const intakeFormSource = readFileSync(
