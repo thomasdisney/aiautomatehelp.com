@@ -5,6 +5,7 @@ import { privacySharingCopy } from "@/lib/site-copy";
 export const metadata: Metadata = {
   title: "Privacy",
   description: "How AutomateAI handles information on aiautomatehelp.com.",
+  alternates: { canonical: "/privacy" },
 };
 
 export default function PrivacyPage() {

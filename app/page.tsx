@@ -5,6 +5,7 @@ export const metadata: Metadata = {
   title: "AI agent in your pocket",
   description:
     "Turn a spare computer into a headless AI coding agent and drive it from your iPhone. Run one command, type the code, and you're connected.",
+  alternates: { canonical: "/" },
 };
 
 export default function Home() {

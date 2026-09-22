@@ -1,7 +1,12 @@
+import type { Metadata } from "next";
 import { IntakeForm } from "@/app/components/intake-form";
 import { intakeStoreConfigured } from "@/lib/intake-store";
 import { paymentConfigured } from "@/lib/payment";
 import { noOutboundEmailCopy, priceFaqCopy } from "@/lib/site-copy";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/automation" },
+};
 
 const EXAMPLES = [
   {

@@ -5,6 +5,7 @@ import { termsOfferCopy, termsScopeCopy } from "@/lib/site-copy";
 export const metadata: Metadata = {
   title: "Terms",
   description: "Terms for using AutomateAI and a scoped job.",
+  alternates: { canonical: "/terms" },
 };
 
 export default function TermsPage() {

@@ -100682,5 +100682,12 @@ const statusFormSource = readFileSync(
 assert.equal(statusFormSource.includes("closedBriefNextHref"), true);
 assert.equal(statusFormSource.includes("unmatchedLookupNextHref"), true);
 assert.equal(statusFormSource.includes("Send a new brief"), true);
+const layoutSource = readFileSync(new URL("../app/layout.tsx", import.meta.url), "utf8");
+assert.equal(layoutSource.includes('canonical: "/"'), false);
+assert.equal(homeSource.includes('canonical: "/"'), true);
+assert.equal(automationSource.includes('canonical: "/automation"'), true);
+assert.equal(statusPageSource.includes('canonical: "/status"'), true);
+assert.equal(privacySource.includes('canonical: "/privacy"'), true);
+assert.equal(termsPageSource.includes('canonical: "/terms"'), true);
 
 console.log("intake checks ok");

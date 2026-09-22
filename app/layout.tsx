@@ -27,9 +27,6 @@ export async function generateMetadata(): Promise<Metadata> {
       template: "%s · AutomateAI",
     },
     description,
-    alternates: {
-      canonical: "/",
-    },
     openGraph: {
       title: "AutomateAI — scoped automation, built to order",
       description,

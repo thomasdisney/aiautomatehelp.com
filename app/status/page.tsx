@@ -7,6 +7,7 @@ import { statusIntroCopy } from "@/lib/site-copy";
 export const metadata: Metadata = {
   title: "Status",
   description: "Check a brief you already sent to AutomateAI. Support stays on this site.",
+  alternates: { canonical: "/status" },
 };
 
 export default async function StatusPage({
