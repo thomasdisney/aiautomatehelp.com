@@ -9,6 +9,7 @@ const LINKS = [
   { href: "/#price", label: "Price" },
   { href: "/#start", label: "Start" },
   { href: "/status", label: "Status" },
+  { href: "/agent", label: "Agent" },
 ] as const;
 
 export function SiteHeader() {
