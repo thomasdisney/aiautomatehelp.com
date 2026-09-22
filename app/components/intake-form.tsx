@@ -25,7 +25,7 @@ type Status =
 
 const ERRORS: Record<string, string> = {
   rate_limited: "Too many tries from this network. Wait and try once more later.",
-  required: "Name, email, and a short job description are required.",
+  required: "Name, email, and one workflow (what starts it, which tools, and what done looks like) are required.",
   email: "That email does not look usable.",
   invalid: "The form could not be read. Try again.",
   intake_not_connected: "The inbox is not accepting briefs right now.",
@@ -115,7 +115,9 @@ export function IntakeForm({ connected }: { connected: boolean }) {
           name: data.get("name"),
           email: data.get("email"),
           company: data.get("company"),
-          message: data.get("message"),
+          trigger: data.get("trigger"),
+          tools: data.get("tools"),
+          outcome: data.get("outcome"),
           website: data.get("website"),
         }),
       });
@@ -194,7 +196,8 @@ export function IntakeForm({ connected }: { connected: boolean }) {
         className="space-y-5 rounded-2xl border border-ink/10 bg-white p-6 sm:p-8"
       >
         <p className="text-sm text-ink/60">
-          Describe one workflow. Do not send secrets. {noOutboundEmailCopy()}
+          Name one workflow: what starts it, which tools, and what done looks like. Do not send
+          secrets. {noOutboundEmailCopy()}
         </p>
         <div className="absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden="true">
           <label htmlFor="website">Website</label>
@@ -240,16 +243,44 @@ export function IntakeForm({ connected }: { connected: boolean }) {
           />
         </div>
         <div>
-          <label htmlFor="message" className="block text-sm font-medium text-ink">
-            The job
+          <label htmlFor="trigger" className="block text-sm font-medium text-ink">
+            What starts it
           </label>
           <textarea
-            id="message"
-            name="message"
+            id="trigger"
+            name="trigger"
             required
-            rows={6}
-            maxLength={FIELD_LIMITS.message}
-            placeholder="What repeats, which tools you use, and what done looks like."
+            rows={3}
+            maxLength={FIELD_LIMITS.trigger}
+            placeholder="A form submit, a new row, a daily time — the event that should start the job."
+            className="mt-1.5 w-full resize-y rounded-lg border border-ink/15 px-3 py-2.5 outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
+          />
+        </div>
+        <div>
+          <label htmlFor="tools" className="block text-sm font-medium text-ink">
+            Tools you already use
+          </label>
+          <textarea
+            id="tools"
+            name="tools"
+            required
+            rows={3}
+            maxLength={FIELD_LIMITS.tools}
+            placeholder="Email, a sheet, a CRM, a form — name the tools this should run in."
+            className="mt-1.5 w-full resize-y rounded-lg border border-ink/15 px-3 py-2.5 outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
+          />
+        </div>
+        <div>
+          <label htmlFor="outcome" className="block text-sm font-medium text-ink">
+            What done looks like
+          </label>
+          <textarea
+            id="outcome"
+            name="outcome"
+            required
+            rows={3}
+            maxLength={FIELD_LIMITS.outcome}
+            placeholder="A test you can check: a row appears, an email is sent, a report is ready."
             className="mt-1.5 w-full resize-y rounded-lg border border-ink/15 px-3 py-2.5 outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
           />
         </div>

@@ -3,6 +3,9 @@ export const FIELD_LIMITS = {
   email: 120,
   company: 120,
   message: 4000,
+  trigger: 800,
+  tools: 800,
+  outcome: 800,
   quoteText: 500,
   customerReply: 2000,
   updateText: 2000,
@@ -119,6 +122,17 @@ export function blobIntakeReceivedAtHasDisallowedValue(receivedAt: unknown): boo
   return parseIntakeAt(receivedAt) === null;
 }
 
+export function composeIntakeMessage(input: {
+  trigger: string;
+  tools: string;
+  outcome: string;
+}): string {
+  return `Trigger: ${input.trigger}\n\nTools: ${input.tools}\n\nDone when: ${input.outcome}`.slice(
+    0,
+    FIELD_LIMITS.message,
+  );
+}
+
 export function parseIntake(body: unknown): IntakeParse {
   if (!body || typeof body !== "object") return { ok: false, error: "invalid" };
   const raw = body as Record<string, unknown>;
@@ -128,10 +142,16 @@ export function parseIntake(body: unknown): IntakeParse {
   const name = sanitizeText(raw.name, FIELD_LIMITS.name);
   const email = sanitizeText(raw.email, FIELD_LIMITS.email);
   const company = sanitizeText(raw.company, FIELD_LIMITS.company);
-  const message = sanitizeText(raw.message, FIELD_LIMITS.message);
+  const trigger = sanitizeText(raw.trigger, FIELD_LIMITS.trigger);
+  const tools = sanitizeText(raw.tools, FIELD_LIMITS.tools);
+  const outcome = sanitizeText(raw.outcome, FIELD_LIMITS.outcome);
 
-  if (!name || !email || !message) return { ok: false, error: "required" };
+  if (!name || !email || !trigger || !tools || !outcome) {
+    return { ok: false, error: "required" };
+  }
   if (!isValidEmail(email)) return { ok: false, error: "email" };
+  const message = composeIntakeMessage({ trigger, tools, outcome });
+  if (!message) return { ok: false, error: "required" };
   return { ok: true, dropped: false, data: { name, email, company, message } };
 }
 
