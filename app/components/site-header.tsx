@@ -4,12 +4,9 @@ import { useState } from "react";
 import Link from "next/link";
 
 const LINKS = [
-  { href: "/#offer", label: "Offer" },
-  { href: "/#how", label: "How it works" },
-  { href: "/#price", label: "Price" },
-  { href: "/#start", label: "Start" },
+  { href: "/", label: "Agent" },
+  { href: "/automation", label: "Automation" },
   { href: "/status", label: "Status" },
-  { href: "/agent", label: "Agent" },
 ] as const;
 
 export function SiteHeader() {
