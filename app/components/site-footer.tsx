@@ -11,7 +11,7 @@ export function SiteFooter() {
           </p>
         </div>
         <nav className="flex flex-wrap gap-5 text-sm text-paper/70" aria-label="Legal">
-          <Link href="/#start" className="hover:text-paper">
+          <Link href="/automation#start" className="hover:text-paper">
             Start
           </Link>
           <Link href="/status" className="hover:text-paper">

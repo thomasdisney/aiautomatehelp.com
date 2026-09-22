@@ -100594,4 +100594,18 @@ for (const rel of publicAppFiles) {
   assert.equal(text.includes("github.com/thomas"), false);
 }
 
+const footerSource = readFileSync(
+  new URL("../app/components/site-footer.tsx", import.meta.url),
+  "utf8",
+);
+assert.equal(footerSource.includes('href="/automation#start"'), true);
+assert.equal(footerSource.includes('href="/#start"'), false);
+const homeSource = readFileSync(new URL("../app/page.tsx", import.meta.url), "utf8");
+assert.equal(homeSource.includes('id="start"'), false);
+const automationSource = readFileSync(
+  new URL("../app/automation/page.tsx", import.meta.url),
+  "utf8",
+);
+assert.equal(automationSource.includes('id="start"'), true);
+
 console.log("intake checks ok");
