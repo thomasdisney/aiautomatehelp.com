@@ -14,7 +14,12 @@ import {
 } from "@/lib/brief-receipt";
 import { FIELD_LIMITS, parseDueAt, parseThread, type ThreadEntry } from "@/lib/intake";
 import { statusLookupCopy } from "@/lib/site-copy";
-import { closedBriefNextHref, customerReplyIntroCopy, customerStatusCopy } from "@/lib/status";
+import {
+  closedBriefNextHref,
+  customerReplyIntroCopy,
+  customerStatusCopy,
+  unmatchedLookupNextHref,
+} from "@/lib/status";
 
 type Found = {
   kind: "found";
@@ -322,8 +327,15 @@ export function StatusForm({
         <div className="rounded-2xl border border-ink/10 bg-white p-6" role="status">
           <p className="font-semibold text-ink">No matching brief</p>
           <p className="mt-2 leading-relaxed text-ink/70">
-            That reference and email do not match a stored brief. Check both and try once more.
+            That reference and email do not match a stored brief. Check both and try once more,
+            or send a new brief that names what starts it, which tools, and what done looks like.
           </p>
+          <a
+            href={unmatchedLookupNextHref()}
+            className="mt-4 inline-flex items-center justify-center rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent-hover"
+          >
+            Send a new brief
+          </a>
         </div>
       ) : null}
 

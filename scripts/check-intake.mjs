@@ -42,6 +42,7 @@ import {
   customerStatusCopy,
   customerReplyIntroCopy,
   closedBriefNextHref,
+  unmatchedLookupNextHref,
 } from "../lib/status.ts";
 import {
   siteMetaDescription,
@@ -348,6 +349,7 @@ assert.equal(closedBriefNextHref("quoted"), null);
 assert.equal(closedBriefNextHref("accepted"), null);
 assert.equal(closedBriefNextHref("paid"), null);
 assert.equal(closedBriefNextHref("delivered"), null);
+assert.equal(unmatchedLookupNextHref(), "/automation#start");
 
 const quotedReplyConnected = customerReplyIntroCopy("quoted", true);
 const quotedReplyDisconnected = customerReplyIntroCopy("quoted", false);
@@ -100666,11 +100668,13 @@ const statusPageSource = readFileSync(
   "utf8",
 );
 assert.equal(statusPageSource.includes('href="/automation#start"'), true);
+assert.equal(statusPageSource.includes("do not match"), true);
 const statusFormSource = readFileSync(
   new URL("../app/components/status-form.tsx", import.meta.url),
   "utf8",
 );
 assert.equal(statusFormSource.includes("closedBriefNextHref"), true);
+assert.equal(statusFormSource.includes("unmatchedLookupNextHref"), true);
 assert.equal(statusFormSource.includes("Send a new brief"), true);
 
 console.log("intake checks ok");

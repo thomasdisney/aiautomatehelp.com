@@ -148,6 +148,10 @@ export function closedBriefNextHref(status: string): "/automation#start" | null 
   return null;
 }
 
+export function unmatchedLookupNextHref(): "/automation#start" {
+  return "/automation#start";
+}
+
 export function customerStatusCopy(status: string, paymentConnected = false): string {
   if (status === "quoted") {
     return paymentConnected

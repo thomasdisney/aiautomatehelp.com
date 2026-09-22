@@ -26,7 +26,8 @@ export default async function StatusPage({
         {statusIntroCopy(paymentConnected)}
       </p>
       <p className="mt-4 leading-relaxed text-ink/70">
-        If a brief is closed, send a new named-workflow brief on the{" "}
+        If a brief is closed, or this reference and email do not match, send a
+        new named-workflow brief on the{" "}
         <a href="/automation#start" className="font-medium text-ink underline underline-offset-2">
           automation page
         </a>
