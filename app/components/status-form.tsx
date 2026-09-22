@@ -14,7 +14,7 @@ import {
 } from "@/lib/brief-receipt";
 import { FIELD_LIMITS, parseDueAt, parseThread, type ThreadEntry } from "@/lib/intake";
 import { statusLookupCopy } from "@/lib/site-copy";
-import { customerReplyIntroCopy, customerStatusCopy } from "@/lib/status";
+import { closedBriefNextHref, customerReplyIntroCopy, customerStatusCopy } from "@/lib/status";
 
 type Found = {
   kind: "found";
@@ -82,6 +82,7 @@ export function StatusForm({
   const [replyError, setReplyError] = useState("");
   const [typedId, setTypedId] = useState<string | null>(null);
   const idValue = typedId ?? initialId;
+  const closedHref = result.kind === "found" ? closedBriefNextHref(result.status) : null;
   const receipts = useSyncExternalStore(
     subscribeBriefReceipts,
     getBriefReceiptSnapshot,
@@ -384,6 +385,20 @@ export function StatusForm({
               Received {result.receivedAt}. Reference {result.id}.
             </p>
           </div>
+          {closedHref ? (
+            <div className="rounded-2xl border border-ink/10 bg-white p-6 sm:p-8">
+              <p className="leading-relaxed text-ink/70">
+                This brief stays closed. Send a new brief that names what starts it, which
+                tools, and what done looks like.
+              </p>
+              <a
+                href={closedHref}
+                className="mt-4 inline-flex items-center justify-center rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent-hover"
+              >
+                Send a new brief
+              </a>
+            </div>
+          ) : null}
           <PayPanel
             accepted={result.status === "accepted"}
             amountCents={result.amountCents}

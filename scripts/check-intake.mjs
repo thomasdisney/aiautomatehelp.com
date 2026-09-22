@@ -41,6 +41,7 @@ import {
   quoteTermsMatch,
   customerStatusCopy,
   customerReplyIntroCopy,
+  closedBriefNextHref,
 } from "../lib/status.ts";
 import {
   siteMetaDescription,
@@ -335,6 +336,18 @@ assert.equal(customerStatusCopy("received", false), customerStatusCopy("received
 assert.equal(customerStatusCopy("received", false).includes("Pay here"), false);
 assert.equal(customerStatusCopy("paid", true).includes("Paid."), true);
 assert.equal(customerStatusCopy("unknown", false).includes("on file"), true);
+const declinedCopy = customerStatusCopy("declined");
+assert.equal(declinedCopy.includes("I am not taking this job"), true);
+assert.equal(declinedCopy.includes("Send a new"), true);
+assert.equal(declinedCopy.includes("what starts"), true);
+assert.equal(declinedCopy.includes("mailto:"), false);
+assert.equal(closedBriefNextHref("declined"), "/automation#start");
+assert.equal(closedBriefNextHref("withdrawn"), "/automation#start");
+assert.equal(closedBriefNextHref("received"), null);
+assert.equal(closedBriefNextHref("quoted"), null);
+assert.equal(closedBriefNextHref("accepted"), null);
+assert.equal(closedBriefNextHref("paid"), null);
+assert.equal(closedBriefNextHref("delivered"), null);
 
 const quotedReplyConnected = customerReplyIntroCopy("quoted", true);
 const quotedReplyDisconnected = customerReplyIntroCopy("quoted", false);
@@ -100608,6 +100621,7 @@ const publicAppFiles = [
   "../app/privacy/page.tsx",
   "../app/terms/page.tsx",
   "../app/status/page.tsx",
+  "../app/components/status-form.tsx",
 ];
 for (const rel of publicAppFiles) {
   const text = readFileSync(new URL(rel, import.meta.url), "utf8").toLowerCase();
@@ -100647,5 +100661,16 @@ assert.equal(intakeFormSource.includes('name="trigger"'), true);
 assert.equal(intakeFormSource.includes('name="tools"'), true);
 assert.equal(intakeFormSource.includes('name="outcome"'), true);
 assert.equal(intakeFormSource.includes('name="message"'), false);
+const statusPageSource = readFileSync(
+  new URL("../app/status/page.tsx", import.meta.url),
+  "utf8",
+);
+assert.equal(statusPageSource.includes('href="/automation#start"'), true);
+const statusFormSource = readFileSync(
+  new URL("../app/components/status-form.tsx", import.meta.url),
+  "utf8",
+);
+assert.equal(statusFormSource.includes("closedBriefNextHref"), true);
+assert.equal(statusFormSource.includes("Send a new brief"), true);
 
 console.log("intake checks ok");

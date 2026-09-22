@@ -132,7 +132,8 @@ const STATUS_COPY: Record<IntakeStatus, string> = {
     "I have the brief. I may ask a follow-up here. A yes or no and, if yes, a fixed quote will show here.",
   quoted:
     "This is a fixed quote for the written scope, with a delivery date and a done-when test. Accepting agrees to that scope, price, date, and test together.",
-  declined: "I am not taking this job. If I post a new quote here, it will include a new note.",
+  declined:
+    "I am not taking this job. This brief stays closed. Send a new brief that names what starts it, which tools, and what done looks like. If I post a new quote here, it will include a new note.",
   accepted:
     "You accepted this quote, including the written scope, price, date, and done-when test. Those terms stay as written.",
   withdrawn:
@@ -141,6 +142,11 @@ const STATUS_COPY: Record<IntakeStatus, string> = {
   delivered:
     "Handed off. Confirm the stored done-when test here when it passes. Ask here if something in that scope is broken.",
 };
+
+export function closedBriefNextHref(status: string): "/automation#start" | null {
+  if (status === "declined" || status === "withdrawn") return "/automation#start";
+  return null;
+}
 
 export function customerStatusCopy(status: string, paymentConnected = false): string {
   if (status === "quoted") {

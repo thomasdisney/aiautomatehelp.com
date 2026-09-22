@@ -25,6 +25,13 @@ export default async function StatusPage({
       <p className="mt-6 leading-relaxed text-ink/70">
         {statusIntroCopy(paymentConnected)}
       </p>
+      <p className="mt-4 leading-relaxed text-ink/70">
+        If a brief is closed, send a new named-workflow brief on the{" "}
+        <a href="/automation#start" className="font-medium text-ink underline underline-offset-2">
+          automation page
+        </a>
+        .
+      </p>
       <div className="mt-10">
         <StatusForm initialId={initialId} paymentConnected={paymentConnected} />
       </div>
