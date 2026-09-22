@@ -44,8 +44,15 @@ export default function PrivacyPage() {
       </p>
       <h2 className="mt-10 text-xl font-semibold text-ink">Questions</h2>
       <p className="mt-3 leading-relaxed text-ink/70">
-        Use the start section on the home page, or the status page for a brief
-        you already sent.
+        Use the start section on the{" "}
+        <a href="/automation#start" className="font-medium text-ink underline underline-offset-2">
+          automation page
+        </a>
+        , or the{" "}
+        <a href="/status" className="font-medium text-ink underline underline-offset-2">
+          status page
+        </a>{" "}
+        for a brief you already sent.
       </p>
     </article>
   );

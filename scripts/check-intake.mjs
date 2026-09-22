@@ -100607,5 +100607,13 @@ const automationSource = readFileSync(
   "utf8",
 );
 assert.equal(automationSource.includes('id="start"'), true);
+const privacySource = readFileSync(
+  new URL("../app/privacy/page.tsx", import.meta.url),
+  "utf8",
+);
+assert.equal(privacySource.includes('href="/automation#start"'), true);
+assert.equal(privacySource.includes("start section on the home page"), false);
+const sitemapSource = readFileSync(new URL("../app/sitemap.ts", import.meta.url), "utf8");
+assert.equal(sitemapSource.includes("${site}/automation"), true);
 
 console.log("intake checks ok");
