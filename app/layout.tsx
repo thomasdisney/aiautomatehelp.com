@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Source_Serif_4 } from "next/font/google";
 import { SiteFooter } from "@/app/components/site-footer";
 import { SiteHeader } from "@/app/components/site-header";
@@ -18,6 +18,13 @@ const sourceSerif = Source_Serif_4({
 
 const siteUrl = "https://www.aiautomatehelp.com";
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#f6f1e8",
+};
+
 export async function generateMetadata(): Promise<Metadata> {
   const description = siteMetaDescription(paymentConfigured());
   return {
@@ -31,6 +38,11 @@ export async function generateMetadata(): Promise<Metadata> {
       url: "./",
       siteName: "AutomateAI",
       type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "AutomateAI",
+      description,
     },
     robots: {
       index: true,
@@ -48,7 +60,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en">
       <body
         className={`${geistSans.variable} ${sourceSerif.variable} bg-paper font-sans text-ink antialiased`}
       >
