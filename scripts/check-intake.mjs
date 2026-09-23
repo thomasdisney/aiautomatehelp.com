@@ -58,6 +58,7 @@ import {
   costsCopy,
   briefSecretsFaqCopy,
   exampleWorkflowsHeadingCopy,
+  sendBriefStepCopy,
   triggerPlaceholderCopy,
   confirmDoneCopy,
   acceptDoneWhenCopy,
@@ -556,6 +557,17 @@ assert.equal(exampleWorkflowsHeading.includes("Example workflows"), true);
 assert.equal(exampleWorkflowsHeading.toLowerCase().includes("mailto"), false);
 assert.equal(exampleWorkflowsHeading.includes("thomasdisney"), false);
 assert.equal(exampleWorkflowsHeading.includes("gmail.com"), false);
+
+const sendBriefStep = sendBriefStepCopy();
+assert.equal(sendBriefStep.includes("Describe one workflow"), false);
+assert.equal(sendBriefStep.includes("the job"), false);
+assert.equal(sendBriefStep.includes("named workflow"), true);
+assert.equal(sendBriefStep.includes("what starts it"), true);
+assert.equal(sendBriefStep.includes("which tools"), true);
+assert.equal(sendBriefStep.includes("what done looks like"), true);
+assert.equal(sendBriefStep.toLowerCase().includes("mailto"), false);
+assert.equal(sendBriefStep.includes("thomasdisney"), false);
+assert.equal(sendBriefStep.includes("gmail.com"), false);
 
 const triggerPlaceholder = triggerPlaceholderCopy();
 assert.equal(triggerPlaceholder.includes("start the job"), false);
@@ -100919,6 +100931,8 @@ assert.equal(automationSource.includes("priceFaqCopy"), true);
 assert.equal(automationSource.includes("after the brief"), false);
 assert.equal(automationSource.includes("briefSecretsFaqCopy"), true);
 assert.equal(automationSource.includes("exampleWorkflowsHeadingCopy"), true);
+assert.equal(automationSource.includes("sendBriefStepCopy"), true);
+assert.equal(automationSource.includes("Describe one workflow"), false);
 assert.equal(automationSource.includes("Example jobs"), false);
 assert.equal(automationSource.includes("one scoped job"), false);
 assert.equal(automationSource.includes("How long does a job take?"), false);

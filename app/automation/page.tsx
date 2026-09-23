@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { IntakeForm } from "@/app/components/intake-form";
 import { intakeStoreConfigured } from "@/lib/intake-store";
 import { paymentConfigured } from "@/lib/payment";
-import { briefSecretsFaqCopy, costsCopy, durationFaqCopy, exampleWorkflowsHeadingCopy, jsonLdDescription, noOutboundEmailCopy, priceFaqCopy, staffedAgencyFaqCopy, supportAfterHandoffFaqCopy } from "@/lib/site-copy";
+import { briefSecretsFaqCopy, costsCopy, durationFaqCopy, exampleWorkflowsHeadingCopy, jsonLdDescription, noOutboundEmailCopy, priceFaqCopy, sendBriefStepCopy, staffedAgencyFaqCopy, supportAfterHandoffFaqCopy } from "@/lib/site-copy";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/automation" },
@@ -27,7 +27,7 @@ const STEPS = [
   {
     n: "01",
     title: "Send a brief",
-    body: "Describe one workflow: trigger, tools, and what done looks like.",
+    body: sendBriefStepCopy(),
   },
   {
     n: "02",
