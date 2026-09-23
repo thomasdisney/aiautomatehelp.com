@@ -368,7 +368,7 @@ export function parseIntakeOutcome(value: unknown): string | null {
   return raw;
 }
 
-const INTAKE_EMAIL_URL_RE = /:/;
+const INTAKE_EMAIL_URL_RE = /[:\uFF1A]/;
 
 export function parseIntakeEmail(value: unknown): string | null {
   if (typeof value !== "string") return null;
