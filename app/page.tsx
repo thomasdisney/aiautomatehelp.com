@@ -36,6 +36,17 @@ export default function Home() {
             prints that code. Support stays on this site.
           </p>
         </div>
+        <p className="mx-auto mt-8 max-w-md text-sm leading-relaxed text-ink/60">
+          For a scoped automation, send a brief that names what starts it, which
+          tools, and what done looks like on the{" "}
+          <a
+            href="/automation#start"
+            className="font-medium text-ink underline underline-offset-2"
+          >
+            automation page
+          </a>
+          . Checkout is not open on this site yet.
+        </p>
       </div>
     </main>
   );
