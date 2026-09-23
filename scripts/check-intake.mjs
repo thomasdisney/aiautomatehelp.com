@@ -102296,6 +102296,71 @@ assert.equal(
 );
 assert.equal(toIntakePathPayload(record)?.operatorNote, "");
 
+const doneWhenStamp = "A test submit creates one new row in the named sheet.";
+const dirtyReceiptUrlDoneWhenBlob = {
+  ...record,
+  doneWhen: "https://pay.example.test/receipts/hosted",
+  path: `INTAKE/${id}.JSON`,
+};
+assert.equal(
+  parseIntakeRecordAtPath(JSON.stringify(dirtyReceiptUrlDoneWhenBlob), `intake/${id}.json`),
+  null,
+);
+assert.equal(parseIntakeRecord(JSON.stringify(dirtyReceiptUrlDoneWhenBlob))?.id, id);
+assert.equal(
+  parseIntakeRecord(JSON.stringify(dirtyReceiptUrlDoneWhenBlob))?.doneWhen,
+  "https://pay.example.test/receipts/hosted",
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      doneWhen: doneWhenStamp,
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.id,
+  id,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      doneWhen: doneWhenStamp,
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.doneWhen,
+  doneWhenStamp,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      doneWhen: "",
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.doneWhen,
+  "",
+);
+
+const dirtyReceiptUrlDoneWhenWrite = toIntakePathPayload({
+  ...record,
+  doneWhen: "https://pay.example.test/receipts/hosted",
+});
+const dirtyReceiptUrlDoneWhenJson = JSON.stringify(dirtyReceiptUrlDoneWhenWrite);
+assert.equal(dirtyReceiptUrlDoneWhenWrite, null);
+assert.equal(dirtyReceiptUrlDoneWhenJson.includes("receipts/hosted"), false);
+assert.equal(
+  toIntakePathPayload({
+    ...record,
+    doneWhen: doneWhenStamp,
+  })?.doneWhen,
+  doneWhenStamp,
+);
+assert.equal(toIntakePathPayload(record)?.doneWhen, "");
+
 const publicAppFiles = [
   "../app/page.tsx",
   "../app/agent/page.tsx",
