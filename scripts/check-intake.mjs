@@ -54,6 +54,7 @@ import {
   termsIntroCopy,
   staffedAgencyFaqCopy,
   durationFaqCopy,
+  supportAfterHandoffFaqCopy,
   priceFaqCopy,
   privacySharingCopy,
   privacyCollectCopy,
@@ -472,6 +473,19 @@ assert.equal(durationFaq.includes("delivery window"), true);
 assert.equal(durationFaq.toLowerCase().includes("mailto"), false);
 assert.equal(durationFaq.includes("thomasdisney"), false);
 assert.equal(durationFaq.includes("gmail.com"), false);
+
+const supportAfterHandoffFaq = supportAfterHandoffFaqCopy();
+assert.equal(supportAfterHandoffFaq.includes("the job"), false);
+assert.equal(supportAfterHandoffFaq.includes("part of the job"), false);
+assert.equal(supportAfterHandoffFaq.includes("a job"), false);
+assert.equal(supportAfterHandoffFaq.includes("job description"), false);
+assert.equal(supportAfterHandoffFaq.includes("job text"), false);
+assert.equal(supportAfterHandoffFaq.includes("named workflow"), true);
+assert.equal(supportAfterHandoffFaq.includes("this site"), true);
+assert.equal(supportAfterHandoffFaq.includes("New work is a new quote"), true);
+assert.equal(supportAfterHandoffFaq.toLowerCase().includes("mailto"), false);
+assert.equal(supportAfterHandoffFaq.includes("thomasdisney"), false);
+assert.equal(supportAfterHandoffFaq.includes("gmail.com"), false);
 
 const priceFaqConnected = priceFaqCopy(true);
 const priceFaqDisconnected = priceFaqCopy(false);
@@ -100767,9 +100781,11 @@ const automationSource = readFileSync(
 assert.equal(automationSource.includes('id="start"'), true);
 assert.equal(automationSource.includes("staffedAgencyFaqCopy"), true);
 assert.equal(automationSource.includes("durationFaqCopy"), true);
+assert.equal(automationSource.includes("supportAfterHandoffFaqCopy"), true);
 assert.equal(automationSource.includes("one scoped job"), false);
 assert.equal(automationSource.includes("How long does a job take?"), false);
 assert.equal(automationSource.includes("Simple jobs"), false);
+assert.equal(automationSource.includes("part of the job"), false);
 const privacySource = readFileSync(
   new URL("../app/privacy/page.tsx", import.meta.url),
   "utf8",

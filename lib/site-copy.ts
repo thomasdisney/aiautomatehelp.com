@@ -50,6 +50,10 @@ export function durationFaqCopy(): string {
   return "A delivery window comes with the quote. Simple named workflows are usually days.";
 }
 
+export function supportAfterHandoffFaqCopy(): string {
+  return "In-scope fixes for that named workflow stay on this site. New work is a new quote.";
+}
+
 export function priceFaqCopy(paymentConnected = false): string {
   return paymentConnected
     ? "A fixed quote after the brief. You pay after you accept, before I build."

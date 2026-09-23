@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { IntakeForm } from "@/app/components/intake-form";
 import { intakeStoreConfigured } from "@/lib/intake-store";
 import { paymentConfigured } from "@/lib/payment";
-import { durationFaqCopy, jsonLdDescription, noOutboundEmailCopy, priceFaqCopy, staffedAgencyFaqCopy } from "@/lib/site-copy";
+import { durationFaqCopy, jsonLdDescription, noOutboundEmailCopy, priceFaqCopy, staffedAgencyFaqCopy, supportAfterHandoffFaqCopy } from "@/lib/site-copy";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/automation" },
@@ -61,7 +61,7 @@ const FAQS = [
   },
   {
     q: "What about support after handoff?",
-    a: "In-scope fixes are part of the job. New work is a new quote.",
+    a: supportAfterHandoffFaqCopy(),
   },
   {
     q: "What should I leave out of a brief?",
