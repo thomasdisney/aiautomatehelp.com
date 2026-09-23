@@ -407,6 +407,17 @@ assert.equal(metaDisconnected.includes("Paid before I start"), false);
 assert.equal(metaDisconnected.includes("Checkout is not open on this site yet."), true);
 assert.equal(metaDisconnected.includes("I may build and hand off after you accept."), true);
 assert.equal(metaConnected.includes("I may build and hand off"), false);
+assert.equal(metaConnected.includes("after a brief"), false);
+assert.equal(metaDisconnected.includes("after a brief"), false);
+assert.equal(metaConnected.includes("the job"), false);
+assert.equal(metaDisconnected.includes("the job"), false);
+assert.equal(metaConnected.includes("named workflow"), true);
+assert.equal(metaDisconnected.includes("named workflow"), true);
+assert.equal(metaConnected.includes("after I understand the named workflow"), true);
+assert.equal(metaDisconnected.includes("after I understand the named workflow"), true);
+assert.equal(metaConnected.toLowerCase().includes("mailto"), false);
+assert.equal(metaDisconnected.includes("thomasdisney"), false);
+assert.equal(metaDisconnected.includes("gmail.com"), false);
 
 const termsOfferConnected = termsOfferCopy(true);
 const termsOfferDisconnected = termsOfferCopy(false);
@@ -646,6 +657,17 @@ assert.equal(jsonLdDisconnected.includes("Checkout is not open on this site yet.
 assert.equal(jsonLdDisconnected.includes("I may build and hand off after you accept."), true);
 assert.equal(jsonLdConnected.includes("I may build and hand off"), false);
 assert.equal(jsonLdDisconnected.includes("payment processors"), false);
+assert.equal(jsonLdConnected.includes("after a brief"), false);
+assert.equal(jsonLdDisconnected.includes("after a brief"), false);
+assert.equal(jsonLdConnected.includes("the job"), false);
+assert.equal(jsonLdDisconnected.includes("the job"), false);
+assert.equal(jsonLdConnected.includes("named workflow"), true);
+assert.equal(jsonLdDisconnected.includes("named workflow"), true);
+assert.equal(jsonLdConnected.includes("after I understand the named workflow"), true);
+assert.equal(jsonLdDisconnected.includes("after I understand the named workflow"), true);
+assert.equal(jsonLdConnected.toLowerCase().includes("mailto"), false);
+assert.equal(jsonLdDisconnected.includes("thomasdisney"), false);
+assert.equal(jsonLdDisconnected.includes("gmail.com"), false);
 
 const noOutboundEmail = noOutboundEmailCopy();
 assert.equal(noOutboundEmail.includes("I will not send mail here."), true);

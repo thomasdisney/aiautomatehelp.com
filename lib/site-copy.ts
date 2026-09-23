@@ -1,13 +1,13 @@
 export function siteMetaDescription(paymentConnected = false): string {
   return paymentConnected
-    ? "One repetitive workflow at a time. Fixed quote after a brief. Paid before I start."
-    : "One repetitive workflow at a time. Fixed quote after a brief. Checkout is not open on this site yet. I may build and hand off after you accept.";
+    ? "One repetitive workflow at a time. Fixed quote after I understand the named workflow. Paid before I start."
+    : "One repetitive workflow at a time. Fixed quote after I understand the named workflow. Checkout is not open on this site yet. I may build and hand off after you accept.";
 }
 
 export function jsonLdDescription(paymentConnected = false): string {
   return paymentConnected
-    ? "Scoped AI automation built to order for small businesses. Fixed quote after a brief. Paid before I start."
-    : "Scoped AI automation built to order for small businesses. Fixed quote after a brief. Checkout is not open on this site yet. I may build and hand off after you accept.";
+    ? "Scoped AI automation built to order for small businesses. Fixed quote after I understand the named workflow. Paid before I start."
+    : "Scoped AI automation built to order for small businesses. Fixed quote after I understand the named workflow. Checkout is not open on this site yet. I may build and hand off after you accept.";
 }
 
 export function termsOfferCopy(paymentConnected = false): string {
