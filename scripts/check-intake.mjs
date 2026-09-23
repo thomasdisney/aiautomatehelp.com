@@ -59,6 +59,7 @@ import {
   briefSecretsFaqCopy,
   exampleWorkflowsHeadingCopy,
   sendBriefStepCopy,
+  startHereNameCopy,
   triggerPlaceholderCopy,
   confirmDoneCopy,
   acceptDoneWhenCopy,
@@ -568,6 +569,17 @@ assert.equal(sendBriefStep.includes("what done looks like"), true);
 assert.equal(sendBriefStep.toLowerCase().includes("mailto"), false);
 assert.equal(sendBriefStep.includes("thomasdisney"), false);
 assert.equal(sendBriefStep.includes("gmail.com"), false);
+
+const startHereName = startHereNameCopy();
+assert.equal(startHereName.includes("Name one workflow"), false);
+assert.equal(startHereName.includes("the job"), false);
+assert.equal(startHereName.includes("named workflow"), true);
+assert.equal(startHereName.includes("what starts it"), true);
+assert.equal(startHereName.includes("which tools"), true);
+assert.equal(startHereName.includes("what done looks like"), true);
+assert.equal(startHereName.toLowerCase().includes("mailto"), false);
+assert.equal(startHereName.includes("thomasdisney"), false);
+assert.equal(startHereName.includes("gmail.com"), false);
 
 const triggerPlaceholder = triggerPlaceholderCopy();
 assert.equal(triggerPlaceholder.includes("start the job"), false);
@@ -100932,7 +100944,9 @@ assert.equal(automationSource.includes("after the brief"), false);
 assert.equal(automationSource.includes("briefSecretsFaqCopy"), true);
 assert.equal(automationSource.includes("exampleWorkflowsHeadingCopy"), true);
 assert.equal(automationSource.includes("sendBriefStepCopy"), true);
+assert.equal(automationSource.includes("startHereNameCopy"), true);
 assert.equal(automationSource.includes("Describe one workflow"), false);
+assert.equal(automationSource.includes("Name one workflow"), false);
 assert.equal(automationSource.includes("Example jobs"), false);
 assert.equal(automationSource.includes("one scoped job"), false);
 assert.equal(automationSource.includes("How long does a job take?"), false);

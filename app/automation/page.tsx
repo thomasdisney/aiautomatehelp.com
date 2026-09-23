@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { IntakeForm } from "@/app/components/intake-form";
 import { intakeStoreConfigured } from "@/lib/intake-store";
 import { paymentConfigured } from "@/lib/payment";
-import { briefSecretsFaqCopy, costsCopy, durationFaqCopy, exampleWorkflowsHeadingCopy, jsonLdDescription, noOutboundEmailCopy, priceFaqCopy, sendBriefStepCopy, staffedAgencyFaqCopy, supportAfterHandoffFaqCopy } from "@/lib/site-copy";
+import { briefSecretsFaqCopy, costsCopy, durationFaqCopy, exampleWorkflowsHeadingCopy, jsonLdDescription, noOutboundEmailCopy, priceFaqCopy, sendBriefStepCopy, startHereNameCopy, staffedAgencyFaqCopy, supportAfterHandoffFaqCopy } from "@/lib/site-copy";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/automation" },
@@ -243,7 +243,7 @@ export default function Home() {
           <div>
             <h2 className="font-serif text-3xl text-ink">Start here</h2>
             <ol className="mt-6 list-decimal space-y-3 pl-5 leading-relaxed text-ink/70">
-              <li>Name one workflow: trigger, tools, done-when.</li>
+              <li>{startHereNameCopy()}</li>
               <li>Get a yes or no and a fixed quote on the status page.</li>
               <li>
                 {paymentLive

@@ -72,6 +72,10 @@ export function sendBriefStepCopy(): string {
   return "Describe one named workflow — what starts it, which tools, and what done looks like.";
 }
 
+export function startHereNameCopy(): string {
+  return "One named workflow — what starts it, which tools, and what done looks like.";
+}
+
 export function triggerPlaceholderCopy(): string {
   return "A form submit, a new row, a daily time — the event that should start the named workflow.";
 }
