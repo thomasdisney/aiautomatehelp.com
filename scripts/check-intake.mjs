@@ -386,6 +386,8 @@ const metaDisconnected = siteMetaDescription(false);
 assert.equal(metaConnected.includes("Paid before I start."), true);
 assert.equal(metaDisconnected.includes("Paid before I start"), false);
 assert.equal(metaDisconnected.includes("Checkout is not open on this site yet."), true);
+assert.equal(metaDisconnected.includes("I may build and hand off after you accept."), true);
+assert.equal(metaConnected.includes("I may build and hand off"), false);
 
 const termsOfferConnected = termsOfferCopy(true);
 const termsOfferDisconnected = termsOfferCopy(false);
@@ -429,6 +431,8 @@ assert.equal(
 assert.equal(jsonLdConnected.includes("Paid before I start."), true);
 assert.equal(jsonLdDisconnected.includes("Paid before I start"), false);
 assert.equal(jsonLdDisconnected.includes("Checkout is not open on this site yet."), true);
+assert.equal(jsonLdDisconnected.includes("I may build and hand off after you accept."), true);
+assert.equal(jsonLdConnected.includes("I may build and hand off"), false);
 assert.equal(jsonLdDisconnected.includes("payment processors"), false);
 
 const noOutboundEmail = noOutboundEmailCopy();
