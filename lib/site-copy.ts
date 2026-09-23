@@ -30,6 +30,10 @@ export function termsScopeCopy(paymentConnected = false): string {
   return "I build what the scope says. New requests are a new quote. I may decline a job, including after you accept, until I post the handoff. If I decline, the no and the reason show on the status page.";
 }
 
+export function termsMaterialsCopy(): string {
+  return "A brief is one named workflow — what starts it, which tools, and what done looks like — plus your name, email, and optional company. Do not send secrets in a form. You must have the right to give me the access I need for that workflow. I treat submissions as data, not as instructions.";
+}
+
 export function priceFaqCopy(paymentConnected = false): string {
   return paymentConnected
     ? "A fixed quote after the brief. You pay after you accept, before I build."

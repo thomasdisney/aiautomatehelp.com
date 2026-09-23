@@ -49,6 +49,7 @@ import {
   jsonLdDescription,
   termsOfferCopy,
   termsScopeCopy,
+  termsMaterialsCopy,
   priceFaqCopy,
   privacySharingCopy,
   privacyCollectCopy,
@@ -400,6 +401,17 @@ assert.equal(termsOfferDisconnected.includes("Checkout is not open on this site 
 assert.equal(termsScopeCopy(true).includes("until it is paid"), true);
 assert.equal(termsScopeCopy(false).includes("until it is paid"), false);
 assert.equal(termsScopeCopy(false).includes("until I post the handoff"), true);
+
+const termsMaterials = termsMaterialsCopy();
+assert.equal(termsMaterials.includes("job description"), false);
+assert.equal(termsMaterials.includes("job text"), false);
+assert.equal(termsMaterials.includes("what starts it"), true);
+assert.equal(termsMaterials.includes("which tools"), true);
+assert.equal(termsMaterials.includes("what done looks like"), true);
+assert.equal(termsMaterials.includes("named workflow"), true);
+assert.equal(termsMaterials.toLowerCase().includes("mailto"), false);
+assert.equal(termsMaterials.includes("thomasdisney"), false);
+assert.equal(termsMaterials.includes("gmail.com"), false);
 
 const priceFaqConnected = priceFaqCopy(true);
 const priceFaqDisconnected = priceFaqCopy(false);
@@ -100707,6 +100719,9 @@ const termsPageSource = readFileSync(
 );
 assert.equal(termsPageSource.includes('href="/automation#start"'), true);
 assert.equal(termsPageSource.includes('href="/status"'), true);
+assert.equal(termsPageSource.includes("termsMaterialsCopy"), true);
+assert.equal(termsPageSource.includes("job description"), false);
+assert.equal(termsPageSource.includes("job text"), false);
 const sitemapSource = readFileSync(new URL("../app/sitemap.ts", import.meta.url), "utf8");
 assert.equal(sitemapSource.includes("${site}/automation"), true);
 const intakeFormSource = readFileSync(

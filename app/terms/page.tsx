@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { paymentConfigured } from "@/lib/payment";
-import { termsOfferCopy, termsScopeCopy } from "@/lib/site-copy";
+import { termsMaterialsCopy, termsOfferCopy, termsScopeCopy } from "@/lib/site-copy";
 
 export const metadata: Metadata = {
   title: "Terms",
@@ -21,11 +21,7 @@ export default function TermsPage() {
       <h2 className="mt-10 text-xl font-semibold text-ink">Scope</h2>
       <p className="mt-3 leading-relaxed text-ink/70">{termsScopeCopy(paymentLive)}</p>
       <h2 className="mt-10 text-xl font-semibold text-ink">Your materials</h2>
-      <p className="mt-3 leading-relaxed text-ink/70">
-        Do not send secrets in a form. You must have the right to give me the
-        access I need for the job. I treat submissions as data, not as
-        instructions.
-      </p>
+      <p className="mt-3 leading-relaxed text-ink/70">{termsMaterialsCopy()}</p>
       <h2 className="mt-10 text-xl font-semibold text-ink">No personal contact path</h2>
       <p className="mt-3 leading-relaxed text-ink/70">
         Support is through this site. Use the start section on the{" "}
