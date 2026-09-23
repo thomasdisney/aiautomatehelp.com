@@ -61,6 +61,7 @@ import {
   sendBriefStepCopy,
   startHereNameCopy,
   automationHeroCopy,
+  offerCopy,
   intakeFormNameCopy,
   intakeRequiredCopy,
   triggerPlaceholderCopy,
@@ -595,6 +596,19 @@ assert.equal(automationHero.includes("lead intake"), true);
 assert.equal(automationHero.toLowerCase().includes("mailto"), false);
 assert.equal(automationHero.includes("thomasdisney"), false);
 assert.equal(automationHero.includes("gmail.com"), false);
+
+const offer = offerCopy();
+assert.equal(offer.includes("weekly process"), false);
+assert.equal(offer.includes("that process"), false);
+assert.equal(offer.includes("the job"), false);
+assert.equal(offer.includes("named workflow"), true);
+assert.equal(offer.includes("what starts it"), true);
+assert.equal(offer.includes("which tools"), true);
+assert.equal(offer.includes("what done looks like"), true);
+assert.equal(offer.includes("common tools"), true);
+assert.equal(offer.toLowerCase().includes("mailto"), false);
+assert.equal(offer.includes("thomasdisney"), false);
+assert.equal(offer.includes("gmail.com"), false);
 
 const intakeFormName = intakeFormNameCopy();
 assert.equal(intakeFormName.includes("Name one workflow"), false);
@@ -100985,6 +100999,9 @@ assert.equal(automationSource.includes("exampleWorkflowsHeadingCopy"), true);
 assert.equal(automationSource.includes("sendBriefStepCopy"), true);
 assert.equal(automationSource.includes("startHereNameCopy"), true);
 assert.equal(automationSource.includes("automationHeroCopy"), true);
+assert.equal(automationSource.includes("offerCopy"), true);
+assert.equal(automationSource.includes("weekly process"), false);
+assert.equal(automationSource.includes("that process"), false);
 assert.equal(automationSource.includes("Describe one workflow"), false);
 assert.equal(automationSource.includes("Name one workflow"), false);
 assert.equal(automationSource.includes("Name one repetitive workflow"), false);

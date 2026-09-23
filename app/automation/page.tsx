@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { IntakeForm } from "@/app/components/intake-form";
 import { intakeStoreConfigured } from "@/lib/intake-store";
 import { paymentConfigured } from "@/lib/payment";
-import { automationHeroCopy, briefSecretsFaqCopy, costsCopy, durationFaqCopy, exampleWorkflowsHeadingCopy, jsonLdDescription, noOutboundEmailCopy, priceFaqCopy, sendBriefStepCopy, startHereNameCopy, staffedAgencyFaqCopy, supportAfterHandoffFaqCopy } from "@/lib/site-copy";
+import { automationHeroCopy, briefSecretsFaqCopy, costsCopy, durationFaqCopy, exampleWorkflowsHeadingCopy, jsonLdDescription, noOutboundEmailCopy, offerCopy, priceFaqCopy, sendBriefStepCopy, startHereNameCopy, staffedAgencyFaqCopy, supportAfterHandoffFaqCopy } from "@/lib/site-copy";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/automation" },
@@ -150,9 +150,7 @@ export default function Home() {
         <div className="mx-auto max-w-3xl">
           <h2 className="font-serif text-3xl text-ink">The offer</h2>
           <p className="mt-4 leading-relaxed text-ink/70">
-            For owners who can name one weekly process and already use common tools —
-            email, sheets, a CRM, a form — and want that process handled without hiring
-            a developer.
+            {offerCopy()}
           </p>
         </div>
       </section>
