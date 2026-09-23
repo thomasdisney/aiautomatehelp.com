@@ -3,7 +3,7 @@ import { Geist, Source_Serif_4 } from "next/font/google";
 import { SiteFooter } from "@/app/components/site-footer";
 import { SiteHeader } from "@/app/components/site-header";
 import { paymentConfigured } from "@/lib/payment";
-import { jsonLdDescription, siteMetaDescription } from "@/lib/site-copy";
+import { siteMetaDescription } from "@/lib/site-copy";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -47,23 +47,11 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "ProfessionalService",
-    name: "AutomateAI",
-    url: siteUrl,
-    description: jsonLdDescription(paymentConfigured()),
-  };
-
   return (
     <html lang="en" className="scroll-smooth">
       <body
         className={`${geistSans.variable} ${sourceSerif.variable} bg-paper font-sans text-ink antialiased`}
       >
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-white focus:px-3 focus:py-2"

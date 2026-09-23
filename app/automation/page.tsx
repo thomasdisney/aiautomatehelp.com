@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { IntakeForm } from "@/app/components/intake-form";
 import { intakeStoreConfigured } from "@/lib/intake-store";
 import { paymentConfigured } from "@/lib/payment";
-import { noOutboundEmailCopy, priceFaqCopy } from "@/lib/site-copy";
+import { jsonLdDescription, noOutboundEmailCopy, priceFaqCopy } from "@/lib/site-copy";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/automation" },
@@ -92,9 +92,20 @@ export default function Home() {
         }
       : item,
   );
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    name: "AutomateAI",
+    url: "https://www.aiautomatehelp.com/automation",
+    description: jsonLdDescription(paymentLive),
+  };
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <section className="px-5 pb-16 pt-16 sm:pt-24">
         <div className="mx-auto grid max-w-5xl items-center gap-10 md:grid-cols-2">
           <div>
