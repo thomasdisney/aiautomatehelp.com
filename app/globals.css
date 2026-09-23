@@ -53,6 +53,20 @@ input[type="button"] {
   -webkit-tap-highlight-color: color-mix(in srgb, var(--ink) 12%, transparent);
 }
 
+/* Phone: keep iOS from zooming on focus; give primary controls a fingertip hit area */
+input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+textarea,
+select {
+  font-size: 16px;
+}
+
+button,
+input[type="submit"],
+input[type="button"],
+a.inline-flex {
+  min-height: 44px;
+}
+
 :where(a, button, input, textarea, select, summary):focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
