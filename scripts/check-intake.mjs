@@ -101700,6 +101700,82 @@ assert.equal(
 );
 assert.equal(toIntakePathPayload(record)?.declinedAt, "");
 
+const notedAtStamp = "2026-08-12T18:00:00.000Z";
+const dirtyNonTimestampNotedAtBlob = {
+  ...record,
+  notedAt: "https://pay.example.test/receipts/hosted",
+  path: `INTAKE/${id}.JSON`,
+};
+assert.equal(
+  parseIntakeRecordAtPath(JSON.stringify(dirtyNonTimestampNotedAtBlob), `intake/${id}.json`),
+  null,
+);
+assert.equal(parseIntakeRecord(JSON.stringify(dirtyNonTimestampNotedAtBlob))?.id, id);
+assert.equal(
+  parseIntakeRecord(JSON.stringify(dirtyNonTimestampNotedAtBlob))?.notedAt,
+  "https://pay.example.test/receipts/hosted",
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      notedAt: "not-a-timestamp",
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  ),
+  null,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      notedAt: notedAtStamp,
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.id,
+  id,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      notedAt: notedAtStamp,
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.notedAt,
+  notedAtStamp,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      notedAt: "",
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.notedAt,
+  "",
+);
+
+const dirtyNonTimestampNotedAtWrite = toIntakePathPayload({
+  ...record,
+  notedAt: "https://pay.example.test/receipts/hosted",
+});
+const dirtyNonTimestampNotedAtJson = JSON.stringify(dirtyNonTimestampNotedAtWrite);
+assert.equal(dirtyNonTimestampNotedAtWrite, null);
+assert.equal(dirtyNonTimestampNotedAtJson.includes("receipts/hosted"), false);
+assert.equal(
+  toIntakePathPayload({
+    ...record,
+    notedAt: notedAtStamp,
+  })?.notedAt,
+  notedAtStamp,
+);
+assert.equal(toIntakePathPayload(record)?.notedAt, "");
+
 const publicAppFiles = [
   "../app/page.tsx",
   "../app/agent/page.tsx",
