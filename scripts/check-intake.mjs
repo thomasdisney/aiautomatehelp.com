@@ -12863,6 +12863,8 @@ assert.equal(emailIndexDigest("pat@https/pay.example.test"), null);
 assert.equal(emailIndexPath("pat@https/pay.example.test"), null);
 assert.equal(emailIndexDigest("pat@https\uFF0Fpay.example.test"), null);
 assert.equal(emailIndexPath("pat@https\uFF0Fpay.example.test"), null);
+assert.equal(emailIndexDigest("pat@https\\pay.example.test"), null);
+assert.equal(emailIndexPath("pat@https\\pay.example.test"), null);
 assert.equal(emailIndexPath(xrefPatEmail), `ops/xref/${xrefDigest}.json`);
 
 assert.equal(emailIndexDigestFromPath(xrefExpectedPath), xrefDigest);
