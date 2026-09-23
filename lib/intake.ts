@@ -341,6 +341,15 @@ export function blobIntakeMessageHasDisallowedValue(message: unknown): boolean {
   return parseIntakeMessage(message) === null;
 }
 
+const INTAKE_TRIGGER_URL_RE = /^https?:\/\//i;
+
+export function parseIntakeTrigger(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const raw = sanitizeText(value, FIELD_LIMITS.trigger);
+  if (!raw || INTAKE_TRIGGER_URL_RE.test(raw)) return null;
+  return raw;
+}
+
 const INTAKE_EMAIL_URL_RE = /^https?:\/\//i;
 
 export function parseIntakeEmail(value: unknown): string | null {
@@ -388,6 +397,9 @@ export function parseIntake(body: unknown): IntakeParse {
     return { ok: false, error: "invalid" };
   }
   if (company && parseIntakeCompany(company) === null) {
+    return { ok: false, error: "invalid" };
+  }
+  if (parseIntakeTrigger(trigger) === null) {
     return { ok: false, error: "invalid" };
   }
   if (!isValidEmail(email) || parseIntakeEmail(email) === null) {

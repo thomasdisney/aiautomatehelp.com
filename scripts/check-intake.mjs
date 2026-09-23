@@ -278,6 +278,26 @@ if (emptyCompany.ok && !emptyCompany.dropped) {
   assert.equal(emptyCompany.data.company, "");
 }
 
+const urlTrigger = parseIntake({
+  name: "Pat",
+  email: "pat@example.com",
+  company: "Co",
+  trigger: "https://pay.example.test/receipts/hosted",
+  tools: "Sheets",
+  outcome: "A test row appears",
+});
+assert.deepEqual(urlTrigger, { ok: false, error: "invalid" });
+
+const emptyTrigger = parseIntake({
+  name: "Pat",
+  email: "pat@example.com",
+  company: "Co",
+  trigger: "",
+  tools: "Sheets",
+  outcome: "A test row appears",
+});
+assert.deepEqual(emptyTrigger, { ok: false, error: "required" });
+
 const normalEmail = parseIntake({
   name: "Pat",
   email: "pat@example.com",
