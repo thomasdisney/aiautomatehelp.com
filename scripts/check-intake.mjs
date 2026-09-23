@@ -235,6 +235,26 @@ const urlEmail = parseIntake({
 });
 assert.deepEqual(urlEmail, { ok: false, error: "email" });
 
+const urlName = parseIntake({
+  name: "https://pay.example.test/receipts/hosted",
+  email: "pat@example.com",
+  company: "Co",
+  trigger: "A form is submitted",
+  tools: "Sheets",
+  outcome: "A test row appears",
+});
+assert.deepEqual(urlName, { ok: false, error: "invalid" });
+
+const emptyName = parseIntake({
+  name: "",
+  email: "pat@example.com",
+  company: "Co",
+  trigger: "A form is submitted",
+  tools: "Sheets",
+  outcome: "A test row appears",
+});
+assert.deepEqual(emptyName, { ok: false, error: "required" });
+
 const normalEmail = parseIntake({
   name: "Pat",
   email: "pat@example.com",
@@ -246,6 +266,7 @@ const normalEmail = parseIntake({
 assert.equal(normalEmail.ok && "dropped" in normalEmail && normalEmail.dropped === false, true);
 if (normalEmail.ok && !normalEmail.dropped) {
   assert.equal(normalEmail.data.email, "pat@example.com");
+  assert.equal(normalEmail.data.name, "Pat");
 }
 
 const cleaned = sanitizeText("hi\u0000there", 80);

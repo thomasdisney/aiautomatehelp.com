@@ -384,6 +384,9 @@ export function parseIntake(body: unknown): IntakeParse {
   if (!name || !email || !trigger || !tools || !outcome) {
     return { ok: false, error: "required" };
   }
+  if (parseIntakeName(name) === null) {
+    return { ok: false, error: "invalid" };
+  }
   if (!isValidEmail(email) || parseIntakeEmail(email) === null) {
     return { ok: false, error: "email" };
   }
