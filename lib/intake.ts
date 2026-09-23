@@ -229,6 +229,22 @@ export function blobIntakeCustomerReplyHasDisallowedValue(customerReply: unknown
   return parseIntakeCustomerReply(customerReply) === null;
 }
 
+const INTAKE_UPDATE_TEXT_URL_RE = /^https?:\/\//i;
+
+export function parseIntakeUpdateText(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const raw = sanitizeText(value, FIELD_LIMITS.updateText);
+  if (!raw || INTAKE_UPDATE_TEXT_URL_RE.test(raw)) return null;
+  return raw;
+}
+
+export function blobIntakeUpdateTextHasDisallowedValue(updateText: unknown): boolean {
+  if (typeof updateText !== "string") return false;
+  const raw = sanitizeText(updateText, FIELD_LIMITS.updateText);
+  if (!raw) return false;
+  return parseIntakeUpdateText(updateText) === null;
+}
+
 export function composeIntakeMessage(input: {
   trigger: string;
   tools: string;
@@ -406,6 +422,7 @@ export function toIntakePathPayload(
   if (blobIntakePaymentRefHasDisallowedValue(payload.paymentRef)) return null;
   if (blobIntakeQuoteTextHasDisallowedValue(payload.quoteText)) return null;
   if (blobIntakeCustomerReplyHasDisallowedValue(payload.customerReply)) return null;
+  if (blobIntakeUpdateTextHasDisallowedValue(payload.updateText)) return null;
   if (blobIntakeAcceptedAtHasDisallowedValue(parsed.acceptedAt)) return null;
   if (blobIntakeConfirmedAtHasDisallowedValue(parsed.confirmedAt)) return null;
   if (blobIntakeDeliveredAtHasDisallowedValue(parsed.deliveredAt)) return null;
@@ -677,6 +694,7 @@ export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeR
   if (blobIntakePaymentRefHasDisallowedValue(row.paymentRef)) return null;
   if (blobIntakeQuoteTextHasDisallowedValue(row.quoteText)) return null;
   if (blobIntakeCustomerReplyHasDisallowedValue(row.customerReply)) return null;
+  if (blobIntakeUpdateTextHasDisallowedValue(row.updateText)) return null;
   const path = typeof row.path === "string" ? row.path.trim().toLowerCase() : "";
   if (path !== expectedPath) return null;
   const parsed = parseIntakeRecord(raw);
