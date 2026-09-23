@@ -25,9 +25,9 @@ export function termsOfferCopy(paymentConnected = false): string {
 
 export function termsScopeCopy(paymentConnected = false): string {
   if (paymentConnected) {
-    return "I build what the scope says. New requests are a new quote. I may decline a job, including after you accept, until it is paid. If I decline, the no and the reason show on the status page.";
+    return "I build what the scope says. New requests are a new quote. I may decline a named workflow, including after you accept, until it is paid. If I decline, the no and the reason show on the status page.";
   }
-  return "I build what the scope says. New requests are a new quote. I may decline a job, including after you accept, until I post the handoff. If I decline, the no and the reason show on the status page.";
+  return "I build what the scope says. New requests are a new quote. I may decline a named workflow, including after you accept, until I post the handoff. If I decline, the no and the reason show on the status page.";
 }
 
 export function termsMaterialsCopy(): string {

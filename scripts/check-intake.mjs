@@ -402,6 +402,10 @@ assert.equal(termsOfferDisconnected.includes("Checkout is not open on this site 
 assert.equal(termsScopeCopy(true).includes("until it is paid"), true);
 assert.equal(termsScopeCopy(false).includes("until it is paid"), false);
 assert.equal(termsScopeCopy(false).includes("until I post the handoff"), true);
+assert.equal(termsScopeCopy(true).includes("decline a job"), false);
+assert.equal(termsScopeCopy(false).includes("decline a job"), false);
+assert.equal(termsScopeCopy(true).includes("named workflow"), true);
+assert.equal(termsScopeCopy(false).includes("named workflow"), true);
 
 const termsMaterials = termsMaterialsCopy();
 assert.equal(termsMaterials.includes("job description"), false);
