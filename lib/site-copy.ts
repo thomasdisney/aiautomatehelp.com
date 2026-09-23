@@ -38,6 +38,10 @@ export function termsMetaCopy(): string {
   return "Terms for using AutomateAI and one named workflow — what starts it, which tools, and what done looks like.";
 }
 
+export function termsIntroCopy(): string {
+  return "These terms cover aiautomatehelp.com and one named workflow — what starts it, which tools, and what done looks like — sold as AutomateAI.";
+}
+
 export function priceFaqCopy(paymentConnected = false): string {
   return paymentConnected
     ? "A fixed quote after the brief. You pay after you accept, before I build."

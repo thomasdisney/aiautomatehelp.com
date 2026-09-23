@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { paymentConfigured } from "@/lib/payment";
-import { termsMaterialsCopy, termsMetaCopy, termsOfferCopy, termsScopeCopy } from "@/lib/site-copy";
+import { termsIntroCopy, termsMaterialsCopy, termsMetaCopy, termsOfferCopy, termsScopeCopy } from "@/lib/site-copy";
 
 export const metadata: Metadata = {
   title: "Terms",
@@ -13,9 +13,7 @@ export default function TermsPage() {
   return (
     <article className="mx-auto max-w-3xl px-5 py-16">
       <h1 className="font-serif text-4xl text-ink">Terms</h1>
-      <p className="mt-6 leading-relaxed text-ink/70">
-        These terms cover aiautomatehelp.com and scoped work sold as AutomateAI.
-      </p>
+      <p className="mt-6 leading-relaxed text-ink/70">{termsIntroCopy()}</p>
       <h2 className="mt-10 text-xl font-semibold text-ink">The offer</h2>
       <p className="mt-3 leading-relaxed text-ink/70">{termsOfferCopy(paymentLive)}</p>
       <h2 className="mt-10 text-xl font-semibold text-ink">Scope</h2>
