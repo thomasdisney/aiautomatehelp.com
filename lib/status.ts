@@ -7,6 +7,7 @@ import {
   intakeBlobPath,
   isValidEmail,
   parseDueAt,
+  parseIntakeCustomerReply,
   parseIntakeStatus,
   sanitizeText,
   type IntakeRecord,
@@ -224,6 +225,9 @@ export function parseCustomerAction(body: unknown): CustomerActionParse {
     return { ok: false, error: "invalid" };
   }
   if (!CUSTOMER_DECISIONS.includes(decisionRaw as CustomerDecision)) {
+    return { ok: false, error: "invalid" };
+  }
+  if (note && parseIntakeCustomerReply(note) === null) {
     return { ok: false, error: "invalid" };
   }
   if (decisionRaw === "question" && !note) return { ok: false, error: "invalid" };

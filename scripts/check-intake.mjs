@@ -1096,6 +1096,14 @@ const questionNeedsNote = parseCustomerAction({
 });
 assert.deepEqual(questionNeedsNote, { ok: false, error: "invalid" });
 
+const urlNote = parseCustomerAction({
+  id,
+  email: "pat@example.com",
+  decision: "question",
+  note: "https://pay.example.test/receipts/hosted",
+});
+assert.deepEqual(urlNote, { ok: false, error: "invalid" });
+
 const selfQuote = parseCustomerAction({
   id,
   email: "pat@example.com",
