@@ -52,6 +52,7 @@ import {
   termsMaterialsCopy,
   termsMetaCopy,
   termsIntroCopy,
+  staffedAgencyFaqCopy,
   priceFaqCopy,
   privacySharingCopy,
   privacyCollectCopy,
@@ -443,6 +444,18 @@ assert.equal(termsIntro.includes("named workflow"), true);
 assert.equal(termsIntro.toLowerCase().includes("mailto"), false);
 assert.equal(termsIntro.includes("thomasdisney"), false);
 assert.equal(termsIntro.includes("gmail.com"), false);
+
+const staffedAgencyFaq = staffedAgencyFaqCopy();
+assert.equal(staffedAgencyFaq.includes("scoped job"), false);
+assert.equal(staffedAgencyFaq.includes("job description"), false);
+assert.equal(staffedAgencyFaq.includes("job text"), false);
+assert.equal(staffedAgencyFaq.includes("what starts it"), true);
+assert.equal(staffedAgencyFaq.includes("which tools"), true);
+assert.equal(staffedAgencyFaq.includes("what done looks like"), true);
+assert.equal(staffedAgencyFaq.includes("named workflow"), true);
+assert.equal(staffedAgencyFaq.toLowerCase().includes("mailto"), false);
+assert.equal(staffedAgencyFaq.includes("thomasdisney"), false);
+assert.equal(staffedAgencyFaq.includes("gmail.com"), false);
 
 const priceFaqConnected = priceFaqCopy(true);
 const priceFaqDisconnected = priceFaqCopy(false);
@@ -100736,6 +100749,8 @@ const automationSource = readFileSync(
   "utf8",
 );
 assert.equal(automationSource.includes('id="start"'), true);
+assert.equal(automationSource.includes("staffedAgencyFaqCopy"), true);
+assert.equal(automationSource.includes("one scoped job"), false);
 const privacySource = readFileSync(
   new URL("../app/privacy/page.tsx", import.meta.url),
   "utf8",

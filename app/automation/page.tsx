@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { IntakeForm } from "@/app/components/intake-form";
 import { intakeStoreConfigured } from "@/lib/intake-store";
 import { paymentConfigured } from "@/lib/payment";
-import { jsonLdDescription, noOutboundEmailCopy, priceFaqCopy } from "@/lib/site-copy";
+import { jsonLdDescription, noOutboundEmailCopy, priceFaqCopy, staffedAgencyFaqCopy } from "@/lib/site-copy";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/automation" },
@@ -49,7 +49,7 @@ const STEPS = [
 const FAQS = [
   {
     q: "Is this a staffed agency?",
-    a: "No. One person, one scoped job, built and supported here.",
+    a: staffedAgencyFaqCopy(),
   },
   {
     q: "What does it cost?",
