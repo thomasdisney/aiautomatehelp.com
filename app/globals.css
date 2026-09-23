@@ -16,6 +16,24 @@
   --font-serif: var(--font-source-serif);
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 body {
   background: var(--paper);
   color: var(--ink);
@@ -24,4 +42,31 @@ body {
 
 .font-serif {
   font-family: var(--font-source-serif), ui-serif, Georgia, serif;
+}
+
+a,
+button,
+[role="button"],
+input[type="submit"],
+input[type="button"] {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: color-mix(in srgb, var(--ink) 12%, transparent);
+}
+
+:where(a, button, input, textarea, select, summary):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.safe-pad-x {
+  padding-left: max(1.25rem, env(safe-area-inset-left));
+  padding-right: max(1.25rem, env(safe-area-inset-right));
+}
+
+.safe-pad-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-pad-bottom {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
 }
