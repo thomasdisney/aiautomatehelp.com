@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { IntakeForm } from "@/app/components/intake-form";
 import { intakeStoreConfigured } from "@/lib/intake-store";
 import { paymentConfigured } from "@/lib/payment";
-import { automationHeroCopy, briefSecretsFaqCopy, costsCopy, durationFaqCopy, exampleWorkflowsHeadingCopy, jsonLdDescription, noOutboundEmailCopy, offerCopy, priceFaqCopy, sendBriefStepCopy, startHereNameCopy, staffedAgencyFaqCopy, supportAfterHandoffFaqCopy } from "@/lib/site-copy";
+import { automationHeroCopy, briefSecretsFaqCopy, costsCopy, durationFaqCopy, exampleWorkflowsHeadingCopy, jsonLdDescription, noOutboundEmailCopy, offerCopy, priceFaqCopy, sendBriefStepCopy, startHereNameCopy, staffedAgencyFaqCopy, supportAfterHandoffFaqCopy, writtenScopeCopy } from "@/lib/site-copy";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/automation" },
@@ -162,7 +162,7 @@ export default function Home() {
             <li className="rounded-2xl border border-ink/10 p-6">
               <p className="font-semibold text-ink">A written scope</p>
               <p className="mt-2 text-sm leading-relaxed text-ink/70">
-                What is in, what is out, which tools, and the done-when test.
+                {writtenScopeCopy()}
               </p>
             </li>
             <li className="rounded-2xl border border-ink/10 p-6">

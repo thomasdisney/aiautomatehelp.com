@@ -84,6 +84,10 @@ export function offerCopy(): string {
   return "For owners who can name one named workflow — what starts it, which tools, and what done looks like — and already use common tools — email, sheets, a CRM, a form — and want that named workflow handled without hiring a developer.";
 }
 
+export function writtenScopeCopy(): string {
+  return "That named workflow: what is in, what is out, which tools, and the done-when test.";
+}
+
 export function intakeFormNameCopy(): string {
   return "One named workflow — what starts it, which tools, and what done looks like. Do not send secrets.";
 }
