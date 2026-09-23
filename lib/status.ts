@@ -183,7 +183,7 @@ export function customerReplyIntroCopy(
   if (status === "accepted") {
     return paymentConnected
       ? "You can still turn this quote down until it is paid. Ask a question here. Notes stay on this page in order."
-      : "You can still turn this quote down until I post the handoff. Payment is not open on this page yet. Ask a question here. Notes stay on this page in order.";
+      : "You can still turn this quote down until I post the handoff. Payment is not open on this page yet. I may build and hand off before checkout is available. Ask a question here. Notes stay on this page in order.";
   }
   if (status === "delivered" && !confirmed) {
     return "The handoff is posted. Confirm the stored done-when test here when it passes, or ask a question. Notes stay on this page in order.";

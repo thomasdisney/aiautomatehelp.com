@@ -372,6 +372,9 @@ assert.equal(acceptedReplyConnected.includes("until it is paid"), true);
 assert.equal(acceptedReplyDisconnected.includes("until it is paid"), false);
 assert.equal(acceptedReplyDisconnected.includes("Payment is not open on this page yet."), true);
 assert.equal(acceptedReplyDisconnected.includes("until I post the handoff"), true);
+assert.equal(acceptedReplyDisconnected.includes("I may build and hand off"), true);
+assert.equal(acceptedReplyDisconnected.includes("before checkout is available"), true);
+assert.equal(acceptedReplyConnected.includes("I may build and hand off"), false);
 assert.equal(
   customerReplyIntroCopy("delivered", false, false).includes("handoff is posted"),
   true,
