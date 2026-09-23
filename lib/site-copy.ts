@@ -76,6 +76,10 @@ export function startHereNameCopy(): string {
   return "One named workflow — what starts it, which tools, and what done looks like.";
 }
 
+export function automationHeroCopy(): string {
+  return "Name one named workflow — lead intake, follow-up, or a report: what starts it, which tools, and what done looks like — and get a fixed-price automation that runs in the tools you already use.";
+}
+
 export function intakeFormNameCopy(): string {
   return "One named workflow — what starts it, which tools, and what done looks like. Do not send secrets.";
 }

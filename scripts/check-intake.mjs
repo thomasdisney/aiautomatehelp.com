@@ -60,6 +60,7 @@ import {
   exampleWorkflowsHeadingCopy,
   sendBriefStepCopy,
   startHereNameCopy,
+  automationHeroCopy,
   intakeFormNameCopy,
   intakeRequiredCopy,
   triggerPlaceholderCopy,
@@ -582,6 +583,18 @@ assert.equal(startHereName.includes("what done looks like"), true);
 assert.equal(startHereName.toLowerCase().includes("mailto"), false);
 assert.equal(startHereName.includes("thomasdisney"), false);
 assert.equal(startHereName.includes("gmail.com"), false);
+
+const automationHero = automationHeroCopy();
+assert.equal(automationHero.includes("Name one repetitive workflow"), false);
+assert.equal(automationHero.includes("the job"), false);
+assert.equal(automationHero.includes("named workflow"), true);
+assert.equal(automationHero.includes("what starts it"), true);
+assert.equal(automationHero.includes("which tools"), true);
+assert.equal(automationHero.includes("what done looks like"), true);
+assert.equal(automationHero.includes("lead intake"), true);
+assert.equal(automationHero.toLowerCase().includes("mailto"), false);
+assert.equal(automationHero.includes("thomasdisney"), false);
+assert.equal(automationHero.includes("gmail.com"), false);
 
 const intakeFormName = intakeFormNameCopy();
 assert.equal(intakeFormName.includes("Name one workflow"), false);
@@ -100971,8 +100984,10 @@ assert.equal(automationSource.includes("briefSecretsFaqCopy"), true);
 assert.equal(automationSource.includes("exampleWorkflowsHeadingCopy"), true);
 assert.equal(automationSource.includes("sendBriefStepCopy"), true);
 assert.equal(automationSource.includes("startHereNameCopy"), true);
+assert.equal(automationSource.includes("automationHeroCopy"), true);
 assert.equal(automationSource.includes("Describe one workflow"), false);
 assert.equal(automationSource.includes("Name one workflow"), false);
+assert.equal(automationSource.includes("Name one repetitive workflow"), false);
 assert.equal(automationSource.includes("Example jobs"), false);
 assert.equal(automationSource.includes("one scoped job"), false);
 assert.equal(automationSource.includes("How long does a job take?"), false);

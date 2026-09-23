@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { IntakeForm } from "@/app/components/intake-form";
 import { intakeStoreConfigured } from "@/lib/intake-store";
 import { paymentConfigured } from "@/lib/payment";
-import { briefSecretsFaqCopy, costsCopy, durationFaqCopy, exampleWorkflowsHeadingCopy, jsonLdDescription, noOutboundEmailCopy, priceFaqCopy, sendBriefStepCopy, startHereNameCopy, staffedAgencyFaqCopy, supportAfterHandoffFaqCopy } from "@/lib/site-copy";
+import { automationHeroCopy, briefSecretsFaqCopy, costsCopy, durationFaqCopy, exampleWorkflowsHeadingCopy, jsonLdDescription, noOutboundEmailCopy, priceFaqCopy, sendBriefStepCopy, startHereNameCopy, staffedAgencyFaqCopy, supportAfterHandoffFaqCopy } from "@/lib/site-copy";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/automation" },
@@ -116,8 +116,7 @@ export default function Home() {
               Scoped automation, built to order.
             </h1>
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-ink/70 sm:text-xl">
-              Name one repetitive workflow — lead intake, follow-up, or a report —
-              and get a fixed-price automation that runs in the tools you already use.
+              {automationHeroCopy()}
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <a
