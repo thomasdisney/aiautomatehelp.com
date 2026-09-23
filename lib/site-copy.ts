@@ -64,6 +64,10 @@ export function briefSecretsFaqCopy(): string {
   return "Passwords, API keys, private keys, and customer lists. Share only what the named workflow needs.";
 }
 
+export function exampleWorkflowsHeadingCopy(): string {
+  return "Example workflows";
+}
+
 export function priceFaqCopy(paymentConnected = false): string {
   return paymentConnected
     ? "A fixed quote after the brief. You pay after you accept, before I build."

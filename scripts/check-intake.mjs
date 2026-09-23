@@ -57,6 +57,7 @@ import {
   supportAfterHandoffFaqCopy,
   costsCopy,
   briefSecretsFaqCopy,
+  exampleWorkflowsHeadingCopy,
   priceFaqCopy,
   privacySharingCopy,
   privacyCollectCopy,
@@ -522,6 +523,15 @@ assert.equal(briefSecretsFaq.includes("API keys"), true);
 assert.equal(briefSecretsFaq.toLowerCase().includes("mailto"), false);
 assert.equal(briefSecretsFaq.includes("thomasdisney"), false);
 assert.equal(briefSecretsFaq.includes("gmail.com"), false);
+
+const exampleWorkflowsHeading = exampleWorkflowsHeadingCopy();
+assert.equal(exampleWorkflowsHeading.includes("Example jobs"), false);
+assert.equal(exampleWorkflowsHeading.includes("jobs"), false);
+assert.equal(exampleWorkflowsHeading.includes("the job"), false);
+assert.equal(exampleWorkflowsHeading.includes("Example workflows"), true);
+assert.equal(exampleWorkflowsHeading.toLowerCase().includes("mailto"), false);
+assert.equal(exampleWorkflowsHeading.includes("thomasdisney"), false);
+assert.equal(exampleWorkflowsHeading.includes("gmail.com"), false);
 
 const priceFaqConnected = priceFaqCopy(true);
 const priceFaqDisconnected = priceFaqCopy(false);
@@ -100820,6 +100830,8 @@ assert.equal(automationSource.includes("durationFaqCopy"), true);
 assert.equal(automationSource.includes("supportAfterHandoffFaqCopy"), true);
 assert.equal(automationSource.includes("costsCopy"), true);
 assert.equal(automationSource.includes("briefSecretsFaqCopy"), true);
+assert.equal(automationSource.includes("exampleWorkflowsHeadingCopy"), true);
+assert.equal(automationSource.includes("Example jobs"), false);
 assert.equal(automationSource.includes("one scoped job"), false);
 assert.equal(automationSource.includes("How long does a job take?"), false);
 assert.equal(automationSource.includes("Simple jobs"), false);

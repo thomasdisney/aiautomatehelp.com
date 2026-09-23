@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { IntakeForm } from "@/app/components/intake-form";
 import { intakeStoreConfigured } from "@/lib/intake-store";
 import { paymentConfigured } from "@/lib/payment";
-import { briefSecretsFaqCopy, costsCopy, durationFaqCopy, jsonLdDescription, noOutboundEmailCopy, priceFaqCopy, staffedAgencyFaqCopy, supportAfterHandoffFaqCopy } from "@/lib/site-copy";
+import { briefSecretsFaqCopy, costsCopy, durationFaqCopy, exampleWorkflowsHeadingCopy, jsonLdDescription, noOutboundEmailCopy, priceFaqCopy, staffedAgencyFaqCopy, supportAfterHandoffFaqCopy } from "@/lib/site-copy";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/automation" },
@@ -212,7 +212,7 @@ export default function Home() {
 
       <section className="border-t border-ink/10 px-5 py-16">
         <div className="mx-auto max-w-5xl">
-          <h2 className="font-serif text-3xl text-ink">Example jobs</h2>
+          <h2 className="font-serif text-3xl text-ink">{exampleWorkflowsHeadingCopy()}</h2>
           <ul className="mt-8 grid gap-6 md:grid-cols-3">
             {EXAMPLES.map((item) => (
               <li key={item.title} className="rounded-2xl border border-ink/10 bg-white p-6">
