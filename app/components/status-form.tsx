@@ -13,7 +13,7 @@ import {
   subscribeBriefReceipts,
 } from "@/lib/brief-receipt";
 import { FIELD_LIMITS, parseDueAt, parseThread, type ThreadEntry } from "@/lib/intake";
-import { confirmDoneCopy, statusLookupCopy } from "@/lib/site-copy";
+import { acceptDoneWhenCopy, confirmDoneCopy, statusLookupCopy } from "@/lib/site-copy";
 import {
   closedBriefNextHref,
   customerReplyIntroCopy,
@@ -607,8 +607,8 @@ function ReplyPanel({
             onChange={(event) => setAckTerms(event.target.checked)}
           />
           <span>
-            I accept {formatUsd(amountCents)}, delivery by {formatDueAt(dueAt) || dueAt},
-            the written scope above, and that this job is done when {doneWhen}
+            I accept {formatUsd(amountCents)}, delivery by {formatDueAt(dueAt) || dueAt},{" "}
+            {acceptDoneWhenCopy()} {doneWhen}
           </span>
         </label>
       ) : null}

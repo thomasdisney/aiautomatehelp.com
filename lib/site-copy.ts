@@ -76,6 +76,10 @@ export function confirmDoneCopy(): string {
   return "This named workflow is done. The stored test passed:";
 }
 
+export function acceptDoneWhenCopy(): string {
+  return "the written scope above, and that this named workflow is done when";
+}
+
 export function priceFaqCopy(paymentConnected = false): string {
   return paymentConnected
     ? "A fixed quote after the brief. You pay after you accept, before I build."

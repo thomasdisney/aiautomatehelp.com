@@ -60,6 +60,7 @@ import {
   exampleWorkflowsHeadingCopy,
   triggerPlaceholderCopy,
   confirmDoneCopy,
+  acceptDoneWhenCopy,
   priceFaqCopy,
   privacySharingCopy,
   privacyCollectCopy,
@@ -552,6 +553,15 @@ assert.equal(confirmDone.includes("stored test passed"), true);
 assert.equal(confirmDone.toLowerCase().includes("mailto"), false);
 assert.equal(confirmDone.includes("thomasdisney"), false);
 assert.equal(confirmDone.includes("gmail.com"), false);
+
+const acceptDoneWhen = acceptDoneWhenCopy();
+assert.equal(acceptDoneWhen.includes("this job is done when"), false);
+assert.equal(acceptDoneWhen.includes("the job"), false);
+assert.equal(acceptDoneWhen.includes("named workflow"), true);
+assert.equal(acceptDoneWhen.includes("written scope"), true);
+assert.equal(acceptDoneWhen.toLowerCase().includes("mailto"), false);
+assert.equal(acceptDoneWhen.includes("thomasdisney"), false);
+assert.equal(acceptDoneWhen.includes("gmail.com"), false);
 
 const priceFaqConnected = priceFaqCopy(true);
 const priceFaqDisconnected = priceFaqCopy(false);
@@ -100915,6 +100925,8 @@ assert.equal(
 );
 assert.equal(statusFormSource.includes("confirmDoneCopy"), true);
 assert.equal(statusFormSource.includes("This job is done"), false);
+assert.equal(statusFormSource.includes("acceptDoneWhenCopy"), true);
+assert.equal(statusFormSource.includes("this job is done when"), false);
 const layoutSource = readFileSync(new URL("../app/layout.tsx", import.meta.url), "utf8");
 assert.equal(layoutSource.includes('canonical: "/"'), false);
 assert.equal(layoutSource.includes('url: "./"'), true);
