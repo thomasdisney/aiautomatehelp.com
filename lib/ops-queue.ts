@@ -10,6 +10,7 @@ import {
   intakeIdFromBlobPath,
   isValidEmail,
   parseDueAt,
+  parseIntakeEmail,
   parseIntakeStatus,
   sanitizeText,
   FIELD_LIMITS,
@@ -618,7 +619,7 @@ const EMAIL_INDEX_DIGEST_RE = /^[0-9a-f]{64}$/;
 
 export function emailIndexDigest(email: string): string | null {
   const normalized = sanitizeText(email, FIELD_LIMITS.email).toLowerCase();
-  if (!isValidEmail(normalized)) return null;
+  if (!isValidEmail(normalized) || parseIntakeEmail(normalized) === null) return null;
   const digest = createHash("sha256").update(normalized).digest("hex");
   return EMAIL_INDEX_DIGEST_RE.test(digest) ? digest : null;
 }
