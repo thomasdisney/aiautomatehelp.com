@@ -18,7 +18,7 @@ export function termsOfferCopy(paymentConnected = false): string {
   const handoff =
     "After I post the handoff, you confirm the stored done-when test on the status page. There is no monthly retainer on this site unless we later agree to one in writing.";
   if (paymentConnected) {
-    return `${offer} You can turn the quote down until it is paid. ${close} After payment, the job is on. New work is a new quote. Work starts after payment. ${handoff}`;
+    return `${offer} You can turn the quote down until it is paid. ${close} After payment, the named workflow is on. New work is a new quote. Work starts after payment. ${handoff}`;
   }
   return `${offer} Checkout is not open on this site yet. You can turn the quote down until I post the handoff. ${close} I may build and hand off before checkout is available. When checkout opens, pay on the status page; remaining work then starts after payment. New work is a new quote. ${handoff}`;
 }
