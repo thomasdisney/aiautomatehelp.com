@@ -15,7 +15,7 @@ import {
   toPublicIntakeCreate,
 } from "@/lib/brief-receipt";
 import { FIELD_LIMITS } from "@/lib/intake";
-import { noOutboundEmailCopy, triggerPlaceholderCopy } from "@/lib/site-copy";
+import { intakeFormNameCopy, noOutboundEmailCopy, triggerPlaceholderCopy } from "@/lib/site-copy";
 
 type Status =
   | { kind: "idle" }
@@ -196,8 +196,7 @@ export function IntakeForm({ connected }: { connected: boolean }) {
         className="space-y-5 rounded-2xl border border-ink/10 bg-white p-6 sm:p-8"
       >
         <p className="text-sm text-ink/60">
-          Name one workflow: what starts it, which tools, and what done looks like. Do not send
-          secrets. {noOutboundEmailCopy()}
+          {intakeFormNameCopy()} {noOutboundEmailCopy()}
         </p>
         <div className="absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden="true">
           <label htmlFor="website">Website</label>
