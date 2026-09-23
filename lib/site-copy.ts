@@ -52,7 +52,7 @@ export function statusIntroCopy(paymentConnected = false): string {
     "Enter the saved reference and the same email you used on the brief.";
   const actions = paymentConnected
     ? "You can see the quote, accept or decline, pay after you accept, ask a question, or confirm the done-when test after handoff."
-    : "You can see the quote, accept or decline, ask a question, or confirm the done-when test after handoff. Payment is not open on this page yet.";
+    : "You can see the quote, accept or decline, ask a question, or confirm the done-when test after handoff. Payment is not open on this page yet. After you accept, I may build and hand off before checkout is available.";
   return `${lookup} ${actions} ${noOutboundEmailCopy()} This browser keeps the reference and shows the original received time from this device.`;
 }
 

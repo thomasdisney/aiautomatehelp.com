@@ -441,10 +441,14 @@ assert.equal(statusIntroDisconnected.includes("I will not send mail here."), tru
 assert.equal(statusIntroDisconnected.includes("Payment is not open on this page yet."), true);
 assert.equal(statusIntroDisconnected.includes("pay after you accept"), false);
 assert.equal(statusIntroDisconnected.includes("confirm the done-when test"), true);
+assert.equal(statusIntroDisconnected.includes("I may build and hand off"), true);
+assert.equal(statusIntroDisconnected.includes("before checkout is available"), true);
+assert.equal(statusIntroDisconnected.includes("when you can pay"), false);
 assert.equal(statusIntroConnected.includes("from your confirmation"), false);
 assert.equal(statusIntroConnected.includes("confirmation"), false);
 assert.equal(statusIntroConnected.includes("pay after you accept"), true);
 assert.equal(statusIntroConnected.includes("I will not send mail here."), true);
+assert.equal(statusIntroConnected.includes("I may build and hand off"), false);
 
 const statusLookup = statusLookupCopy();
 assert.equal(statusLookup.includes("from the confirmation"), false);
