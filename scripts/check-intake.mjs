@@ -586,6 +586,18 @@ assert.equal(
   priceFaqDisconnected.includes("pay the stored amount on the status page"),
   true,
 );
+assert.equal(priceFaqConnected.includes("after the brief"), false);
+assert.equal(priceFaqDisconnected.includes("after the brief"), false);
+assert.equal(priceFaqConnected.includes("the job"), false);
+assert.equal(priceFaqDisconnected.includes("the job"), false);
+assert.equal(priceFaqConnected.includes("named workflow"), true);
+assert.equal(priceFaqDisconnected.includes("named workflow"), true);
+assert.equal(priceFaqConnected.includes("after I understand the named workflow"), true);
+assert.equal(priceFaqDisconnected.includes("after I understand the named workflow"), true);
+assert.equal(priceFaqConnected.toLowerCase().includes("mailto"), false);
+assert.equal(priceFaqDisconnected.toLowerCase().includes("mailto"), false);
+assert.equal(priceFaqConnected.includes("thomasdisney"), false);
+assert.equal(priceFaqDisconnected.includes("gmail.com"), false);
 
 const privacyCollect = privacyCollectCopy();
 assert.equal(privacyCollect.includes("job description"), false);
@@ -100872,6 +100884,8 @@ assert.equal(automationSource.includes("staffedAgencyFaqCopy"), true);
 assert.equal(automationSource.includes("durationFaqCopy"), true);
 assert.equal(automationSource.includes("supportAfterHandoffFaqCopy"), true);
 assert.equal(automationSource.includes("costsCopy"), true);
+assert.equal(automationSource.includes("priceFaqCopy"), true);
+assert.equal(automationSource.includes("after the brief"), false);
 assert.equal(automationSource.includes("briefSecretsFaqCopy"), true);
 assert.equal(automationSource.includes("exampleWorkflowsHeadingCopy"), true);
 assert.equal(automationSource.includes("Example jobs"), false);

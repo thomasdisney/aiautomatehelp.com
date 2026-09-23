@@ -86,8 +86,8 @@ export function briefReceiptsOmitCopy(): string {
 
 export function priceFaqCopy(paymentConnected = false): string {
   return paymentConnected
-    ? "A fixed quote after the brief. You pay after you accept, before I build."
-    : "A fixed quote after the brief. Checkout is not open on this site yet. I may build and hand off after you accept. When checkout opens, pay the stored amount on the status page.";
+    ? "A fixed quote after I understand the named workflow. You pay after you accept, before I build."
+    : "A fixed quote after I understand the named workflow. Checkout is not open on this site yet. I may build and hand off after you accept. When checkout opens, pay the stored amount on the status page.";
 }
 
 export function privacyCollectCopy(): string {
