@@ -101776,6 +101776,79 @@ assert.equal(
 );
 assert.equal(toIntakePathPayload(record)?.notedAt, "");
 
+const dueAtStamp = dueSoon;
+const dirtyNonTimestampDueAtBlob = {
+  ...record,
+  dueAt: "https://pay.example.test/receipts/hosted",
+  path: `INTAKE/${id}.JSON`,
+};
+assert.equal(
+  parseIntakeRecordAtPath(JSON.stringify(dirtyNonTimestampDueAtBlob), `intake/${id}.json`),
+  null,
+);
+assert.equal(parseIntakeRecord(JSON.stringify(dirtyNonTimestampDueAtBlob))?.id, id);
+assert.equal(parseIntakeRecord(JSON.stringify(dirtyNonTimestampDueAtBlob))?.dueAt, "");
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      dueAt: "not-a-date",
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  ),
+  null,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      dueAt: dueAtStamp,
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.id,
+  id,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      dueAt: dueAtStamp,
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.dueAt,
+  dueAtStamp,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      dueAt: "",
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.dueAt,
+  "",
+);
+
+const dirtyNonTimestampDueAtWrite = toIntakePathPayload({
+  ...record,
+  dueAt: "https://pay.example.test/receipts/hosted",
+});
+const dirtyNonTimestampDueAtJson = JSON.stringify(dirtyNonTimestampDueAtWrite);
+assert.equal(dirtyNonTimestampDueAtWrite, null);
+assert.equal(dirtyNonTimestampDueAtJson.includes("receipts/hosted"), false);
+assert.equal(
+  toIntakePathPayload({
+    ...record,
+    dueAt: dueAtStamp,
+  })?.dueAt,
+  dueAtStamp,
+);
+assert.equal(toIntakePathPayload(record)?.dueAt, "");
+
 const publicAppFiles = [
   "../app/page.tsx",
   "../app/agent/page.tsx",
