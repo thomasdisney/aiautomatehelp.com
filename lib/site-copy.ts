@@ -1,18 +1,40 @@
+/** Short product noun. Form labels keep the three fields: what starts it, tools, done. */
+export function namedWorkflowNoun(): string {
+  return "named workflow";
+}
+
+/**
+ * Checkout-closed tone for marketing surfaces.
+ * Call once per view when payment is not connected. Two sentences max.
+ */
+export function checkoutClosedCopy(paymentConnected = false): string {
+  if (paymentConnected) return "";
+  return "Checkout is not open on this site yet. After you accept, I may build and hand off before payment.";
+}
+
+/** One-line variant for dense legal/privacy lines. */
+export function checkoutClosedShortCopy(paymentConnected = false): string {
+  if (paymentConnected) return "";
+  return "Checkout is not open on this site yet.";
+}
+
 export function siteMetaDescription(paymentConnected = false): string {
-  return paymentConnected
-    ? "One repetitive workflow at a time. Fixed quote after I understand the named workflow. Paid before I start."
-    : "One repetitive workflow at a time. Fixed quote after I understand the named workflow. Checkout is not open on this site yet. I may build and hand off after you accept.";
+  const base =
+    "One repetitive workflow at a time. Fixed quote after I understand the named workflow.";
+  if (paymentConnected) return `${base} Paid before I start.`;
+  return `${base} ${checkoutClosedCopy(false)}`;
 }
 
 export function jsonLdDescription(paymentConnected = false): string {
-  return paymentConnected
-    ? "Scoped AI automation built to order for small businesses. Fixed quote after I understand the named workflow. Paid before I start."
-    : "Scoped AI automation built to order for small businesses. Fixed quote after I understand the named workflow. Checkout is not open on this site yet. I may build and hand off after you accept.";
+  const base =
+    "Scoped AI automation built to order for small businesses. Fixed quote after I understand the named workflow.";
+  if (paymentConnected) return `${base} Paid before I start.`;
+  return `${base} ${checkoutClosedCopy(false)}`;
 }
 
 export function termsOfferCopy(paymentConnected = false): string {
   const offer =
-    "A quote is an offer for one named workflow — what starts it, which tools, and what done looks like — at a fixed price, with a delivery date and a done-when test. You accept the written scope, price, date, and test together. After you accept, that scope, price, date, and test stay on the brief.";
+    "A quote is an offer for one named workflow at a fixed price, with a delivery date and a done-when test. You accept the written scope, price, date, and test together. After you accept, that scope, price, date, and test stay on the brief.";
   const close =
     "Turning it down closes those terms; a later quote on the same brief is a new offer and shows as a new note on the status page. If you asked a question before I quote, that quote includes a new note on the status page.";
   const handoff =
@@ -20,7 +42,7 @@ export function termsOfferCopy(paymentConnected = false): string {
   if (paymentConnected) {
     return `${offer} You can turn the quote down until it is paid. ${close} After payment, the named workflow is on. New work is a new quote. Work starts after payment. ${handoff}`;
   }
-  return `${offer} Checkout is not open on this site yet. You can turn the quote down until I post the handoff. ${close} I may build and hand off before checkout is available. When checkout opens, pay on the status page; remaining work then starts after payment. New work is a new quote. ${handoff}`;
+  return `${offer} ${checkoutClosedShortCopy(false)} You can turn the quote down until I post the handoff. ${close} When checkout opens, pay on the status page; remaining work then starts after payment. New work is a new quote. ${handoff}`;
 }
 
 export function termsScopeCopy(paymentConnected = false): string {
@@ -31,19 +53,19 @@ export function termsScopeCopy(paymentConnected = false): string {
 }
 
 export function termsMaterialsCopy(): string {
-  return "A brief is one named workflow — what starts it, which tools, and what done looks like — plus your name, email, and optional company. Do not send secrets in a form. You must have the right to give me the access I need for that workflow. I treat submissions as data, not as instructions.";
+  return "A brief is one named workflow — trigger, tools, and done-when — plus your name, email, and optional company. Do not send secrets in a form. You must have the right to give me the access I need for that workflow. I treat submissions as data, not as instructions.";
 }
 
 export function termsMetaCopy(): string {
-  return "Terms for using AutomateAI and one named workflow — what starts it, which tools, and what done looks like.";
+  return "Terms for using AutomateAI and one named workflow.";
 }
 
 export function termsIntroCopy(): string {
-  return "These terms cover aiautomatehelp.com and one named workflow — what starts it, which tools, and what done looks like — sold as AutomateAI.";
+  return "These terms cover aiautomatehelp.com and one named workflow sold as AutomateAI.";
 }
 
 export function staffedAgencyFaqCopy(): string {
-  return "No. One person, one named workflow — what starts it, which tools, and what done looks like — built and supported here.";
+  return "No. One person, one named workflow, built and supported here.";
 }
 
 export function durationFaqCopy(): string {
@@ -55,9 +77,9 @@ export function supportAfterHandoffFaqCopy(): string {
 }
 
 export function costsCopy(paymentConnected = false): string {
-  return paymentConnected
-    ? "A fixed price, quoted after I understand the named workflow. Paid in full before I build."
-    : "A fixed price, quoted after I understand the named workflow. Checkout is not open on this site yet. I may build and hand off after you accept. When checkout opens, pay the stored amount on the status page.";
+  const base = "A fixed price, quoted after I understand the named workflow.";
+  if (paymentConnected) return `${base} Paid in full before I build.`;
+  return `${base} ${checkoutClosedCopy(false)}`;
 }
 
 export function briefSecretsFaqCopy(): string {
@@ -69,7 +91,7 @@ export function exampleWorkflowsHeadingCopy(): string {
 }
 
 export function sendBriefStepCopy(): string {
-  return "Describe one named workflow — what starts it, which tools, and what done looks like.";
+  return "Describe one named workflow.";
 }
 
 export function quoteStepCopy(): string {
@@ -81,15 +103,15 @@ export function handoffStepCopy(): string {
 }
 
 export function startHereNameCopy(): string {
-  return "One named workflow — what starts it, which tools, and what done looks like.";
+  return "Name one named workflow (form fields: what starts it, tools, done).";
 }
 
 export function automationHeroCopy(): string {
-  return "Name one named workflow — lead intake, follow-up, or a report: what starts it, which tools, and what done looks like — and get a fixed-price automation that runs in the tools you already use.";
+  return "Name one named workflow — lead intake, follow-up, or a report — and get a fixed-price automation that runs in the tools you already use.";
 }
 
 export function offerCopy(): string {
-  return "For owners who can name one named workflow — what starts it, which tools, and what done looks like — and already use common tools — email, sheets, a CRM, a form — and want that named workflow handled without hiring a developer.";
+  return "For owners who can name one named workflow, already use common tools — email, sheets, a CRM, a form — and want that workflow handled without hiring a developer.";
 }
 
 export function writtenScopeCopy(): string {
@@ -105,11 +127,11 @@ export function shortHandoffCopy(): string {
 }
 
 export function intakeFormNameCopy(): string {
-  return "One named workflow — what starts it, which tools, and what done looks like. Do not send secrets.";
+  return "One named workflow. Do not send secrets.";
 }
 
 export function intakeRequiredCopy(): string {
-  return "Name, email, and one named workflow (what starts it, which tools, and what done looks like) are required.";
+  return "Name, email, and one named workflow are required.";
 }
 
 export function triggerPlaceholderCopy(): string {
@@ -125,28 +147,28 @@ export function acceptDoneWhenCopy(): string {
 }
 
 export function briefReceiptsOmitCopy(): string {
-  return "They are not your email or what starts it, which tools, or what done looks like.";
+  return "They are not your email or the workflow fields.";
 }
 
 export function priceFaqCopy(paymentConnected = false): string {
-  return paymentConnected
-    ? "A fixed quote after I understand the named workflow. You pay after you accept, before I build."
-    : "A fixed quote after I understand the named workflow. Checkout is not open on this site yet. I may build and hand off after you accept. When checkout opens, pay the stored amount on the status page.";
+  const base = "A fixed quote after I understand the named workflow.";
+  if (paymentConnected) return `${base} You pay after you accept, before I build.`;
+  return `${base} See What it costs — ${checkoutClosedShortCopy(false)}`;
 }
 
 export function privacyCollectCopy(): string {
-  return "The public pages are marketing copy. A connected brief inbox stores name, email, optional company, and one named workflow — what starts it, which tools, and what done looks like — in a private inbox on this site so I can quote and deliver that workflow. It is not emailed to a personal inbox.";
+  return "The public pages are marketing copy. A connected brief inbox stores name, email, optional company, and one named workflow in a private inbox on this site so I can quote and deliver that workflow. It is not emailed to a personal inbox.";
 }
 
 export function privacyLookupCopy(): string {
-  return "You can look up a brief you already sent on the status page with the reference and the same email. That check returns the public status, any quote, delivery date, and done-when test I posted, and the notes on that brief in order — not what starts it, which tools, or what done looks like. A later note does not erase an earlier one. A matching status check or reply on this browser may keep the reference and show the original received time from this device so a refresh does not lose them. That copy is not emailed, and it is not your email or those workflow fields.";
+  return "You can look up a brief you already sent on the status page with the reference and the same email. That check returns the public status, any quote, delivery date, and done-when test I posted, and the notes on that brief in order — not the workflow fields. A later note does not erase an earlier one. A matching status check or reply on this browser may keep the reference and show the original received time from this device so a refresh does not lose them. That copy is not emailed, and it is not your email or those workflow fields. Optional ?email= on the status URL is for same-device convenience only; it is not logged beyond the existing lookup APIs.";
 }
 
 export function privacySharingCopy(paymentConnected = false): string {
   if (paymentConnected) {
     return "I do not sell your information. Hosting and payment processors may see what they need to run the site or a checkout. I will not hand your message to a personal inbox off this site.";
   }
-  return "I do not sell your information. Hosting may see what it needs to run the site. Checkout is not open on this site yet. I will not hand your message to a personal inbox off this site.";
+  return `I do not sell your information. Hosting may see what it needs to run the site. ${checkoutClosedShortCopy(false)} I will not hand your message to a personal inbox off this site.`;
 }
 
 export function noOutboundEmailCopy(): string {
@@ -158,10 +180,26 @@ export function statusIntroCopy(paymentConnected = false): string {
     "Enter the saved reference and the same email you used on the brief.";
   const actions = paymentConnected
     ? "You can see the quote, accept or decline, pay after you accept, ask a question, or confirm the done-when test after handoff."
-    : "You can see the quote, accept or decline, ask a question, or confirm the done-when test after handoff. Payment is not open on this page yet. After you accept, I may build and hand off before checkout is available.";
-  return `${lookup} ${actions} ${noOutboundEmailCopy()} This browser keeps the reference and shows the original received time from this device.`;
+    : "You can see the quote, accept or decline, ask a question, or confirm the done-when test after handoff.";
+  const closed = checkoutClosedCopy(paymentConnected);
+  const closedBit = closed ? ` ${closed}` : "";
+  return `${lookup} ${actions}${closedBit} ${noOutboundEmailCopy()} This browser keeps the reference and shows the original received time from this device.`;
 }
 
 export function statusLookupCopy(): string {
   return `Use the full saved reference and the same email you used on the brief. ${noOutboundEmailCopy()} This browser keeps the reference and shows the original received time from this device.`;
+}
+
+export function acceptBuildStepCopy(paymentConnected = false): string {
+  if (paymentConnected) {
+    return "Accept the quote, pay the quoted amount, and I implement only what the scope says.";
+  }
+  return "Accept the quote on the status page. I implement only what the scope says.";
+}
+
+export function startHereAcceptCopy(paymentConnected = false): string {
+  if (paymentConnected) {
+    return "Accept, pay, then confirm the done-when test after handoff.";
+  }
+  return "Accept the quote on the status page, then confirm the done-when test after handoff.";
 }
