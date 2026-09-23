@@ -1124,6 +1124,14 @@ const urlNote = parseCustomerAction({
 });
 assert.deepEqual(urlNote, { ok: false, error: "invalid" });
 
+const urlEmailReply = parseCustomerAction({
+  id,
+  email: "https://pay.example.test/receipts/hosted@x.y",
+  decision: "question",
+  note: "Can you include Slack?",
+});
+assert.deepEqual(urlEmailReply, { ok: false, error: "invalid" });
+
 const selfQuote = parseCustomerAction({
   id,
   email: "pat@example.com",

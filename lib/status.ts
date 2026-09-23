@@ -9,6 +9,7 @@ import {
   parseDueAt,
   parseIntakeCustomerReply,
   parseIntakeDoneWhen,
+  parseIntakeEmail,
   parseIntakeOperatorNote,
   parseIntakeQuoteText,
   parseIntakeStatus,
@@ -225,7 +226,11 @@ export function parseCustomerAction(body: unknown): CustomerActionParse {
   const decisionRaw = typeof raw.decision === "string" ? raw.decision.trim() : "";
   const note = sanitizeText(raw.note, FIELD_LIMITS.customerReply);
   const doneWhen = sanitizeText(raw.doneWhen, FIELD_LIMITS.doneWhen);
-  if (!intakeBlobPath(idRaw) || !isValidEmail(email)) {
+  if (
+    !intakeBlobPath(idRaw) ||
+    !isValidEmail(email) ||
+    parseIntakeEmail(email) === null
+  ) {
     return { ok: false, error: "invalid" };
   }
   if (!CUSTOMER_DECISIONS.includes(decisionRaw as CustomerDecision)) {
