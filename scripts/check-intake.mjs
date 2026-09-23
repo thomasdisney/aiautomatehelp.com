@@ -101320,6 +101320,82 @@ assert.equal(
 );
 assert.equal(toIntakePathPayload(record)?.paidAt, "");
 
+const acceptedAtStamp = "2026-08-12T16:00:00.000Z";
+const dirtyNonTimestampAcceptedAtBlob = {
+  ...record,
+  acceptedAt: "https://pay.example.test/receipts/hosted",
+  path: `INTAKE/${id}.JSON`,
+};
+assert.equal(
+  parseIntakeRecordAtPath(JSON.stringify(dirtyNonTimestampAcceptedAtBlob), `intake/${id}.json`),
+  null,
+);
+assert.equal(parseIntakeRecord(JSON.stringify(dirtyNonTimestampAcceptedAtBlob))?.id, id);
+assert.equal(
+  parseIntakeRecord(JSON.stringify(dirtyNonTimestampAcceptedAtBlob))?.acceptedAt,
+  "https://pay.example.test/receipts/hosted",
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      acceptedAt: "not-a-timestamp",
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  ),
+  null,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      acceptedAt: acceptedAtStamp,
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.id,
+  id,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      acceptedAt: acceptedAtStamp,
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.acceptedAt,
+  acceptedAtStamp,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      acceptedAt: "",
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.acceptedAt,
+  "",
+);
+
+const dirtyNonTimestampAcceptedAtWrite = toIntakePathPayload({
+  ...record,
+  acceptedAt: "https://pay.example.test/receipts/hosted",
+});
+const dirtyNonTimestampAcceptedAtJson = JSON.stringify(dirtyNonTimestampAcceptedAtWrite);
+assert.equal(dirtyNonTimestampAcceptedAtWrite, null);
+assert.equal(dirtyNonTimestampAcceptedAtJson.includes("receipts/hosted"), false);
+assert.equal(
+  toIntakePathPayload({
+    ...record,
+    acceptedAt: acceptedAtStamp,
+  })?.acceptedAt,
+  acceptedAtStamp,
+);
+assert.equal(toIntakePathPayload(record)?.acceptedAt, "");
+
 const publicAppFiles = [
   "../app/page.tsx",
   "../app/agent/page.tsx",
