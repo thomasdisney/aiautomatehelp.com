@@ -182,6 +182,21 @@ export function blobThreadEntryAtHasDisallowedValue(at: unknown): boolean {
   return parseIntakeAt(at) === null;
 }
 
+const INTAKE_PAYMENT_REF_RE = /^cs_[A-Za-z0-9_]+$/;
+
+export function parseIntakePaymentRef(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const raw = value.trim();
+  if (!raw || raw.length < 8 || raw.length > 200) return null;
+  if (!INTAKE_PAYMENT_REF_RE.test(raw)) return null;
+  return raw;
+}
+
+export function blobIntakePaymentRefHasDisallowedValue(paymentRef: unknown): boolean {
+  if (paymentRef === undefined || paymentRef === "") return false;
+  return parseIntakePaymentRef(paymentRef) === null;
+}
+
 export function composeIntakeMessage(input: {
   trigger: string;
   tools: string;
@@ -356,6 +371,7 @@ export function toIntakePathPayload(
   if (blobIntakeUpdateAtHasDisallowedValue(parsed.updateAt)) return null;
   if (blobIntakePaidAtHasDisallowedValue(parsed.paidAt)) return null;
   if (blobIntakeDueAtHasDisallowedValue(payload.dueAt)) return null;
+  if (blobIntakePaymentRefHasDisallowedValue(payload.paymentRef)) return null;
   if (blobIntakeAcceptedAtHasDisallowedValue(parsed.acceptedAt)) return null;
   if (blobIntakeConfirmedAtHasDisallowedValue(parsed.confirmedAt)) return null;
   if (blobIntakeDeliveredAtHasDisallowedValue(parsed.deliveredAt)) return null;
@@ -624,6 +640,7 @@ export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeR
   if (blobIntakeWithdrawnAtHasDisallowedValue(row.withdrawnAt)) return null;
   if (blobIntakeDeclinedAtHasDisallowedValue(row.declinedAt)) return null;
   if (blobIntakeNotedAtHasDisallowedValue(row.notedAt)) return null;
+  if (blobIntakePaymentRefHasDisallowedValue(row.paymentRef)) return null;
   const path = typeof row.path === "string" ? row.path.trim().toLowerCase() : "";
   if (path !== expectedPath) return null;
   const parsed = parseIntakeRecord(raw);

@@ -101960,6 +101960,82 @@ assert.equal(
 );
 assert.deepEqual(toIntakePathPayload(record)?.thread, []);
 
+const paymentRefStamp = "cs_test_abc123";
+const dirtyNonCsPaymentRefBlob = {
+  ...record,
+  paymentRef: "https://pay.example.test/receipts/hosted",
+  path: `INTAKE/${id}.JSON`,
+};
+assert.equal(
+  parseIntakeRecordAtPath(JSON.stringify(dirtyNonCsPaymentRefBlob), `intake/${id}.json`),
+  null,
+);
+assert.equal(parseIntakeRecord(JSON.stringify(dirtyNonCsPaymentRefBlob))?.id, id);
+assert.equal(
+  parseIntakeRecord(JSON.stringify(dirtyNonCsPaymentRefBlob))?.paymentRef,
+  "httpspayexampletestreceiptshosted",
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      paymentRef: "not-a-ref",
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  ),
+  null,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      paymentRef: paymentRefStamp,
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.id,
+  id,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      paymentRef: paymentRefStamp,
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.paymentRef,
+  paymentRefStamp,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      paymentRef: "",
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.paymentRef,
+  "",
+);
+
+const dirtyNonCsPaymentRefWrite = toIntakePathPayload({
+  ...record,
+  paymentRef: "https://pay.example.test/receipts/hosted",
+});
+const dirtyNonCsPaymentRefJson = JSON.stringify(dirtyNonCsPaymentRefWrite);
+assert.equal(dirtyNonCsPaymentRefWrite, null);
+assert.equal(dirtyNonCsPaymentRefJson.includes("receipts/hosted"), false);
+assert.equal(
+  toIntakePathPayload({
+    ...record,
+    paymentRef: paymentRefStamp,
+  })?.paymentRef,
+  paymentRefStamp,
+);
+assert.equal(toIntakePathPayload(record)?.paymentRef, "");
+
 const publicAppFiles = [
   "../app/page.tsx",
   "../app/agent/page.tsx",
