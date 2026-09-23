@@ -369,11 +369,14 @@ export function parseIntakeOutcome(value: unknown): string | null {
 }
 
 const INTAKE_EMAIL_URL_RE = /[:\/\\\uFF1A\uFE55\uFE13\uA789\u02F8\u02D0\u02D1\u2236\u2237\u2982\u0589\uFF0F\uFF3C\uFE68\u2044]/;
+const INTAKE_EMAIL_NON_ASCII_RE = /[^\u0000-\u007F]/;
 
 export function parseIntakeEmail(value: unknown): string | null {
   if (typeof value !== "string") return null;
   const raw = sanitizeText(value, FIELD_LIMITS.email);
-  if (!raw || INTAKE_EMAIL_URL_RE.test(raw)) return null;
+  if (!raw || INTAKE_EMAIL_URL_RE.test(raw) || INTAKE_EMAIL_NON_ASCII_RE.test(raw)) {
+    return null;
+  }
   return raw;
 }
 
