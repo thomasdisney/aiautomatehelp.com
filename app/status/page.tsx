@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { StatusEmailPrefiller } from "@/app/components/status-email-prefiller";
 import { StatusForm } from "@/app/components/status-form";
 import { intakeBlobPath } from "@/lib/intake";
 import { paymentConfigured } from "@/lib/payment";
@@ -10,6 +11,14 @@ export const metadata: Metadata = {
   alternates: { canonical: "/status" },
 };
 
+function sanitizeEmailParam(value: string): string {
+  const trimmed = value.trim();
+  if (!trimmed || trimmed.length > 120) return "";
+  // Same-device convenience only; never treat as trusted identity.
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) return "";
+  return trimmed;
+}
+
 export default async function StatusPage({
   searchParams,
 }: {
@@ -18,6 +27,8 @@ export default async function StatusPage({
   const params = await searchParams;
   const ref = typeof params.ref === "string" ? params.ref.trim().toLowerCase() : "";
   const initialId = intakeBlobPath(ref) ? ref : "";
+  const initialEmail =
+    typeof params.email === "string" ? sanitizeEmailParam(params.email) : "";
   const paymentConnected = paymentConfigured();
 
   return (
@@ -34,10 +45,10 @@ export default async function StatusPage({
       </p>
       <p className="mt-4 text-sm leading-relaxed text-ink/60">
         Optional <span className="font-mono">?email=</span> in the URL pre-fills the email field
-        on this device only once StatusForm supports it. It is not logged beyond the existing
-        status lookup APIs.
+        on this device only. It is not logged beyond the existing status lookup APIs.
       </p>
-      <div className="mt-10">
+      <div className="mt-10 [&_input]:min-h-11 [&_input]:text-base [&_button]:min-h-11">
+        <StatusEmailPrefiller email={initialEmail} />
         <StatusForm initialId={initialId} paymentConnected={paymentConnected} />
       </div>
     </article>
