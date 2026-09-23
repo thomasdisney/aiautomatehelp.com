@@ -250,7 +250,7 @@ export default function Home() {
               <li>
                 {paymentLive
                   ? "Accept, pay, then confirm the done-when test after handoff."
-                  : "Accept the quote on the status page, then confirm the done-when test after handoff."}
+                  : "Accept the quote on the status page. I may build and hand off before checkout is available. Then confirm the done-when test after handoff."}
               </li>
             </ol>
             <p className="mt-6 leading-relaxed text-ink/70">

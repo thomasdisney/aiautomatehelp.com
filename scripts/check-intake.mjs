@@ -100711,6 +100711,18 @@ assert.equal(
   automationSource.includes("I may build and hand off before checkout is available."),
   true,
 );
+assert.equal(
+  automationSource.includes(
+    "Accept the quote on the status page, then confirm the done-when test after handoff.",
+  ),
+  false,
+);
+assert.equal(
+  automationSource.includes(
+    "Accept the quote on the status page. I may build and hand off before checkout is available.",
+  ),
+  true,
+);
 assert.equal(homeSource.includes('canonical: "/"'), true);
 assert.equal(homeSource.includes('href="/automation#start"'), true);
 assert.equal(automationSource.includes('canonical: "/automation"'), true);
