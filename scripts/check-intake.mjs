@@ -329,10 +329,15 @@ assert.equal(
 assert.equal(quotedCopyDisconnected.includes("pay that amount here"), false);
 assert.equal(quotedCopyDisconnected.includes("Pay here"), false);
 assert.equal(quotedCopyDisconnected.includes("Payment is not open on this page yet."), true);
+assert.equal(quotedCopyDisconnected.includes("I'll post an update here when you can pay"), false);
+assert.equal(quotedCopyDisconnected.includes("I may build and hand off"), true);
 assert.equal(acceptedCopyConnected.includes("Pay here to start the work."), true);
 assert.equal(acceptedCopyDisconnected.includes("Pay here"), false);
 assert.equal(acceptedCopyDisconnected.includes("pay that amount here"), false);
 assert.equal(acceptedCopyDisconnected.includes("Payment is not open on this page yet."), true);
+assert.equal(acceptedCopyDisconnected.includes("I'll post an update here when you can pay"), false);
+assert.equal(acceptedCopyDisconnected.includes("I may build and hand off"), true);
+assert.equal(acceptedCopyDisconnected.includes("until I post the handoff"), true);
 assert.equal(customerStatusCopy("received", false), customerStatusCopy("received", true));
 assert.equal(customerStatusCopy("received", false).includes("Pay here"), false);
 assert.equal(customerStatusCopy("paid", true).includes("Paid."), true);
@@ -363,6 +368,7 @@ assert.equal(quotedReplyDisconnected.includes("Payment is not open on this page 
 assert.equal(acceptedReplyConnected.includes("until it is paid"), true);
 assert.equal(acceptedReplyDisconnected.includes("until it is paid"), false);
 assert.equal(acceptedReplyDisconnected.includes("Payment is not open on this page yet."), true);
+assert.equal(acceptedReplyDisconnected.includes("until I post the handoff"), true);
 assert.equal(
   customerReplyIntroCopy("delivered", false, false).includes("handoff is posted"),
   true,

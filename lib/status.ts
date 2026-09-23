@@ -156,12 +156,12 @@ export function customerStatusCopy(status: string, paymentConnected = false): st
   if (status === "quoted") {
     return paymentConnected
       ? `${STATUS_COPY.quoted} After you accept, pay that amount here before I start.`
-      : `${STATUS_COPY.quoted} Payment is not open on this page yet. I'll post an update here when you can pay.`;
+      : `${STATUS_COPY.quoted} Payment is not open on this page yet. After you accept, I may build and hand off before checkout is available.`;
   }
   if (status === "accepted") {
     return paymentConnected
       ? `${STATUS_COPY.accepted} You can still turn it down until it is paid. Pay here to start the work. After the handoff, confirm the stored done-when test here.`
-      : `${STATUS_COPY.accepted} You can still turn it down. Payment is not open on this page yet. I'll post an update here when you can pay.`;
+      : `${STATUS_COPY.accepted} You can still turn it down until I post the handoff. Payment is not open on this page yet. I may build and hand off before checkout is available. After the handoff, confirm the stored done-when test here.`;
   }
   const parsed = parseIntakeStatus(status);
   if (!parsed) return "This brief is on file. Check back here for updates.";
@@ -183,7 +183,7 @@ export function customerReplyIntroCopy(
   if (status === "accepted") {
     return paymentConnected
       ? "You can still turn this quote down until it is paid. Ask a question here. Notes stay on this page in order."
-      : "You can still turn this quote down. Payment is not open on this page yet. Ask a question here. Notes stay on this page in order.";
+      : "You can still turn this quote down until I post the handoff. Payment is not open on this page yet. Ask a question here. Notes stay on this page in order.";
   }
   if (status === "delivered" && !confirmed) {
     return "The handoff is posted. Confirm the stored done-when test here when it passes, or ask a question. Notes stay on this page in order.";
