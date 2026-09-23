@@ -28,8 +28,6 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     description,
     openGraph: {
-      title: "AutomateAI — scoped automation, built to order",
-      description,
       url: "./",
       siteName: "AutomateAI",
       type: "website",

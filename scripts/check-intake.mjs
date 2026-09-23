@@ -100685,6 +100685,8 @@ assert.equal(statusFormSource.includes("Send a new brief"), true);
 const layoutSource = readFileSync(new URL("../app/layout.tsx", import.meta.url), "utf8");
 assert.equal(layoutSource.includes('canonical: "/"'), false);
 assert.equal(layoutSource.includes('url: "./"'), true);
+assert.equal(/openGraph:\s*\{[^}]*\btitle:/.test(layoutSource), false);
+assert.equal(/openGraph:\s*\{[^}]*\bdescription/.test(layoutSource), false);
 assert.equal(homeSource.includes('canonical: "/"'), true);
 assert.equal(homeSource.includes('href="/automation#start"'), true);
 assert.equal(automationSource.includes('canonical: "/automation"'), true);
