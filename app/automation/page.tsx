@@ -37,7 +37,7 @@ const STEPS = [
   {
     n: "03",
     title: "Accept, then I build",
-    body: "Accept the quote on the status page. I implement only what the scope says. Payment opens there when checkout is ready.",
+    body: "Accept the quote on the status page. I implement only what the scope says. I may build and hand off before checkout is available. When checkout opens, pay the stored amount on the status page.",
   },
   {
     n: "04",

@@ -100698,6 +100698,15 @@ assert.equal(layoutSource.includes("jsonLdDescription"), false);
 assert.equal(automationSource.includes("application/ld+json"), true);
 assert.equal(automationSource.includes("jsonLdDescription"), true);
 assert.equal(automationSource.includes("ProfessionalService"), true);
+assert.equal(automationSource.includes("Accept, then I build"), true);
+assert.equal(
+  automationSource.includes("Payment opens there when checkout is ready."),
+  false,
+);
+assert.equal(
+  automationSource.includes("I may build and hand off before checkout is available."),
+  true,
+);
 assert.equal(homeSource.includes('canonical: "/"'), true);
 assert.equal(homeSource.includes('href="/automation#start"'), true);
 assert.equal(automationSource.includes('canonical: "/automation"'), true);
