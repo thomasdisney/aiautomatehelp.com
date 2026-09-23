@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { IntakeForm } from "@/app/components/intake-form";
 import { intakeStoreConfigured } from "@/lib/intake-store";
 import { paymentConfigured } from "@/lib/payment";
-import { durationFaqCopy, jsonLdDescription, noOutboundEmailCopy, priceFaqCopy, staffedAgencyFaqCopy, supportAfterHandoffFaqCopy } from "@/lib/site-copy";
+import { costsCopy, durationFaqCopy, jsonLdDescription, noOutboundEmailCopy, priceFaqCopy, staffedAgencyFaqCopy, supportAfterHandoffFaqCopy } from "@/lib/site-copy";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/automation" },
@@ -188,9 +188,7 @@ export default function Home() {
         <div className="mx-auto max-w-3xl">
           <h2 className="font-serif text-3xl text-ink">What it costs</h2>
           <p className="mt-4 text-lg leading-relaxed text-ink/70">
-            {paymentLive
-              ? "A fixed price, quoted after I understand the job. Paid in full before I build."
-              : "A fixed price, quoted after I understand the job. Checkout is not open on this site yet. I may build and hand off after you accept. When checkout opens, pay the stored amount on the status page."}
+            {costsCopy(paymentLive)}
           </p>
         </div>
       </section>

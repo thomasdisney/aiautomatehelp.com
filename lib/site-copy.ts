@@ -54,6 +54,12 @@ export function supportAfterHandoffFaqCopy(): string {
   return "In-scope fixes for that named workflow stay on this site. New work is a new quote.";
 }
 
+export function costsCopy(paymentConnected = false): string {
+  return paymentConnected
+    ? "A fixed price, quoted after I understand the named workflow. Paid in full before I build."
+    : "A fixed price, quoted after I understand the named workflow. Checkout is not open on this site yet. I may build and hand off after you accept. When checkout opens, pay the stored amount on the status page.";
+}
+
 export function priceFaqCopy(paymentConnected = false): string {
   return paymentConnected
     ? "A fixed quote after the brief. You pay after you accept, before I build."

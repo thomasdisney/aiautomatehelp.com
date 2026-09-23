@@ -55,6 +55,7 @@ import {
   staffedAgencyFaqCopy,
   durationFaqCopy,
   supportAfterHandoffFaqCopy,
+  costsCopy,
   priceFaqCopy,
   privacySharingCopy,
   privacyCollectCopy,
@@ -486,6 +487,27 @@ assert.equal(supportAfterHandoffFaq.includes("New work is a new quote"), true);
 assert.equal(supportAfterHandoffFaq.toLowerCase().includes("mailto"), false);
 assert.equal(supportAfterHandoffFaq.includes("thomasdisney"), false);
 assert.equal(supportAfterHandoffFaq.includes("gmail.com"), false);
+
+const costsConnected = costsCopy(true);
+const costsDisconnected = costsCopy(false);
+assert.equal(costsConnected.includes("the job"), false);
+assert.equal(costsDisconnected.includes("the job"), false);
+assert.equal(costsConnected.includes("understand the job"), false);
+assert.equal(costsDisconnected.includes("understand the job"), false);
+assert.equal(costsConnected.includes("named workflow"), true);
+assert.equal(costsDisconnected.includes("named workflow"), true);
+assert.equal(costsConnected.includes("Paid in full before I build."), true);
+assert.equal(costsDisconnected.includes("Paid in full before I build"), false);
+assert.equal(costsDisconnected.includes("Checkout is not open on this site yet."), true);
+assert.equal(costsDisconnected.includes("I may build and hand off after you accept."), true);
+assert.equal(
+  costsDisconnected.includes("pay the stored amount on the status page"),
+  true,
+);
+assert.equal(costsConnected.toLowerCase().includes("mailto"), false);
+assert.equal(costsDisconnected.toLowerCase().includes("mailto"), false);
+assert.equal(costsConnected.includes("thomasdisney"), false);
+assert.equal(costsDisconnected.includes("gmail.com"), false);
 
 const priceFaqConnected = priceFaqCopy(true);
 const priceFaqDisconnected = priceFaqCopy(false);
@@ -100782,6 +100804,7 @@ assert.equal(automationSource.includes('id="start"'), true);
 assert.equal(automationSource.includes("staffedAgencyFaqCopy"), true);
 assert.equal(automationSource.includes("durationFaqCopy"), true);
 assert.equal(automationSource.includes("supportAfterHandoffFaqCopy"), true);
+assert.equal(automationSource.includes("costsCopy"), true);
 assert.equal(automationSource.includes("one scoped job"), false);
 assert.equal(automationSource.includes("How long does a job take?"), false);
 assert.equal(automationSource.includes("Simple jobs"), false);
@@ -100871,12 +100894,7 @@ assert.equal(
   ),
   true,
 );
-assert.equal(
-  automationSource.includes(
-    "A fixed price, quoted after I understand the job. Checkout is not open on this site yet. I may build and hand off after you accept.",
-  ),
-  true,
-);
+assert.equal(automationSource.includes("understand the job"), false);
 assert.equal(homeSource.includes('canonical: "/"'), true);
 assert.equal(homeSource.includes('href="/automation#start"'), true);
 assert.equal(
