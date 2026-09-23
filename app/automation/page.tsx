@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { IntakeForm } from "@/app/components/intake-form";
 import { intakeStoreConfigured } from "@/lib/intake-store";
 import { paymentConfigured } from "@/lib/payment";
-import { automationHeroCopy, briefSecretsFaqCopy, costsCopy, durationFaqCopy, exampleWorkflowsHeadingCopy, jsonLdDescription, noOutboundEmailCopy, offerCopy, priceFaqCopy, sendBriefStepCopy, shortHandoffCopy, startHereNameCopy, staffedAgencyFaqCopy, supportAfterHandoffFaqCopy, workingAutomationCopy, writtenScopeCopy } from "@/lib/site-copy";
+import { automationHeroCopy, briefSecretsFaqCopy, costsCopy, durationFaqCopy, exampleWorkflowsHeadingCopy, handoffStepCopy, jsonLdDescription, noOutboundEmailCopy, offerCopy, priceFaqCopy, sendBriefStepCopy, shortHandoffCopy, startHereNameCopy, staffedAgencyFaqCopy, supportAfterHandoffFaqCopy, workingAutomationCopy, writtenScopeCopy } from "@/lib/site-copy";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/automation" },
@@ -42,7 +42,7 @@ const STEPS = [
   {
     n: "04",
     title: "Handoff",
-    body: "You get the working automation and how it runs. Confirm the done-when test when it passes.",
+    body: handoffStepCopy(),
   },
 ] as const;
 

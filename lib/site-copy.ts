@@ -72,6 +72,10 @@ export function sendBriefStepCopy(): string {
   return "Describe one named workflow — what starts it, which tools, and what done looks like.";
 }
 
+export function handoffStepCopy(): string {
+  return "You get that named workflow and how it runs. Confirm the done-when test when it passes.";
+}
+
 export function startHereNameCopy(): string {
   return "One named workflow — what starts it, which tools, and what done looks like.";
 }
