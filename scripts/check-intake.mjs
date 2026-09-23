@@ -102651,6 +102651,69 @@ assert.equal(
 );
 assert.equal(toIntakePathPayload(record)?.message, record.message);
 
+const emailStamp = "ops@northwind.test";
+const dirtyUrlEmail = "https://pay.example.test/receipts/hosted@x.y";
+const dirtyUrlEmailBlob = {
+  ...record,
+  email: dirtyUrlEmail,
+  path: `INTAKE/${id}.JSON`,
+};
+assert.equal(
+  parseIntakeRecordAtPath(JSON.stringify(dirtyUrlEmailBlob), `intake/${id}.json`),
+  null,
+);
+assert.equal(parseIntakeRecord(JSON.stringify(dirtyUrlEmailBlob))?.id, id);
+assert.equal(parseIntakeRecord(JSON.stringify(dirtyUrlEmailBlob))?.email, dirtyUrlEmail);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      email: emailStamp,
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.id,
+  id,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      email: emailStamp,
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.email,
+  emailStamp,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      email: record.email,
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.email,
+  record.email,
+);
+
+const dirtyUrlEmailWrite = toIntakePathPayload({
+  ...record,
+  email: dirtyUrlEmail,
+});
+const dirtyUrlEmailJson = JSON.stringify(dirtyUrlEmailWrite);
+assert.equal(dirtyUrlEmailWrite, null);
+assert.equal(dirtyUrlEmailJson.includes("receipts/hosted"), false);
+assert.equal(
+  toIntakePathPayload({
+    ...record,
+    email: emailStamp,
+  })?.email,
+  emailStamp,
+);
+assert.equal(toIntakePathPayload(record)?.email, record.email);
+
 const publicAppFiles = [
   "../app/page.tsx",
   "../app/agent/page.tsx",
