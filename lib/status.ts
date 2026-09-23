@@ -234,6 +234,9 @@ export function parseCustomerAction(body: unknown): CustomerActionParse {
   if (note && parseIntakeCustomerReply(note) === null) {
     return { ok: false, error: "invalid" };
   }
+  if (doneWhen && parseIntakeDoneWhen(doneWhen) === null) {
+    return { ok: false, error: "invalid" };
+  }
   if (decisionRaw === "question" && !note) return { ok: false, error: "invalid" };
   if (decisionRaw === "confirm") {
     if (!doneWhen) return { ok: false, error: "invalid" };

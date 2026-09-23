@@ -4412,6 +4412,15 @@ const confirmBlankDoneWhen = parseCustomerAction({
 });
 assert.deepEqual(confirmBlankDoneWhen, { ok: false, error: "invalid" });
 
+const urlConfirmDoneWhen = parseCustomerAction({
+  id,
+  email: "pat@example.com",
+  decision: "confirm",
+  note: "",
+  doneWhen: "https://pay.example.test/receipts/hosted",
+});
+assert.deepEqual(urlConfirmDoneWhen, { ok: false, error: "invalid" });
+
 const confirmParsed = parseCustomerAction({
   id: `  ${id.toUpperCase()}  `,
   email: "  Pat@Example.com  ",
