@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { paymentConfigured } from "@/lib/payment";
-import { privacySharingCopy } from "@/lib/site-copy";
+import { privacyCollectCopy, privacySharingCopy } from "@/lib/site-copy";
 
 export const metadata: Metadata = {
   title: "Privacy",
@@ -19,10 +19,7 @@ export default function PrivacyPage() {
       </p>
       <h2 className="mt-10 text-xl font-semibold text-ink">What this site collects</h2>
       <p className="mt-3 leading-relaxed text-ink/70">
-        The public pages are marketing copy. A connected brief inbox stores
-        name, email, optional company, and the job description in a private
-        inbox on this site so I can quote and deliver the job. It is not
-        emailed to a personal inbox.
+        {privacyCollectCopy()}
       </p>
       <p className="mt-3 leading-relaxed text-ink/70">
         You can look up a brief you already sent on the status page with the

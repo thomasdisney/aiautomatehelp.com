@@ -36,6 +36,10 @@ export function priceFaqCopy(paymentConnected = false): string {
     : "A fixed quote after the brief. Checkout is not open on this site yet. I may build and hand off after you accept. When checkout opens, pay the stored amount on the status page.";
 }
 
+export function privacyCollectCopy(): string {
+  return "The public pages are marketing copy. A connected brief inbox stores name, email, optional company, and one named workflow — what starts it, which tools, and what done looks like — in a private inbox on this site so I can quote and deliver the job. It is not emailed to a personal inbox.";
+}
+
 export function privacySharingCopy(paymentConnected = false): string {
   if (paymentConnected) {
     return "I do not sell your information. Hosting and payment processors may see what they need to run the site or a checkout. I will not hand your message to a personal inbox off this site.";

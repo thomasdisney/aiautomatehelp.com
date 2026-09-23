@@ -51,6 +51,7 @@ import {
   termsScopeCopy,
   priceFaqCopy,
   privacySharingCopy,
+  privacyCollectCopy,
   noOutboundEmailCopy,
   statusIntroCopy,
   statusLookupCopy,
@@ -410,6 +411,16 @@ assert.equal(
   priceFaqDisconnected.includes("pay the stored amount on the status page"),
   true,
 );
+
+const privacyCollect = privacyCollectCopy();
+assert.equal(privacyCollect.includes("job description"), false);
+assert.equal(privacyCollect.includes("what starts it"), true);
+assert.equal(privacyCollect.includes("which tools"), true);
+assert.equal(privacyCollect.includes("what done looks like"), true);
+assert.equal(privacyCollect.includes("named workflow"), true);
+assert.equal(privacyCollect.toLowerCase().includes("mailto"), false);
+assert.equal(privacyCollect.includes("thomasdisney"), false);
+assert.equal(privacyCollect.includes("gmail.com"), false);
 
 const privacySharingConnected = privacySharingCopy(true);
 const privacySharingDisconnected = privacySharingCopy(false);
@@ -100673,6 +100684,8 @@ const privacySource = readFileSync(
 );
 assert.equal(privacySource.includes('href="/automation#start"'), true);
 assert.equal(privacySource.includes("start section on the home page"), false);
+assert.equal(privacySource.includes("privacyCollectCopy"), true);
+assert.equal(privacySource.includes("job description"), false);
 const termsPageSource = readFileSync(
   new URL("../app/terms/page.tsx", import.meta.url),
   "utf8",
