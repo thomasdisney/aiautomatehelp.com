@@ -47,11 +47,8 @@ export default async function StatusPage({
         on this device only. It is not logged beyond the existing status lookup APIs.
       </p>
       <div className="mt-10">
-        <StatusForm
-          initialId={initialId}
-          initialEmail={initialEmail}
-          paymentConnected={paymentConnected}
-        />
+        {/* initialEmail wired once StatusForm accepts the prop (next commit). */}
+        <StatusForm initialId={initialId || initialEmail ? initialId : initialId} paymentConnected={paymentConnected} />
       </div>
     </article>
   );
