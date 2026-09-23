@@ -22,7 +22,7 @@ export default async function StatusPage({
 
   return (
     <article className="mx-auto max-w-3xl px-5 py-16">
-      <h1 className="font-serif text-4xl text-ink">Check a brief</h1>
+      <h1 className="font-serif text-pretty text-4xl text-ink">Check a brief</h1>
       <p className="mt-6 leading-relaxed text-ink/70">
         {statusIntroCopy(paymentConnected)}
       </p>
