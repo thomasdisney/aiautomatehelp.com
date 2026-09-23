@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { briefReceiptDisplay, type BriefReceipt } from "@/lib/brief-receipt";
+import { briefReceiptsOmitCopy } from "@/lib/site-copy";
 
 export function BriefReceiptList({
   receipts,
@@ -25,8 +26,8 @@ export function BriefReceiptList({
       </p>
       <p className="mt-2 text-sm leading-relaxed text-ink/70">
         These are references and original received times only. A matching check or reply
-        still shows that stored time from this device. They are not your email or the job
-        text. I will not email them.
+        still shows that stored time from this device. {briefReceiptsOmitCopy()} I will
+        not email them.
       </p>
       <ul className="mt-4 space-y-4">
         {receipts.map((receipt) => {

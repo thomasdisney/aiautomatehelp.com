@@ -61,6 +61,7 @@ import {
   triggerPlaceholderCopy,
   confirmDoneCopy,
   acceptDoneWhenCopy,
+  briefReceiptsOmitCopy,
   priceFaqCopy,
   privacySharingCopy,
   privacyCollectCopy,
@@ -562,6 +563,17 @@ assert.equal(acceptDoneWhen.includes("written scope"), true);
 assert.equal(acceptDoneWhen.toLowerCase().includes("mailto"), false);
 assert.equal(acceptDoneWhen.includes("thomasdisney"), false);
 assert.equal(acceptDoneWhen.includes("gmail.com"), false);
+
+const briefReceiptsOmit = briefReceiptsOmitCopy();
+assert.equal(briefReceiptsOmit.includes("the job text"), false);
+assert.equal(briefReceiptsOmit.includes("job text"), false);
+assert.equal(briefReceiptsOmit.includes("the job"), false);
+assert.equal(briefReceiptsOmit.includes("what starts it"), true);
+assert.equal(briefReceiptsOmit.includes("which tools"), true);
+assert.equal(briefReceiptsOmit.includes("what done looks like"), true);
+assert.equal(briefReceiptsOmit.toLowerCase().includes("mailto"), false);
+assert.equal(briefReceiptsOmit.includes("thomasdisney"), false);
+assert.equal(briefReceiptsOmit.includes("gmail.com"), false);
 
 const priceFaqConnected = priceFaqCopy(true);
 const priceFaqDisconnected = priceFaqCopy(false);
@@ -100832,6 +100844,7 @@ const publicAppFiles = [
   "../app/terms/page.tsx",
   "../app/status/page.tsx",
   "../app/components/status-form.tsx",
+  "../app/components/brief-receipts.tsx",
 ];
 for (const rel of publicAppFiles) {
   const text = readFileSync(new URL(rel, import.meta.url), "utf8").toLowerCase();
@@ -100927,6 +100940,12 @@ assert.equal(statusFormSource.includes("confirmDoneCopy"), true);
 assert.equal(statusFormSource.includes("This job is done"), false);
 assert.equal(statusFormSource.includes("acceptDoneWhenCopy"), true);
 assert.equal(statusFormSource.includes("this job is done when"), false);
+const briefReceiptsSource = readFileSync(
+  new URL("../app/components/brief-receipts.tsx", import.meta.url),
+  "utf8",
+);
+assert.equal(briefReceiptsSource.includes("briefReceiptsOmitCopy"), true);
+assert.equal(briefReceiptsSource.includes("the job text"), false);
 const layoutSource = readFileSync(new URL("../app/layout.tsx", import.meta.url), "utf8");
 assert.equal(layoutSource.includes('canonical: "/"'), false);
 assert.equal(layoutSource.includes('url: "./"'), true);
