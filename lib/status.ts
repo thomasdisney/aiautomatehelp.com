@@ -111,7 +111,9 @@ export function parseInboxFind(body: unknown): InboxFind {
   if (!body || typeof body !== "object") return { ok: false, error: "invalid" };
   const raw = body as Record<string, unknown>;
   const email = sanitizeText(raw.email, FIELD_LIMITS.email).toLowerCase();
-  if (!isValidEmail(email)) return { ok: false, error: "invalid" };
+  if (!isValidEmail(email) || parseIntakeEmail(email) === null) {
+    return { ok: false, error: "invalid" };
+  }
   return { ok: true, email };
 }
 
