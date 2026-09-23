@@ -102361,6 +102361,101 @@ assert.equal(
 );
 assert.equal(toIntakePathPayload(record)?.doneWhen, "");
 
+const threadTextStamp = "Need a quote for the inbox";
+const dirtyReceiptUrlThreadTextBlob = {
+  ...record,
+  path: `INTAKE/${id}.JSON`,
+  thread: [
+    {
+      role: "customer",
+      text: "https://pay.example.test/receipts/hosted",
+      at: record.receivedAt,
+    },
+  ],
+};
+assert.equal(
+  parseIntakeRecordAtPath(JSON.stringify(dirtyReceiptUrlThreadTextBlob), `intake/${id}.json`),
+  null,
+);
+assert.equal(parseIntakeRecord(JSON.stringify(dirtyReceiptUrlThreadTextBlob))?.id, id);
+assert.equal(
+  parseIntakeRecord(JSON.stringify(dirtyReceiptUrlThreadTextBlob))?.thread[0]?.text,
+  "https://pay.example.test/receipts/hosted",
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      path: `INTAKE/${id}.JSON`,
+      thread: [
+        {
+          role: "customer",
+          text: threadTextStamp,
+          at: record.receivedAt,
+        },
+      ],
+    }),
+    `intake/${id}.json`,
+  )?.id,
+  id,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      path: `INTAKE/${id}.JSON`,
+      thread: [
+        {
+          role: "customer",
+          text: threadTextStamp,
+          at: record.receivedAt,
+        },
+      ],
+    }),
+    `intake/${id}.json`,
+  )?.thread[0]?.text,
+  threadTextStamp,
+);
+assert.deepEqual(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      path: `INTAKE/${id}.JSON`,
+      thread: [],
+    }),
+    `intake/${id}.json`,
+  )?.thread,
+  [],
+);
+
+const dirtyReceiptUrlThreadTextWrite = toIntakePathPayload({
+  ...record,
+  thread: [
+    {
+      role: "customer",
+      text: "https://pay.example.test/receipts/hosted",
+      at: record.receivedAt,
+    },
+  ],
+});
+const dirtyReceiptUrlThreadTextJson = JSON.stringify(dirtyReceiptUrlThreadTextWrite);
+assert.equal(dirtyReceiptUrlThreadTextWrite, null);
+assert.equal(dirtyReceiptUrlThreadTextJson.includes("receipts/hosted"), false);
+assert.equal(
+  toIntakePathPayload({
+    ...record,
+    thread: [
+      {
+        role: "customer",
+        text: threadTextStamp,
+        at: record.receivedAt,
+      },
+    ],
+  })?.thread[0]?.text,
+  threadTextStamp,
+);
+assert.deepEqual(toIntakePathPayload(record)?.thread, []);
+
 const publicAppFiles = [
   "../app/page.tsx",
   "../app/agent/page.tsx",

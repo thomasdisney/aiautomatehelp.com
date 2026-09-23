@@ -277,6 +277,22 @@ export function blobIntakeDoneWhenHasDisallowedValue(doneWhen: unknown): boolean
   return parseIntakeDoneWhen(doneWhen) === null;
 }
 
+const INTAKE_THREAD_TEXT_URL_RE = /^https?:\/\//i;
+
+export function parseIntakeThreadText(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const raw = sanitizeText(value, FIELD_LIMITS.customerReply);
+  if (!raw || INTAKE_THREAD_TEXT_URL_RE.test(raw)) return null;
+  return raw;
+}
+
+export function blobThreadEntryTextHasDisallowedValue(text: unknown): boolean {
+  if (typeof text !== "string") return false;
+  const raw = sanitizeText(text, FIELD_LIMITS.customerReply);
+  if (!raw) return false;
+  return parseIntakeThreadText(text) === null;
+}
+
 export function composeIntakeMessage(input: {
   trigger: string;
   tools: string;
@@ -573,6 +589,7 @@ export function blobThreadHasDisallowedKeys(thread: unknown): boolean {
       blobRowHasKebabCaseKey(row) ||
       blobRowHasDottedKey(row) ||
       blobThreadEntryAtHasDisallowedValue(row.at) ||
+      blobThreadEntryTextHasDisallowedValue(row.text) ||
       !parseThreadEntry(item)
     ) {
       return true;
