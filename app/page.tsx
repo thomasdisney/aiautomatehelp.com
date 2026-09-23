@@ -45,7 +45,7 @@ export default function Home() {
           >
             automation page
           </a>
-          . Checkout is not open on this site yet.
+          . Checkout is not open on this site yet. I may build and hand off after you accept.
         </p>
       </div>
     </main>

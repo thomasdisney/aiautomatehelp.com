@@ -100741,6 +100741,12 @@ assert.equal(
 );
 assert.equal(homeSource.includes('canonical: "/"'), true);
 assert.equal(homeSource.includes('href="/automation#start"'), true);
+assert.equal(
+  homeSource.includes(
+    "Checkout is not open on this site yet. I may build and hand off after you accept.",
+  ),
+  true,
+);
 assert.equal(automationSource.includes('canonical: "/automation"'), true);
 assert.equal(statusPageSource.includes('canonical: "/status"'), true);
 assert.equal(privacySource.includes('canonical: "/privacy"'), true);
