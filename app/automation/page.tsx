@@ -190,7 +190,7 @@ export default function Home() {
           <p className="mt-4 text-lg leading-relaxed text-ink/70">
             {paymentLive
               ? "A fixed price, quoted after I understand the job. Paid in full before I build."
-              : "A fixed price, quoted after I understand the job. Checkout is not open on this site yet."}
+              : "A fixed price, quoted after I understand the job. Checkout is not open on this site yet. I may build and hand off after you accept. When checkout opens, pay the stored amount on the status page."}
           </p>
         </div>
       </section>

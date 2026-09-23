@@ -100723,6 +100723,12 @@ assert.equal(
   ),
   true,
 );
+assert.equal(
+  automationSource.includes(
+    "A fixed price, quoted after I understand the job. Checkout is not open on this site yet. I may build and hand off after you accept.",
+  ),
+  true,
+);
 assert.equal(homeSource.includes('canonical: "/"'), true);
 assert.equal(homeSource.includes('href="/automation#start"'), true);
 assert.equal(automationSource.includes('canonical: "/automation"'), true);
