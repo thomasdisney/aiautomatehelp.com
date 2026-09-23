@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { briefReceiptDisplay, type BriefReceipt } from "@/lib/brief-receipt";
 import { briefReceiptsOmitCopy } from "@/lib/site-copy";
@@ -38,7 +39,7 @@ export function BriefReceiptList({
               key={view.id}
               className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"
             >
-              <div>
+              <div className="min-w-0">
                 <p className="break-all font-mono text-sm text-ink">{view.id}</p>
                 <p className="mt-1 text-sm text-ink/60">Received {view.receivedAt}.</p>
               </div>
@@ -46,7 +47,7 @@ export function BriefReceiptList({
                 {mode === "links" ? (
                   <Link
                     href={`/status?ref=${encodeURIComponent(view.id)}`}
-                    className="inline-flex items-center justify-center rounded-full bg-accent px-4 py-1.5 text-sm font-semibold text-white hover:bg-accent-hover"
+                    className="inline-flex min-h-11 items-center justify-center rounded-full bg-accent px-4 text-sm font-semibold text-white hover:bg-accent-hover"
                   >
                     Check status
                   </Link>
@@ -54,7 +55,7 @@ export function BriefReceiptList({
                   <button
                     type="button"
                     onClick={() => onUse?.(view.id)}
-                    className="rounded-full bg-accent px-4 py-1.5 text-sm font-semibold text-white hover:bg-accent-hover"
+                    className="inline-flex min-h-11 items-center justify-center rounded-full bg-accent px-4 text-sm font-semibold text-white hover:bg-accent-hover"
                   >
                     Use this reference
                   </button>
@@ -62,7 +63,7 @@ export function BriefReceiptList({
                 <button
                   type="button"
                   onClick={() => onRemove(view.id)}
-                  className="rounded-full border border-ink/15 px-4 py-1.5 text-sm font-semibold text-ink hover:bg-paper"
+                  className="inline-flex min-h-11 items-center justify-center rounded-full border border-ink/15 px-4 text-sm font-semibold text-ink hover:bg-paper"
                 >
                   Remove
                 </button>
@@ -74,7 +75,7 @@ export function BriefReceiptList({
       <button
         type="button"
         onClick={onClear}
-        className="mt-4 text-sm text-ink/60 underline underline-offset-2 hover:text-ink"
+        className="mt-4 inline-flex min-h-11 items-center text-sm text-ink/60 underline underline-offset-2 hover:text-ink"
       >
         Clear saved on this browser
       </button>
@@ -83,17 +84,28 @@ export function BriefReceiptList({
 }
 
 export function CopyReference({ id }: { id: string }) {
+  const [copied, setCopied] = useState(false);
+
+  async function copy() {
+    const clipboard = navigator.clipboard;
+    if (!clipboard?.writeText) return;
+    try {
+      await clipboard.writeText(id);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setCopied(false);
+    }
+  }
+
   return (
     <button
       type="button"
-      onClick={() => {
-        const clipboard = navigator.clipboard;
-        if (!clipboard?.writeText) return;
-        void clipboard.writeText(id).catch(() => undefined);
-      }}
-      className="rounded-full border border-ink/15 px-4 py-2 text-sm font-semibold text-ink hover:bg-paper"
+      onClick={() => void copy()}
+      aria-live="polite"
+      className="inline-flex min-h-11 items-center justify-center rounded-full border border-ink/15 px-4 text-sm font-semibold text-ink hover:bg-paper"
     >
-      Copy reference
+      {copied ? "Copied" : "Copy reference"}
     </button>
   );
 }
