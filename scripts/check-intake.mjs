@@ -298,6 +298,26 @@ const emptyTrigger = parseIntake({
 });
 assert.deepEqual(emptyTrigger, { ok: false, error: "required" });
 
+const urlTools = parseIntake({
+  name: "Pat",
+  email: "pat@example.com",
+  company: "Co",
+  trigger: "A form is submitted",
+  tools: "https://pay.example.test/receipts/hosted",
+  outcome: "A test row appears",
+});
+assert.deepEqual(urlTools, { ok: false, error: "invalid" });
+
+const emptyTools = parseIntake({
+  name: "Pat",
+  email: "pat@example.com",
+  company: "Co",
+  trigger: "A form is submitted",
+  tools: "",
+  outcome: "A test row appears",
+});
+assert.deepEqual(emptyTools, { ok: false, error: "required" });
+
 const normalEmail = parseIntake({
   name: "Pat",
   email: "pat@example.com",

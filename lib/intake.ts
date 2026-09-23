@@ -350,6 +350,15 @@ export function parseIntakeTrigger(value: unknown): string | null {
   return raw;
 }
 
+const INTAKE_TOOLS_URL_RE = /^https?:\/\//i;
+
+export function parseIntakeTools(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const raw = sanitizeText(value, FIELD_LIMITS.tools);
+  if (!raw || INTAKE_TOOLS_URL_RE.test(raw)) return null;
+  return raw;
+}
+
 const INTAKE_EMAIL_URL_RE = /^https?:\/\//i;
 
 export function parseIntakeEmail(value: unknown): string | null {
@@ -400,6 +409,9 @@ export function parseIntake(body: unknown): IntakeParse {
     return { ok: false, error: "invalid" };
   }
   if (parseIntakeTrigger(trigger) === null) {
+    return { ok: false, error: "invalid" };
+  }
+  if (parseIntakeTools(tools) === null) {
     return { ok: false, error: "invalid" };
   }
   if (!isValidEmail(email) || parseIntakeEmail(email) === null) {
