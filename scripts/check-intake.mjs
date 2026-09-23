@@ -101624,6 +101624,82 @@ assert.equal(
 );
 assert.equal(toIntakePathPayload(record)?.withdrawnAt, "");
 
+const declinedAtStamp = "2026-08-12T18:00:00.000Z";
+const dirtyNonTimestampDeclinedAtBlob = {
+  ...record,
+  declinedAt: "https://pay.example.test/receipts/hosted",
+  path: `INTAKE/${id}.JSON`,
+};
+assert.equal(
+  parseIntakeRecordAtPath(JSON.stringify(dirtyNonTimestampDeclinedAtBlob), `intake/${id}.json`),
+  null,
+);
+assert.equal(parseIntakeRecord(JSON.stringify(dirtyNonTimestampDeclinedAtBlob))?.id, id);
+assert.equal(
+  parseIntakeRecord(JSON.stringify(dirtyNonTimestampDeclinedAtBlob))?.declinedAt,
+  "https://pay.example.test/receipts/hosted",
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      declinedAt: "not-a-timestamp",
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  ),
+  null,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      declinedAt: declinedAtStamp,
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.id,
+  id,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      declinedAt: declinedAtStamp,
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.declinedAt,
+  declinedAtStamp,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      declinedAt: "",
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.declinedAt,
+  "",
+);
+
+const dirtyNonTimestampDeclinedAtWrite = toIntakePathPayload({
+  ...record,
+  declinedAt: "https://pay.example.test/receipts/hosted",
+});
+const dirtyNonTimestampDeclinedAtJson = JSON.stringify(dirtyNonTimestampDeclinedAtWrite);
+assert.equal(dirtyNonTimestampDeclinedAtWrite, null);
+assert.equal(dirtyNonTimestampDeclinedAtJson.includes("receipts/hosted"), false);
+assert.equal(
+  toIntakePathPayload({
+    ...record,
+    declinedAt: declinedAtStamp,
+  })?.declinedAt,
+  declinedAtStamp,
+);
+assert.equal(toIntakePathPayload(record)?.declinedAt, "");
+
 const publicAppFiles = [
   "../app/page.tsx",
   "../app/agent/page.tsx",
