@@ -2,7 +2,28 @@ import type { Metadata } from "next";
 import { IntakeForm } from "@/app/components/intake-form";
 import { intakeStoreConfigured } from "@/lib/intake-store";
 import { paymentConfigured } from "@/lib/payment";
-import { automationHeroCopy, briefSecretsFaqCopy, costsCopy, durationFaqCopy, exampleWorkflowsHeadingCopy, handoffStepCopy, jsonLdDescription, noOutboundEmailCopy, offerCopy, priceFaqCopy, quoteStepCopy, sendBriefStepCopy, shortHandoffCopy, startHereNameCopy, staffedAgencyFaqCopy, supportAfterHandoffFaqCopy, workingAutomationCopy, writtenScopeCopy } from "@/lib/site-copy";
+import {
+  acceptBuildStepCopy,
+  automationHeroCopy,
+  briefSecretsFaqCopy,
+  costsCopy,
+  durationFaqCopy,
+  exampleWorkflowsHeadingCopy,
+  handoffStepCopy,
+  jsonLdDescription,
+  noOutboundEmailCopy,
+  offerCopy,
+  priceFaqCopy,
+  quoteStepCopy,
+  sendBriefStepCopy,
+  shortHandoffCopy,
+  startHereAcceptCopy,
+  startHereNameCopy,
+  staffedAgencyFaqCopy,
+  supportAfterHandoffFaqCopy,
+  workingAutomationCopy,
+  writtenScopeCopy,
+} from "@/lib/site-copy";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/automation" },
@@ -23,75 +44,29 @@ const EXAMPLES = [
   },
 ] as const;
 
-const STEPS = [
-  {
-    n: "01",
-    title: "Send a brief",
-    body: sendBriefStepCopy(),
-  },
-  {
-    n: "02",
-    title: "Get a fixed quote",
-    body: quoteStepCopy(),
-  },
-  {
-    n: "03",
-    title: "Accept, then I build",
-    body: "Accept the quote on the status page. I implement only what the scope says. I may build and hand off before checkout is available. When checkout opens, pay the stored amount on the status page.",
-  },
-  {
-    n: "04",
-    title: "Handoff",
-    body: handoffStepCopy(),
-  },
-] as const;
-
-const FAQS = [
-  {
-    q: "Is this a staffed agency?",
-    a: staffedAgencyFaqCopy(),
-  },
-  {
-    q: "What does it cost?",
-    a: priceFaqCopy(false),
-  },
-  {
-    q: "How long does a named workflow take?",
-    a: durationFaqCopy(),
-  },
-  {
-    q: "What about support after handoff?",
-    a: supportAfterHandoffFaqCopy(),
-  },
-  {
-    q: "What should I leave out of a brief?",
-    a: briefSecretsFaqCopy(),
-  },
-] as const;
-
-export default function Home() {
+export default function AutomationPage() {
   const intakeLive = intakeStoreConfigured();
   const paymentLive = paymentConfigured();
-  const steps = paymentLive
-    ? [
-        STEPS[0],
-        STEPS[1],
-        {
-          n: "03",
-          title: "Pay, then I build",
-          body: "Accept the quote, pay the quoted amount, and I implement only what the scope says.",
-        },
-        STEPS[3],
-      ]
-    : STEPS;
-  const faqs = FAQS.map((item) =>
-    item.q === "What does it cost?"
-      ? {
-          q: item.q,
-          a: priceFaqCopy(paymentLive),
-        }
-      : item,
-  );
+
+  const steps = [
+    { n: "01", title: "Send a brief", body: sendBriefStepCopy() },
+    { n: "02", title: "Get a fixed quote", body: quoteStepCopy() },
+    {
+      n: "03",
+      title: paymentLive ? "Pay, then I build" : "Accept, then I build",
+      body: acceptBuildStepCopy(paymentLive),
+    },
+    { n: "04", title: "Handoff", body: handoffStepCopy() },
+  ];
+
+  const faqs = [
+    { q: "Is this a staffed agency?", a: staffedAgencyFaqCopy() },
+    { q: "What does it cost?", a: priceFaqCopy(paymentLive) },
+    { q: "How long does a named workflow take?", a: durationFaqCopy() },
+    { q: "What about support after handoff?", a: supportAfterHandoffFaqCopy() },
+    { q: "What should I leave out of a brief?", a: briefSecretsFaqCopy() },
+  ];
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "ProfessionalService",
@@ -100,11 +75,28 @@ export default function Home() {
     description: jsonLdDescription(paymentLive),
   };
 
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((item) => ({
+      "@type": "Question",
+      name: item.q,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.a,
+      },
+    })),
+  };
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
       <section className="px-5 pb-16 pt-16 sm:pt-24">
         <div className="mx-auto grid max-w-5xl items-center gap-10 md:grid-cols-2">
@@ -150,9 +142,7 @@ export default function Home() {
       <section id="offer" className="scroll-mt-20 border-t border-ink/10 px-5 py-16">
         <div className="mx-auto max-w-3xl">
           <h2 className="font-serif text-3xl text-ink">The offer</h2>
-          <p className="mt-4 leading-relaxed text-ink/70">
-            {offerCopy()}
-          </p>
+          <p className="mt-4 leading-relaxed text-ink/70">{offerCopy()}</p>
         </div>
       </section>
 
@@ -162,21 +152,15 @@ export default function Home() {
           <ul className="mt-8 grid gap-6 md:grid-cols-3">
             <li className="rounded-2xl border border-ink/10 p-6">
               <p className="font-semibold text-ink">A written scope</p>
-              <p className="mt-2 text-sm leading-relaxed text-ink/70">
-                {writtenScopeCopy()}
-              </p>
+              <p className="mt-2 text-sm leading-relaxed text-ink/70">{writtenScopeCopy()}</p>
             </li>
             <li className="rounded-2xl border border-ink/10 p-6">
               <p className="font-semibold text-ink">One working automation</p>
-              <p className="mt-2 text-sm leading-relaxed text-ink/70">
-                {workingAutomationCopy()}
-              </p>
+              <p className="mt-2 text-sm leading-relaxed text-ink/70">{workingAutomationCopy()}</p>
             </li>
             <li className="rounded-2xl border border-ink/10 p-6">
               <p className="font-semibold text-ink">A short handoff</p>
-              <p className="mt-2 text-sm leading-relaxed text-ink/70">
-                {shortHandoffCopy()}
-              </p>
+              <p className="mt-2 text-sm leading-relaxed text-ink/70">{shortHandoffCopy()}</p>
             </li>
           </ul>
         </div>
@@ -185,9 +169,7 @@ export default function Home() {
       <section id="price" className="scroll-mt-20 border-t border-ink/10 px-5 py-16">
         <div className="mx-auto max-w-3xl">
           <h2 className="font-serif text-3xl text-ink">What it costs</h2>
-          <p className="mt-4 text-lg leading-relaxed text-ink/70">
-            {costsCopy(paymentLive)}
-          </p>
+          <p className="mt-4 text-lg leading-relaxed text-ink/70">{costsCopy(paymentLive)}</p>
         </div>
       </section>
 
@@ -225,14 +207,26 @@ export default function Home() {
       <section className="border-t border-ink/10 bg-white px-5 py-16">
         <div className="mx-auto max-w-3xl">
           <h2 className="font-serif text-3xl text-ink">Questions</h2>
-          <dl className="mt-8 space-y-6">
-            {faqs.map((item) => (
-              <div key={item.q} className="border-b border-ink/10 pb-6">
-                <dt className="font-semibold text-ink">{item.q}</dt>
-                <dd className="mt-2 leading-relaxed text-ink/70">{item.a}</dd>
-              </div>
+          <div className="mt-8 space-y-3">
+            {faqs.map((item, index) => (
+              <details
+                key={item.q}
+                className="group border-b border-ink/10 pb-3"
+                open={index === 0 ? true : undefined}
+              >
+                <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 py-2 font-semibold text-ink outline-none marker:content-none focus-visible:ring-2 focus-visible:ring-accent/40 [&::-webkit-details-marker]:hidden">
+                  <span>{item.q}</span>
+                  <span
+                    aria-hidden="true"
+                    className="shrink-0 text-ink/40 transition group-open:rotate-45"
+                  >
+                    +
+                  </span>
+                </summary>
+                <p className="pb-3 leading-relaxed text-ink/70">{item.a}</p>
+              </details>
             ))}
-          </dl>
+          </div>
         </div>
       </section>
 
@@ -243,11 +237,7 @@ export default function Home() {
             <ol className="mt-6 list-decimal space-y-3 pl-5 leading-relaxed text-ink/70">
               <li>{startHereNameCopy()}</li>
               <li>Get a yes or no and a fixed quote on the status page.</li>
-              <li>
-                {paymentLive
-                  ? "Accept, pay, then confirm the done-when test after handoff."
-                  : "Accept the quote on the status page. I may build and hand off before checkout is available. Then confirm the done-when test after handoff."}
-              </li>
+              <li>{startHereAcceptCopy(paymentLive)}</li>
             </ol>
             <p className="mt-6 leading-relaxed text-ink/70">
               After you send a brief, save the full reference. {noOutboundEmailCopy()} This
