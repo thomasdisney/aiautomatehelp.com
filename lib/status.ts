@@ -178,7 +178,7 @@ export function customerReplyIntroCopy(
       "Accept, turn it down, or ask a question here. Accepting agrees to the stored written scope, price, date, and done-when test together. Notes stay on this page in order.";
     return paymentConnected
       ? `${base} After you accept, payment is the stored amount only. You can still turn it down until it is paid.`
-      : `${base} Payment is not open on this page yet. You can still turn it down.`;
+      : `${base} Payment is not open on this page yet. You can still turn it down. After you accept, I may build and hand off before checkout is available.`;
   }
   if (status === "accepted") {
     return paymentConnected
