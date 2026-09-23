@@ -13,7 +13,7 @@ import {
   subscribeBriefReceipts,
 } from "@/lib/brief-receipt";
 import { FIELD_LIMITS, parseDueAt, parseThread, type ThreadEntry } from "@/lib/intake";
-import { statusLookupCopy } from "@/lib/site-copy";
+import { confirmDoneCopy, statusLookupCopy } from "@/lib/site-copy";
 import {
   closedBriefNextHref,
   customerReplyIntroCopy,
@@ -620,7 +620,9 @@ function ReplyPanel({
             checked={ackDone}
             onChange={(event) => setAckDone(event.target.checked)}
           />
-          <span>This job is done. The stored test passed: {doneWhen}</span>
+          <span>
+            {confirmDoneCopy()} {doneWhen}
+          </span>
         </label>
       ) : null}
       {error ? (
