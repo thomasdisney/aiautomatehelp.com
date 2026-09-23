@@ -112,7 +112,7 @@ export default function Home() {
             <p className="text-sm font-medium uppercase tracking-[0.18em] text-ink/50">
               AutomateAI
             </p>
-            <h1 className="font-serif mt-4 text-4xl leading-[1.15] text-ink sm:text-5xl">
+            <h1 className="font-serif mt-4 text-pretty text-4xl leading-[1.15] text-ink sm:text-5xl">
               Scoped automation, built to order.
             </h1>
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-ink/70 sm:text-xl">
@@ -121,13 +121,13 @@ export default function Home() {
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <a
                 href="#start"
-                className="inline-flex items-center justify-center rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white hover:bg-accent-hover"
+                className="inline-flex min-h-11 items-center justify-center rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white hover:bg-accent-hover"
               >
                 Send a brief
               </a>
               <a
                 href="#offer"
-                className="inline-flex items-center justify-center rounded-full border border-ink/15 px-6 py-3 text-sm font-semibold text-ink hover:bg-white"
+                className="inline-flex min-h-11 items-center justify-center rounded-full border border-ink/15 px-6 py-3 text-sm font-semibold text-ink hover:bg-white"
               >
                 See the offer
               </a>
@@ -141,6 +141,7 @@ export default function Home() {
               width={480}
               height={360}
               className="h-auto w-full"
+              fetchPriority="high"
             />
           </div>
         </div>
