@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AgentSetup } from "@/app/components/agent-setup";
+import { paymentConfigured } from "@/lib/payment";
+import { checkoutClosedCopy } from "@/lib/site-copy";
 
 export const metadata: Metadata = {
   title: "AI agent in your pocket",
@@ -10,6 +12,8 @@ export const metadata: Metadata = {
 };
 
 export default function Home() {
+  const closed = checkoutClosedCopy(paymentConfigured());
+
   return (
     <div className="mx-auto max-w-5xl px-5 py-16 sm:py-24">
       <div className="mx-auto max-w-2xl text-center">
@@ -45,8 +49,8 @@ export default function Home() {
           >
             Send a brief
           </Link>{" "}
-          with the trigger, tools, and done-when test. Checkout is not open yet;
-          after you accept a quote, handoff may arrive before payment.
+          with the trigger, tools, and done-when test.
+          {closed ? ` ${closed}` : ""}
         </p>
       </div>
     </div>
