@@ -18,7 +18,24 @@ export function BriefReceiptList({
   onRemove: (id: string) => void;
   onClear: () => void;
 }) {
-  if (!receipts.length) return null;
+  if (!receipts.length) {
+    return (
+      <div className="rounded-2xl border border-ink/10 bg-white p-6 sm:p-8">
+        <p className="text-sm font-medium uppercase tracking-wide text-ink/50">
+          Saved on this browser
+        </p>
+        <p className="mt-2 text-sm leading-relaxed text-ink/70">
+          After you send a brief, the reference appears here on this device.
+        </p>
+        <Link
+          href="/automation#start"
+          className="mt-4 inline-flex min-h-11 items-center text-sm font-medium text-ink underline underline-offset-2"
+        >
+          Send a brief
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="rounded-2xl border border-ink/10 bg-white p-6 sm:p-8">
