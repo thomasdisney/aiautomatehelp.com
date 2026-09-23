@@ -12,7 +12,7 @@ export function jsonLdDescription(paymentConnected = false): string {
 
 export function termsOfferCopy(paymentConnected = false): string {
   const offer =
-    "A quote is an offer for one written scope at a fixed price, with a delivery date and a done-when test. You accept the written scope, price, date, and test together. After you accept, that scope, price, date, and test stay on the brief.";
+    "A quote is an offer for one named workflow — what starts it, which tools, and what done looks like — at a fixed price, with a delivery date and a done-when test. You accept the written scope, price, date, and test together. After you accept, that scope, price, date, and test stay on the brief.";
   const close =
     "Turning it down closes those terms; a later quote on the same brief is a new offer and shows as a new note on the status page. If you asked a question before I quote, that quote includes a new note on the status page.";
   const handoff =

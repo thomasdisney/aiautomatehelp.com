@@ -430,6 +430,7 @@ assert.equal(termsOfferConnected.includes("the job"), false);
 assert.equal(termsOfferDisconnected.includes("the job"), false);
 assert.equal(termsOfferConnected.includes("After payment, the named workflow is on."), true);
 assert.equal(termsOfferConnected.includes("named workflow"), true);
+assert.equal(termsOfferDisconnected.includes("named workflow"), true);
 assert.equal(termsOfferConnected.toLowerCase().includes("mailto"), false);
 assert.equal(termsOfferDisconnected.includes("thomasdisney"), false);
 assert.equal(termsOfferDisconnected.includes("gmail.com"), false);
