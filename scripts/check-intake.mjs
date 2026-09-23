@@ -52,6 +52,7 @@ import {
   priceFaqCopy,
   privacySharingCopy,
   privacyCollectCopy,
+  privacyLookupCopy,
   noOutboundEmailCopy,
   statusIntroCopy,
   statusLookupCopy,
@@ -421,6 +422,18 @@ assert.equal(privacyCollect.includes("named workflow"), true);
 assert.equal(privacyCollect.toLowerCase().includes("mailto"), false);
 assert.equal(privacyCollect.includes("thomasdisney"), false);
 assert.equal(privacyCollect.includes("gmail.com"), false);
+
+const privacyLookup = privacyLookupCopy();
+assert.equal(privacyLookup.includes("job text"), false);
+assert.equal(privacyLookup.includes("job description"), false);
+assert.equal(privacyLookup.includes("what starts it"), true);
+assert.equal(privacyLookup.includes("which tools"), true);
+assert.equal(privacyLookup.includes("what done looks like"), true);
+assert.equal(privacyLookup.includes("status page"), true);
+assert.equal(privacyLookup.includes("those workflow fields"), true);
+assert.equal(privacyLookup.toLowerCase().includes("mailto"), false);
+assert.equal(privacyLookup.includes("thomasdisney"), false);
+assert.equal(privacyLookup.includes("gmail.com"), false);
 
 const privacySharingConnected = privacySharingCopy(true);
 const privacySharingDisconnected = privacySharingCopy(false);
@@ -100686,6 +100699,8 @@ assert.equal(privacySource.includes('href="/automation#start"'), true);
 assert.equal(privacySource.includes("start section on the home page"), false);
 assert.equal(privacySource.includes("privacyCollectCopy"), true);
 assert.equal(privacySource.includes("job description"), false);
+assert.equal(privacySource.includes("job text"), false);
+assert.equal(privacySource.includes("privacyLookupCopy"), true);
 const termsPageSource = readFileSync(
   new URL("../app/terms/page.tsx", import.meta.url),
   "utf8",

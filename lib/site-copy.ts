@@ -40,6 +40,10 @@ export function privacyCollectCopy(): string {
   return "The public pages are marketing copy. A connected brief inbox stores name, email, optional company, and one named workflow — what starts it, which tools, and what done looks like — in a private inbox on this site so I can quote and deliver the job. It is not emailed to a personal inbox.";
 }
 
+export function privacyLookupCopy(): string {
+  return "You can look up a brief you already sent on the status page with the reference and the same email. That check returns the public status, any quote, delivery date, and done-when test I posted, and the notes on that brief in order — not what starts it, which tools, or what done looks like. A later note does not erase an earlier one. A matching status check or reply on this browser may keep the reference and show the original received time from this device so a refresh does not lose them. That copy is not emailed, and it is not your email or those workflow fields.";
+}
+
 export function privacySharingCopy(paymentConnected = false): string {
   if (paymentConnected) {
     return "I do not sell your information. Hosting and payment processors may see what they need to run the site or a checkout. I will not hand your message to a personal inbox off this site.";

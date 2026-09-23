@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { paymentConfigured } from "@/lib/payment";
-import { privacyCollectCopy, privacySharingCopy } from "@/lib/site-copy";
+import { privacyCollectCopy, privacyLookupCopy, privacySharingCopy } from "@/lib/site-copy";
 
 export const metadata: Metadata = {
   title: "Privacy",
@@ -22,14 +22,7 @@ export default function PrivacyPage() {
         {privacyCollectCopy()}
       </p>
       <p className="mt-3 leading-relaxed text-ink/70">
-        You can look up a brief you already sent on the status page with the
-        reference and the same email. That check returns the public status, any
-        quote, delivery date, and done-when test I posted, and the notes on that brief in order —
-        not the job text.
-        A later note does not erase an earlier one.
-        A matching status check or reply on this browser may keep the reference
-        and show the original received time from this device so a refresh does not lose them.
-        That copy is not emailed, and it is not your email or the job text.
+        {privacyLookupCopy()}
       </p>
       <h2 className="mt-10 text-xl font-semibold text-ink">How I treat that text</h2>
       <p className="mt-3 leading-relaxed text-ink/70">
