@@ -368,7 +368,7 @@ export function parseIntakeOutcome(value: unknown): string | null {
   return raw;
 }
 
-const INTAKE_EMAIL_URL_RE = /^https?:\/\//i;
+const INTAKE_EMAIL_URL_RE = /:\/\//;
 
 export function parseIntakeEmail(value: unknown): string | null {
   if (typeof value !== "string") return null;
