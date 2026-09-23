@@ -458,6 +458,8 @@ assert.equal(
 
 const privacyCollect = privacyCollectCopy();
 assert.equal(privacyCollect.includes("job description"), false);
+assert.equal(privacyCollect.includes("deliver the job"), false);
+assert.equal(privacyCollect.includes("deliver that workflow"), true);
 assert.equal(privacyCollect.includes("what starts it"), true);
 assert.equal(privacyCollect.includes("which tools"), true);
 assert.equal(privacyCollect.includes("what done looks like"), true);

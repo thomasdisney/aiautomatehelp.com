@@ -49,7 +49,7 @@ export function priceFaqCopy(paymentConnected = false): string {
 }
 
 export function privacyCollectCopy(): string {
-  return "The public pages are marketing copy. A connected brief inbox stores name, email, optional company, and one named workflow — what starts it, which tools, and what done looks like — in a private inbox on this site so I can quote and deliver the job. It is not emailed to a personal inbox.";
+  return "The public pages are marketing copy. A connected brief inbox stores name, email, optional company, and one named workflow — what starts it, which tools, and what done looks like — in a private inbox on this site so I can quote and deliver that workflow. It is not emailed to a personal inbox.";
 }
 
 export function privacyLookupCopy(): string {
