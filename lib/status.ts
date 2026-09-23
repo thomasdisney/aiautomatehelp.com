@@ -133,7 +133,7 @@ const STATUS_COPY: Record<IntakeStatus, string> = {
   quoted:
     "This is a fixed quote for the written scope, with a delivery date and a done-when test. Accepting agrees to that scope, price, date, and test together.",
   declined:
-    "I am not taking this job. This brief stays closed. Send a new brief that names what starts it, which tools, and what done looks like. If I post a new quote here, it will include a new note.",
+    "I am not taking this named workflow. This brief stays closed. Send a new brief that names what starts it, which tools, and what done looks like. If I post a new quote here, it will include a new note.",
   accepted:
     "You accepted this quote, including the written scope, price, date, and done-when test. Those terms stay as written.",
   withdrawn:
