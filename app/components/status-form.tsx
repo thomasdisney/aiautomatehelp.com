@@ -506,8 +506,7 @@ function PayPanel({
         </>
       ) : (
         <p className="text-sm leading-relaxed text-ink/60">
-          Quoted amount: {formatUsd(amountCents)}. Payment is not open on this page yet. After
-          the handoff, confirm the done-when test on this page.
+          Quoted amount: {formatUsd(amountCents)}. Payment is not open on this page yet. I may build and hand off before checkout is available. After the handoff, confirm the done-when test on this page.
         </p>
       )}
       {error ? (

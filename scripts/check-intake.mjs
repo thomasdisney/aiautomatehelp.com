@@ -100715,6 +100715,14 @@ const statusFormSource = readFileSync(
 assert.equal(statusFormSource.includes("closedBriefNextHref"), true);
 assert.equal(statusFormSource.includes("unmatchedLookupNextHref"), true);
 assert.equal(statusFormSource.includes("Send a new brief"), true);
+assert.equal(
+  statusFormSource.includes("I may build and hand off before checkout is available."),
+  true,
+);
+assert.equal(
+  statusFormSource.includes("Payment is not open on this page yet. After"),
+  false,
+);
 const layoutSource = readFileSync(new URL("../app/layout.tsx", import.meta.url), "utf8");
 assert.equal(layoutSource.includes('canonical: "/"'), false);
 assert.equal(layoutSource.includes('url: "./"'), true);
