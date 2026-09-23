@@ -452,6 +452,12 @@ assert.deepEqual(statusBadId, { ok: false, error: "invalid" });
 const statusBadEmail = parseStatusLookup({ id, email: "not-an-email" });
 assert.deepEqual(statusBadEmail, { ok: false, error: "invalid" });
 
+const statusUrlEmail = parseStatusLookup({
+  id,
+  email: "https://pay.example.test/receipts/hosted@x.y",
+});
+assert.deepEqual(statusUrlEmail, { ok: false, error: "invalid" });
+
 const statusOk = parseStatusLookup({
   id: `  ${id.toUpperCase()}  `,
   email: "  Pat@Example.com  ",

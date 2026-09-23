@@ -123,7 +123,11 @@ export function parseStatusLookup(body: unknown): StatusLookup {
 
   const idRaw = typeof raw.id === "string" ? raw.id.trim().toLowerCase() : "";
   const email = sanitizeText(raw.email, 120).toLowerCase();
-  if (!intakeBlobPath(idRaw) || !isValidEmail(email)) {
+  if (
+    !intakeBlobPath(idRaw) ||
+    !isValidEmail(email) ||
+    parseIntakeEmail(email) === null
+  ) {
     return { ok: false, error: "invalid" };
   }
   return { ok: true, dropped: false, id: idRaw, email };
