@@ -92,6 +92,10 @@ export function workingAutomationCopy(): string {
   return "That named workflow, built in the tools you already use — not a slide deck.";
 }
 
+export function shortHandoffCopy(): string {
+  return "How that named workflow runs, what to check, and how to request a change on this site.";
+}
+
 export function intakeFormNameCopy(): string {
   return "One named workflow — what starts it, which tools, and what done looks like. Do not send secrets.";
 }

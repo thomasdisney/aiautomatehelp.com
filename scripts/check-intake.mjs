@@ -64,6 +64,7 @@ import {
   offerCopy,
   writtenScopeCopy,
   workingAutomationCopy,
+  shortHandoffCopy,
   intakeFormNameCopy,
   intakeRequiredCopy,
   triggerPlaceholderCopy,
@@ -632,6 +633,16 @@ assert.equal(workingAutomation.includes("slide deck"), true);
 assert.equal(workingAutomation.toLowerCase().includes("mailto"), false);
 assert.equal(workingAutomation.includes("thomasdisney"), false);
 assert.equal(workingAutomation.includes("gmail.com"), false);
+
+const shortHandoff = shortHandoffCopy();
+assert.equal(shortHandoff.includes("How it runs, what to check, and how to request a change on this site."), false);
+assert.equal(shortHandoff.includes("the job"), false);
+assert.equal(shortHandoff.includes("named workflow"), true);
+assert.equal(shortHandoff.includes("what to check"), true);
+assert.equal(shortHandoff.includes("request a change"), true);
+assert.equal(shortHandoff.toLowerCase().includes("mailto"), false);
+assert.equal(shortHandoff.includes("thomasdisney"), false);
+assert.equal(shortHandoff.includes("gmail.com"), false);
 
 const intakeFormName = intakeFormNameCopy();
 assert.equal(intakeFormName.includes("Name one workflow"), false);
@@ -101025,6 +101036,8 @@ assert.equal(automationSource.includes("automationHeroCopy"), true);
 assert.equal(automationSource.includes("offerCopy"), true);
 assert.equal(automationSource.includes("writtenScopeCopy"), true);
 assert.equal(automationSource.includes("workingAutomationCopy"), true);
+assert.equal(automationSource.includes("shortHandoffCopy"), true);
+assert.equal(automationSource.includes("How it runs, what to check, and how to request a change on this site."), false);
 assert.equal(automationSource.includes("Built in the tools you already use — not a slide deck."), false);
 assert.equal(automationSource.includes("What is in, what is out, which tools, and the done-when test."), false);
 assert.equal(automationSource.includes("weekly process"), false);
