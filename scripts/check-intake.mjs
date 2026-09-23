@@ -101168,6 +101168,82 @@ assert.equal(
 );
 assert.equal(toIntakePathPayload(record)?.customerReplyAt, "");
 
+const updateAtStamp = "2026-08-12T14:00:00.000Z";
+const dirtyNonTimestampUpdateAtBlob = {
+  ...record,
+  updateAt: "https://pay.example.test/receipts/hosted",
+  path: `INTAKE/${id}.JSON`,
+};
+assert.equal(
+  parseIntakeRecordAtPath(JSON.stringify(dirtyNonTimestampUpdateAtBlob), `intake/${id}.json`),
+  null,
+);
+assert.equal(parseIntakeRecord(JSON.stringify(dirtyNonTimestampUpdateAtBlob))?.id, id);
+assert.equal(
+  parseIntakeRecord(JSON.stringify(dirtyNonTimestampUpdateAtBlob))?.updateAt,
+  "https://pay.example.test/receipts/hosted",
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      updateAt: "not-a-timestamp",
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  ),
+  null,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      updateAt: updateAtStamp,
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.id,
+  id,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      updateAt: updateAtStamp,
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.updateAt,
+  updateAtStamp,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      updateAt: "",
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.updateAt,
+  "",
+);
+
+const dirtyNonTimestampUpdateAtWrite = toIntakePathPayload({
+  ...record,
+  updateAt: "https://pay.example.test/receipts/hosted",
+});
+const dirtyNonTimestampUpdateAtJson = JSON.stringify(dirtyNonTimestampUpdateAtWrite);
+assert.equal(dirtyNonTimestampUpdateAtWrite, null);
+assert.equal(dirtyNonTimestampUpdateAtJson.includes("receipts/hosted"), false);
+assert.equal(
+  toIntakePathPayload({
+    ...record,
+    updateAt: updateAtStamp,
+  })?.updateAt,
+  updateAtStamp,
+);
+assert.equal(toIntakePathPayload(record)?.updateAt, "");
+
 const publicAppFiles = [
   "../app/page.tsx",
   "../app/agent/page.tsx",
