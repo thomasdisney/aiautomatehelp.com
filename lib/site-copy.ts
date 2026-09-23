@@ -88,6 +88,10 @@ export function writtenScopeCopy(): string {
   return "That named workflow: what is in, what is out, which tools, and the done-when test.";
 }
 
+export function workingAutomationCopy(): string {
+  return "That named workflow, built in the tools you already use — not a slide deck.";
+}
+
 export function intakeFormNameCopy(): string {
   return "One named workflow — what starts it, which tools, and what done looks like. Do not send secrets.";
 }
