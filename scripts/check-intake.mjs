@@ -102456,6 +102456,71 @@ assert.equal(
 );
 assert.deepEqual(toIntakePathPayload(record)?.thread, []);
 
+const nameStamp = "Pat Operator";
+const dirtyReceiptUrlNameBlob = {
+  ...record,
+  name: "https://pay.example.test/receipts/hosted",
+  path: `INTAKE/${id}.JSON`,
+};
+assert.equal(
+  parseIntakeRecordAtPath(JSON.stringify(dirtyReceiptUrlNameBlob), `intake/${id}.json`),
+  null,
+);
+assert.equal(parseIntakeRecord(JSON.stringify(dirtyReceiptUrlNameBlob))?.id, id);
+assert.equal(
+  parseIntakeRecord(JSON.stringify(dirtyReceiptUrlNameBlob))?.name,
+  "https://pay.example.test/receipts/hosted",
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      name: nameStamp,
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.id,
+  id,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      name: nameStamp,
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.name,
+  nameStamp,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      name: record.name,
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.name,
+  record.name,
+);
+
+const dirtyReceiptUrlNameWrite = toIntakePathPayload({
+  ...record,
+  name: "https://pay.example.test/receipts/hosted",
+});
+const dirtyReceiptUrlNameJson = JSON.stringify(dirtyReceiptUrlNameWrite);
+assert.equal(dirtyReceiptUrlNameWrite, null);
+assert.equal(dirtyReceiptUrlNameJson.includes("receipts/hosted"), false);
+assert.equal(
+  toIntakePathPayload({
+    ...record,
+    name: nameStamp,
+  })?.name,
+  nameStamp,
+);
+assert.equal(toIntakePathPayload(record)?.name, record.name);
+
 const publicAppFiles = [
   "../app/page.tsx",
   "../app/agent/page.tsx",
