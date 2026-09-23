@@ -15,7 +15,7 @@ import {
   toPublicIntakeCreate,
 } from "@/lib/brief-receipt";
 import { FIELD_LIMITS } from "@/lib/intake";
-import { noOutboundEmailCopy } from "@/lib/site-copy";
+import { noOutboundEmailCopy, triggerPlaceholderCopy } from "@/lib/site-copy";
 
 type Status =
   | { kind: "idle" }
@@ -252,7 +252,7 @@ export function IntakeForm({ connected }: { connected: boolean }) {
             required
             rows={3}
             maxLength={FIELD_LIMITS.trigger}
-            placeholder="A form submit, a new row, a daily time — the event that should start the job."
+            placeholder={triggerPlaceholderCopy()}
             className="mt-1.5 w-full resize-y rounded-lg border border-ink/15 px-3 py-2.5 outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
           />
         </div>

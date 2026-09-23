@@ -58,6 +58,7 @@ import {
   costsCopy,
   briefSecretsFaqCopy,
   exampleWorkflowsHeadingCopy,
+  triggerPlaceholderCopy,
   priceFaqCopy,
   privacySharingCopy,
   privacyCollectCopy,
@@ -532,6 +533,15 @@ assert.equal(exampleWorkflowsHeading.includes("Example workflows"), true);
 assert.equal(exampleWorkflowsHeading.toLowerCase().includes("mailto"), false);
 assert.equal(exampleWorkflowsHeading.includes("thomasdisney"), false);
 assert.equal(exampleWorkflowsHeading.includes("gmail.com"), false);
+
+const triggerPlaceholder = triggerPlaceholderCopy();
+assert.equal(triggerPlaceholder.includes("start the job"), false);
+assert.equal(triggerPlaceholder.includes("the job"), false);
+assert.equal(triggerPlaceholder.includes("named workflow"), true);
+assert.equal(triggerPlaceholder.includes("A form submit"), true);
+assert.equal(triggerPlaceholder.toLowerCase().includes("mailto"), false);
+assert.equal(triggerPlaceholder.includes("thomasdisney"), false);
+assert.equal(triggerPlaceholder.includes("gmail.com"), false);
 
 const priceFaqConnected = priceFaqCopy(true);
 const priceFaqDisconnected = priceFaqCopy(false);
@@ -100870,6 +100880,8 @@ assert.equal(intakeFormSource.includes('name="trigger"'), true);
 assert.equal(intakeFormSource.includes('name="tools"'), true);
 assert.equal(intakeFormSource.includes('name="outcome"'), true);
 assert.equal(intakeFormSource.includes('name="message"'), false);
+assert.equal(intakeFormSource.includes("triggerPlaceholderCopy"), true);
+assert.equal(intakeFormSource.includes("start the job"), false);
 const statusPageSource = readFileSync(
   new URL("../app/status/page.tsx", import.meta.url),
   "utf8",

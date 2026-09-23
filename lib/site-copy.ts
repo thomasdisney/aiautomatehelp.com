@@ -68,6 +68,10 @@ export function exampleWorkflowsHeadingCopy(): string {
   return "Example workflows";
 }
 
+export function triggerPlaceholderCopy(): string {
+  return "A form submit, a new row, a daily time — the event that should start the named workflow.";
+}
+
 export function priceFaqCopy(paymentConnected = false): string {
   return paymentConnected
     ? "A fixed quote after the brief. You pay after you accept, before I build."
