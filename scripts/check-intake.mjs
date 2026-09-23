@@ -3889,6 +3889,18 @@ const acceptBlankQuoteText = parseCustomerAction({
 });
 assert.deepEqual(acceptBlankQuoteText, { ok: false, error: "invalid" });
 
+const urlAcceptQuoteText = parseCustomerAction({
+  id,
+  email: "pat@example.com",
+  decision: "accept",
+  note: "",
+  doneWhen: doneWhenText,
+  amountCents: 80000,
+  dueAt: dueSoon,
+  quoteText: "https://pay.example.test/receipts/hosted",
+});
+assert.deepEqual(urlAcceptQuoteText, { ok: false, error: "invalid" });
+
 const acceptWithQuoteText = parseCustomerAction({
   id: `  ${id.toUpperCase()}  `,
   email: "  Pat@Example.com  ",

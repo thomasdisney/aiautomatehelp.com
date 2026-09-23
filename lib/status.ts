@@ -256,6 +256,7 @@ export function parseCustomerAction(body: unknown): CustomerActionParse {
     const dueAt = parseDueAt(raw.dueAt);
     const quoteText = sanitizeText(raw.quoteText, FIELD_LIMITS.quoteText);
     if (amountCents === null || !dueAt || !quoteText) return { ok: false, error: "invalid" };
+    if (parseIntakeQuoteText(quoteText) === null) return { ok: false, error: "invalid" };
     return {
       ok: true,
       dropped: false,
