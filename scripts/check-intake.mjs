@@ -12873,6 +12873,8 @@ assert.equal(emailIndexDigest("pat@https\u2044pay.example.test"), null);
 assert.equal(emailIndexPath("pat@https\u2044pay.example.test"), null);
 assert.equal(emailIndexDigest("pat@https\u2215pay.example.test"), null);
 assert.equal(emailIndexPath("pat@https\u2215pay.example.test"), null);
+assert.equal(emailIndexDigest("pat@https%3Apay.example.test"), null);
+assert.equal(emailIndexPath("pat@https%3Apay.example.test"), null);
 assert.equal(emailIndexPath(xrefPatEmail), `ops/xref/${xrefDigest}.json`);
 
 assert.equal(emailIndexDigestFromPath(xrefExpectedPath), xrefDigest);
@@ -103145,8 +103147,12 @@ assert.equal(homeSource.includes('canonical: "/"'), true);
 assert.equal(homeSource.includes('href="/automation#start"'), true);
 assert.equal(
   homeSource.includes(
-    "Checkout is not open on this site yet. I may build and hand off after you accept.",
+    "Checkout is not open yet;",
   ),
+  true,
+);
+assert.equal(
+  homeSource.includes("handoff may arrive before payment."),
   true,
 );
 assert.equal(automationSource.includes('canonical: "/automation"'), true);

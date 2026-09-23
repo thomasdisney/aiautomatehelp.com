@@ -368,7 +368,7 @@ export function parseIntakeOutcome(value: unknown): string | null {
   return raw;
 }
 
-const INTAKE_EMAIL_URL_RE = /[:\/\\\uFF1A\uFE55\uFE13\uA789\u02F8\u02D0\u02D1\u2236\u2237\u2982\u0589\uFF0F\uFF3C\uFE68\u2044]/;
+const INTAKE_EMAIL_URL_RE = /[:\/\\\uFF1A\uFE55\uFE13\uA789\u02F8\u02D0\u02D1\u2236\u2237\u2982\u0589\uFF0F\uFF3C\uFE68\u2044]|%3[Aa]/;
 const INTAKE_EMAIL_NON_ASCII_RE = /[^\u0000-\u007F]/;
 
 export function parseIntakeEmail(value: unknown): string | null {
