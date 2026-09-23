@@ -46,6 +46,10 @@ export function staffedAgencyFaqCopy(): string {
   return "No. One person, one named workflow — what starts it, which tools, and what done looks like — built and supported here.";
 }
 
+export function durationFaqCopy(): string {
+  return "A delivery window comes with the quote. Simple named workflows are usually days.";
+}
+
 export function priceFaqCopy(paymentConnected = false): string {
   return paymentConnected
     ? "A fixed quote after the brief. You pay after you accept, before I build."

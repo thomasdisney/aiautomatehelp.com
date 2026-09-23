@@ -53,6 +53,7 @@ import {
   termsMetaCopy,
   termsIntroCopy,
   staffedAgencyFaqCopy,
+  durationFaqCopy,
   priceFaqCopy,
   privacySharingCopy,
   privacyCollectCopy,
@@ -460,6 +461,17 @@ assert.equal(staffedAgencyFaq.includes("named workflow"), true);
 assert.equal(staffedAgencyFaq.toLowerCase().includes("mailto"), false);
 assert.equal(staffedAgencyFaq.includes("thomasdisney"), false);
 assert.equal(staffedAgencyFaq.includes("gmail.com"), false);
+
+const durationFaq = durationFaqCopy();
+assert.equal(durationFaq.includes("a job"), false);
+assert.equal(durationFaq.includes("Simple jobs"), false);
+assert.equal(durationFaq.includes("job description"), false);
+assert.equal(durationFaq.includes("job text"), false);
+assert.equal(durationFaq.includes("named workflow"), true);
+assert.equal(durationFaq.includes("delivery window"), true);
+assert.equal(durationFaq.toLowerCase().includes("mailto"), false);
+assert.equal(durationFaq.includes("thomasdisney"), false);
+assert.equal(durationFaq.includes("gmail.com"), false);
 
 const priceFaqConnected = priceFaqCopy(true);
 const priceFaqDisconnected = priceFaqCopy(false);
@@ -100754,7 +100766,10 @@ const automationSource = readFileSync(
 );
 assert.equal(automationSource.includes('id="start"'), true);
 assert.equal(automationSource.includes("staffedAgencyFaqCopy"), true);
+assert.equal(automationSource.includes("durationFaqCopy"), true);
 assert.equal(automationSource.includes("one scoped job"), false);
+assert.equal(automationSource.includes("How long does a job take?"), false);
+assert.equal(automationSource.includes("Simple jobs"), false);
 const privacySource = readFileSync(
   new URL("../app/privacy/page.tsx", import.meta.url),
   "utf8",

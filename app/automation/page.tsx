@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { IntakeForm } from "@/app/components/intake-form";
 import { intakeStoreConfigured } from "@/lib/intake-store";
 import { paymentConfigured } from "@/lib/payment";
-import { jsonLdDescription, noOutboundEmailCopy, priceFaqCopy, staffedAgencyFaqCopy } from "@/lib/site-copy";
+import { durationFaqCopy, jsonLdDescription, noOutboundEmailCopy, priceFaqCopy, staffedAgencyFaqCopy } from "@/lib/site-copy";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/automation" },
@@ -56,8 +56,8 @@ const FAQS = [
     a: priceFaqCopy(false),
   },
   {
-    q: "How long does a job take?",
-    a: "A delivery window comes with the quote. Simple jobs are usually days.",
+    q: "How long does a named workflow take?",
+    a: durationFaqCopy(),
   },
   {
     q: "What about support after handoff?",
