@@ -225,6 +225,29 @@ if (jailbreak.ok && !jailbreak.dropped) {
   assert.equal(jailbreak.data.message.includes("smuggle this unstructured blob"), false);
 }
 
+const urlEmail = parseIntake({
+  name: "Pat",
+  email: "https://pay.example.test/receipts/hosted@x.y",
+  company: "Co",
+  trigger: "A form is submitted",
+  tools: "Sheets",
+  outcome: "A test row appears",
+});
+assert.deepEqual(urlEmail, { ok: false, error: "email" });
+
+const normalEmail = parseIntake({
+  name: "Pat",
+  email: "pat@example.com",
+  company: "Co",
+  trigger: "A form is submitted",
+  tools: "Sheets",
+  outcome: "A test row appears",
+});
+assert.equal(normalEmail.ok && "dropped" in normalEmail && normalEmail.dropped === false, true);
+if (normalEmail.ok && !normalEmail.dropped) {
+  assert.equal(normalEmail.data.email, "pat@example.com");
+}
+
 const cleaned = sanitizeText("hi\u0000there", 80);
 assert.equal(cleaned, "hithere");
 

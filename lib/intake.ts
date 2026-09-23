@@ -384,7 +384,9 @@ export function parseIntake(body: unknown): IntakeParse {
   if (!name || !email || !trigger || !tools || !outcome) {
     return { ok: false, error: "required" };
   }
-  if (!isValidEmail(email)) return { ok: false, error: "email" };
+  if (!isValidEmail(email) || parseIntakeEmail(email) === null) {
+    return { ok: false, error: "email" };
+  }
   const message = composeIntakeMessage({ trigger, tools, outcome });
   if (!message) return { ok: false, error: "required" };
   return { ok: true, dropped: false, data: { name, email, company, message } };
