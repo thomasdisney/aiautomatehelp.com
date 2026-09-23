@@ -80,6 +80,10 @@ export function intakeFormNameCopy(): string {
   return "One named workflow — what starts it, which tools, and what done looks like. Do not send secrets.";
 }
 
+export function intakeRequiredCopy(): string {
+  return "Name, email, and one named workflow (what starts it, which tools, and what done looks like) are required.";
+}
+
 export function triggerPlaceholderCopy(): string {
   return "A form submit, a new row, a daily time — the event that should start the named workflow.";
 }

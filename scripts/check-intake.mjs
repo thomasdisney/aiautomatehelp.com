@@ -61,6 +61,7 @@ import {
   sendBriefStepCopy,
   startHereNameCopy,
   intakeFormNameCopy,
+  intakeRequiredCopy,
   triggerPlaceholderCopy,
   confirmDoneCopy,
   acceptDoneWhenCopy,
@@ -593,6 +594,18 @@ assert.equal(intakeFormName.includes("Do not send secrets"), true);
 assert.equal(intakeFormName.toLowerCase().includes("mailto"), false);
 assert.equal(intakeFormName.includes("thomasdisney"), false);
 assert.equal(intakeFormName.includes("gmail.com"), false);
+
+const intakeRequired = intakeRequiredCopy();
+assert.equal(intakeRequired.includes("one workflow"), false);
+assert.equal(intakeRequired.includes("the job"), false);
+assert.equal(intakeRequired.includes("named workflow"), true);
+assert.equal(intakeRequired.includes("Name, email"), true);
+assert.equal(intakeRequired.includes("what starts it"), true);
+assert.equal(intakeRequired.includes("which tools"), true);
+assert.equal(intakeRequired.includes("what done looks like"), true);
+assert.equal(intakeRequired.toLowerCase().includes("mailto"), false);
+assert.equal(intakeRequired.includes("thomasdisney"), false);
+assert.equal(intakeRequired.includes("gmail.com"), false);
 
 const triggerPlaceholder = triggerPlaceholderCopy();
 assert.equal(triggerPlaceholder.includes("start the job"), false);
@@ -101001,7 +101014,9 @@ assert.equal(intakeFormSource.includes('name="outcome"'), true);
 assert.equal(intakeFormSource.includes('name="message"'), false);
 assert.equal(intakeFormSource.includes("triggerPlaceholderCopy"), true);
 assert.equal(intakeFormSource.includes("intakeFormNameCopy"), true);
+assert.equal(intakeFormSource.includes("intakeRequiredCopy"), true);
 assert.equal(intakeFormSource.includes("Name one workflow"), false);
+assert.equal(intakeFormSource.includes("one workflow"), false);
 assert.equal(intakeFormSource.includes("start the job"), false);
 const statusPageSource = readFileSync(
   new URL("../app/status/page.tsx", import.meta.url),

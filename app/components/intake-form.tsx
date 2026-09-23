@@ -15,7 +15,7 @@ import {
   toPublicIntakeCreate,
 } from "@/lib/brief-receipt";
 import { FIELD_LIMITS } from "@/lib/intake";
-import { intakeFormNameCopy, noOutboundEmailCopy, triggerPlaceholderCopy } from "@/lib/site-copy";
+import { intakeFormNameCopy, intakeRequiredCopy, noOutboundEmailCopy, triggerPlaceholderCopy } from "@/lib/site-copy";
 
 type Status =
   | { kind: "idle" }
@@ -25,7 +25,7 @@ type Status =
 
 const ERRORS: Record<string, string> = {
   rate_limited: "Too many tries from this network. Wait and try once more later.",
-  required: "Name, email, and one workflow (what starts it, which tools, and what done looks like) are required.",
+  required: intakeRequiredCopy(),
   email: "That email does not look usable.",
   invalid: "The form could not be read. Try again.",
   intake_not_connected: "The inbox is not accepting briefs right now.",
