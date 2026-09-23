@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { IntakeForm } from "@/app/components/intake-form";
 import { intakeStoreConfigured } from "@/lib/intake-store";
 import { paymentConfigured } from "@/lib/payment";
-import { costsCopy, durationFaqCopy, jsonLdDescription, noOutboundEmailCopy, priceFaqCopy, staffedAgencyFaqCopy, supportAfterHandoffFaqCopy } from "@/lib/site-copy";
+import { briefSecretsFaqCopy, costsCopy, durationFaqCopy, jsonLdDescription, noOutboundEmailCopy, priceFaqCopy, staffedAgencyFaqCopy, supportAfterHandoffFaqCopy } from "@/lib/site-copy";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/automation" },
@@ -65,7 +65,7 @@ const FAQS = [
   },
   {
     q: "What should I leave out of a brief?",
-    a: "Passwords, API keys, private keys, and customer lists. Share only what the job needs.",
+    a: briefSecretsFaqCopy(),
   },
 ] as const;
 

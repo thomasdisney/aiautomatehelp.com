@@ -56,6 +56,7 @@ import {
   durationFaqCopy,
   supportAfterHandoffFaqCopy,
   costsCopy,
+  briefSecretsFaqCopy,
   priceFaqCopy,
   privacySharingCopy,
   privacyCollectCopy,
@@ -508,6 +509,19 @@ assert.equal(costsConnected.toLowerCase().includes("mailto"), false);
 assert.equal(costsDisconnected.toLowerCase().includes("mailto"), false);
 assert.equal(costsConnected.includes("thomasdisney"), false);
 assert.equal(costsDisconnected.includes("gmail.com"), false);
+
+const briefSecretsFaq = briefSecretsFaqCopy();
+assert.equal(briefSecretsFaq.includes("the job"), false);
+assert.equal(briefSecretsFaq.includes("what the job needs"), false);
+assert.equal(briefSecretsFaq.includes("a job"), false);
+assert.equal(briefSecretsFaq.includes("job description"), false);
+assert.equal(briefSecretsFaq.includes("job text"), false);
+assert.equal(briefSecretsFaq.includes("named workflow"), true);
+assert.equal(briefSecretsFaq.includes("Passwords"), true);
+assert.equal(briefSecretsFaq.includes("API keys"), true);
+assert.equal(briefSecretsFaq.toLowerCase().includes("mailto"), false);
+assert.equal(briefSecretsFaq.includes("thomasdisney"), false);
+assert.equal(briefSecretsFaq.includes("gmail.com"), false);
 
 const priceFaqConnected = priceFaqCopy(true);
 const priceFaqDisconnected = priceFaqCopy(false);
@@ -100805,10 +100819,12 @@ assert.equal(automationSource.includes("staffedAgencyFaqCopy"), true);
 assert.equal(automationSource.includes("durationFaqCopy"), true);
 assert.equal(automationSource.includes("supportAfterHandoffFaqCopy"), true);
 assert.equal(automationSource.includes("costsCopy"), true);
+assert.equal(automationSource.includes("briefSecretsFaqCopy"), true);
 assert.equal(automationSource.includes("one scoped job"), false);
 assert.equal(automationSource.includes("How long does a job take?"), false);
 assert.equal(automationSource.includes("Simple jobs"), false);
 assert.equal(automationSource.includes("part of the job"), false);
+assert.equal(automationSource.includes("what the job needs"), false);
 const privacySource = readFileSync(
   new URL("../app/privacy/page.tsx", import.meta.url),
   "utf8",

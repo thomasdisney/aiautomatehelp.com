@@ -60,6 +60,10 @@ export function costsCopy(paymentConnected = false): string {
     : "A fixed price, quoted after I understand the named workflow. Checkout is not open on this site yet. I may build and hand off after you accept. When checkout opens, pay the stored amount on the status page.";
 }
 
+export function briefSecretsFaqCopy(): string {
+  return "Passwords, API keys, private keys, and customer lists. Share only what the named workflow needs.";
+}
+
 export function priceFaqCopy(paymentConnected = false): string {
   return paymentConnected
     ? "A fixed quote after the brief. You pay after you accept, before I build."
