@@ -101011,6 +101011,82 @@ assert.deepEqual(toIntakePathPayload(record)?.receivedAt, record.receivedAt);
 assert.equal(toIntakePathPayload(record)?.path, `intake/${id}.json`);
 assert.equal(JSON.stringify(toIntakePathPayload(record)).includes("receipts/hosted"), false);
 
+const quotedAtStamp = "2026-08-12T12:00:00.000Z";
+const dirtyNonTimestampQuotedAtBlob = {
+  ...record,
+  quotedAt: "https://pay.example.test/receipts/hosted",
+  path: `INTAKE/${id}.JSON`,
+};
+assert.equal(
+  parseIntakeRecordAtPath(JSON.stringify(dirtyNonTimestampQuotedAtBlob), `intake/${id}.json`),
+  null,
+);
+assert.equal(parseIntakeRecord(JSON.stringify(dirtyNonTimestampQuotedAtBlob))?.id, id);
+assert.equal(
+  parseIntakeRecord(JSON.stringify(dirtyNonTimestampQuotedAtBlob))?.quotedAt,
+  "https://pay.example.test/receipts/hosted",
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      quotedAt: "not-a-timestamp",
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  ),
+  null,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      quotedAt: quotedAtStamp,
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.id,
+  id,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      quotedAt: quotedAtStamp,
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.quotedAt,
+  quotedAtStamp,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      quotedAt: "",
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.quotedAt,
+  "",
+);
+
+const dirtyNonTimestampQuotedAtWrite = toIntakePathPayload({
+  ...record,
+  quotedAt: "https://pay.example.test/receipts/hosted",
+});
+const dirtyNonTimestampQuotedAtJson = JSON.stringify(dirtyNonTimestampQuotedAtWrite);
+assert.equal(dirtyNonTimestampQuotedAtWrite, null);
+assert.equal(dirtyNonTimestampQuotedAtJson.includes("receipts/hosted"), false);
+assert.equal(
+  toIntakePathPayload({
+    ...record,
+    quotedAt: quotedAtStamp,
+  })?.quotedAt,
+  quotedAtStamp,
+);
+assert.equal(toIntakePathPayload(record)?.quotedAt, "");
+
 const publicAppFiles = [
   "../app/page.tsx",
   "../app/agent/page.tsx",
