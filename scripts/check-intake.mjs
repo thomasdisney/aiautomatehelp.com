@@ -101087,6 +101087,87 @@ assert.equal(
 );
 assert.equal(toIntakePathPayload(record)?.quotedAt, "");
 
+const customerReplyAtStamp = "2026-08-12T13:00:00.000Z";
+const dirtyNonTimestampCustomerReplyAtBlob = {
+  ...record,
+  customerReplyAt: "https://pay.example.test/receipts/hosted",
+  path: `INTAKE/${id}.JSON`,
+};
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify(dirtyNonTimestampCustomerReplyAtBlob),
+    `intake/${id}.json`,
+  ),
+  null,
+);
+assert.equal(parseIntakeRecord(JSON.stringify(dirtyNonTimestampCustomerReplyAtBlob))?.id, id);
+assert.equal(
+  parseIntakeRecord(JSON.stringify(dirtyNonTimestampCustomerReplyAtBlob))?.customerReplyAt,
+  "https://pay.example.test/receipts/hosted",
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      customerReplyAt: "not-a-timestamp",
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  ),
+  null,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      customerReplyAt: customerReplyAtStamp,
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.id,
+  id,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      customerReplyAt: customerReplyAtStamp,
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.customerReplyAt,
+  customerReplyAtStamp,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      customerReplyAt: "",
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.customerReplyAt,
+  "",
+);
+
+const dirtyNonTimestampCustomerReplyAtWrite = toIntakePathPayload({
+  ...record,
+  customerReplyAt: "https://pay.example.test/receipts/hosted",
+});
+const dirtyNonTimestampCustomerReplyAtJson = JSON.stringify(
+  dirtyNonTimestampCustomerReplyAtWrite,
+);
+assert.equal(dirtyNonTimestampCustomerReplyAtWrite, null);
+assert.equal(dirtyNonTimestampCustomerReplyAtJson.includes("receipts/hosted"), false);
+assert.equal(
+  toIntakePathPayload({
+    ...record,
+    customerReplyAt: customerReplyAtStamp,
+  })?.customerReplyAt,
+  customerReplyAtStamp,
+);
+assert.equal(toIntakePathPayload(record)?.customerReplyAt, "");
+
 const publicAppFiles = [
   "../app/page.tsx",
   "../app/agent/page.tsx",
