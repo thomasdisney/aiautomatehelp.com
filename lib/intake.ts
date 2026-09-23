@@ -245,6 +245,22 @@ export function blobIntakeUpdateTextHasDisallowedValue(updateText: unknown): boo
   return parseIntakeUpdateText(updateText) === null;
 }
 
+const INTAKE_OPERATOR_NOTE_URL_RE = /^https?:\/\//i;
+
+export function parseIntakeOperatorNote(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const raw = sanitizeText(value, FIELD_LIMITS.operatorNote);
+  if (!raw || INTAKE_OPERATOR_NOTE_URL_RE.test(raw)) return null;
+  return raw;
+}
+
+export function blobIntakeOperatorNoteHasDisallowedValue(operatorNote: unknown): boolean {
+  if (typeof operatorNote !== "string") return false;
+  const raw = sanitizeText(operatorNote, FIELD_LIMITS.operatorNote);
+  if (!raw) return false;
+  return parseIntakeOperatorNote(operatorNote) === null;
+}
+
 export function composeIntakeMessage(input: {
   trigger: string;
   tools: string;
@@ -423,6 +439,7 @@ export function toIntakePathPayload(
   if (blobIntakeQuoteTextHasDisallowedValue(payload.quoteText)) return null;
   if (blobIntakeCustomerReplyHasDisallowedValue(payload.customerReply)) return null;
   if (blobIntakeUpdateTextHasDisallowedValue(payload.updateText)) return null;
+  if (blobIntakeOperatorNoteHasDisallowedValue(payload.operatorNote)) return null;
   if (blobIntakeAcceptedAtHasDisallowedValue(parsed.acceptedAt)) return null;
   if (blobIntakeConfirmedAtHasDisallowedValue(parsed.confirmedAt)) return null;
   if (blobIntakeDeliveredAtHasDisallowedValue(parsed.deliveredAt)) return null;
@@ -695,6 +712,7 @@ export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeR
   if (blobIntakeQuoteTextHasDisallowedValue(row.quoteText)) return null;
   if (blobIntakeCustomerReplyHasDisallowedValue(row.customerReply)) return null;
   if (blobIntakeUpdateTextHasDisallowedValue(row.updateText)) return null;
+  if (blobIntakeOperatorNoteHasDisallowedValue(row.operatorNote)) return null;
   const path = typeof row.path === "string" ? row.path.trim().toLowerCase() : "";
   if (path !== expectedPath) return null;
   const parsed = parseIntakeRecord(raw);

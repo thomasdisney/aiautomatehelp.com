@@ -102231,6 +102231,71 @@ assert.equal(
 );
 assert.equal(toIntakePathPayload(record)?.updateText, "");
 
+const operatorNoteStamp = "Internal: wait for one named workflow before quoting.";
+const dirtyReceiptUrlOperatorNoteBlob = {
+  ...record,
+  operatorNote: "https://pay.example.test/receipts/hosted",
+  path: `INTAKE/${id}.JSON`,
+};
+assert.equal(
+  parseIntakeRecordAtPath(JSON.stringify(dirtyReceiptUrlOperatorNoteBlob), `intake/${id}.json`),
+  null,
+);
+assert.equal(parseIntakeRecord(JSON.stringify(dirtyReceiptUrlOperatorNoteBlob))?.id, id);
+assert.equal(
+  parseIntakeRecord(JSON.stringify(dirtyReceiptUrlOperatorNoteBlob))?.operatorNote,
+  "https://pay.example.test/receipts/hosted",
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      operatorNote: operatorNoteStamp,
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.id,
+  id,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      operatorNote: operatorNoteStamp,
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.operatorNote,
+  operatorNoteStamp,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      operatorNote: "",
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.operatorNote,
+  "",
+);
+
+const dirtyReceiptUrlOperatorNoteWrite = toIntakePathPayload({
+  ...record,
+  operatorNote: "https://pay.example.test/receipts/hosted",
+});
+const dirtyReceiptUrlOperatorNoteJson = JSON.stringify(dirtyReceiptUrlOperatorNoteWrite);
+assert.equal(dirtyReceiptUrlOperatorNoteWrite, null);
+assert.equal(dirtyReceiptUrlOperatorNoteJson.includes("receipts/hosted"), false);
+assert.equal(
+  toIntakePathPayload({
+    ...record,
+    operatorNote: operatorNoteStamp,
+  })?.operatorNote,
+  operatorNoteStamp,
+);
+assert.equal(toIntakePathPayload(record)?.operatorNote, "");
+
 const publicAppFiles = [
   "../app/page.tsx",
   "../app/agent/page.tsx",
