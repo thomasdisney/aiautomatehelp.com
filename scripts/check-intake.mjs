@@ -101396,6 +101396,82 @@ assert.equal(
 );
 assert.equal(toIntakePathPayload(record)?.acceptedAt, "");
 
+const confirmedAtStamp = "2026-08-12T17:00:00.000Z";
+const dirtyNonTimestampConfirmedAtBlob = {
+  ...record,
+  confirmedAt: "https://pay.example.test/receipts/hosted",
+  path: `INTAKE/${id}.JSON`,
+};
+assert.equal(
+  parseIntakeRecordAtPath(JSON.stringify(dirtyNonTimestampConfirmedAtBlob), `intake/${id}.json`),
+  null,
+);
+assert.equal(parseIntakeRecord(JSON.stringify(dirtyNonTimestampConfirmedAtBlob))?.id, id);
+assert.equal(
+  parseIntakeRecord(JSON.stringify(dirtyNonTimestampConfirmedAtBlob))?.confirmedAt,
+  "https://pay.example.test/receipts/hosted",
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      confirmedAt: "not-a-timestamp",
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  ),
+  null,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      confirmedAt: confirmedAtStamp,
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.id,
+  id,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      confirmedAt: confirmedAtStamp,
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.confirmedAt,
+  confirmedAtStamp,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      confirmedAt: "",
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.confirmedAt,
+  "",
+);
+
+const dirtyNonTimestampConfirmedAtWrite = toIntakePathPayload({
+  ...record,
+  confirmedAt: "https://pay.example.test/receipts/hosted",
+});
+const dirtyNonTimestampConfirmedAtJson = JSON.stringify(dirtyNonTimestampConfirmedAtWrite);
+assert.equal(dirtyNonTimestampConfirmedAtWrite, null);
+assert.equal(dirtyNonTimestampConfirmedAtJson.includes("receipts/hosted"), false);
+assert.equal(
+  toIntakePathPayload({
+    ...record,
+    confirmedAt: confirmedAtStamp,
+  })?.confirmedAt,
+  confirmedAtStamp,
+);
+assert.equal(toIntakePathPayload(record)?.confirmedAt, "");
+
 const publicAppFiles = [
   "../app/page.tsx",
   "../app/agent/page.tsx",
