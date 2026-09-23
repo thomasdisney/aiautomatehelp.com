@@ -177,6 +177,11 @@ export function blobIntakeDueAtHasDisallowedValue(dueAt: unknown): boolean {
   return parseDueAt(dueAt) === null;
 }
 
+export function blobThreadEntryAtHasDisallowedValue(at: unknown): boolean {
+  if (at === undefined || at === "") return false;
+  return parseIntakeAt(at) === null;
+}
+
 export function composeIntakeMessage(input: {
   trigger: string;
   tools: string;
@@ -357,6 +362,7 @@ export function toIntakePathPayload(
   if (blobIntakeWithdrawnAtHasDisallowedValue(parsed.withdrawnAt)) return null;
   if (blobIntakeDeclinedAtHasDisallowedValue(parsed.declinedAt)) return null;
   if (blobIntakeNotedAtHasDisallowedValue(parsed.notedAt)) return null;
+  if (blobThreadHasDisallowedKeys(parsed.thread)) return null;
   return { ...parsed, receivedAt, path };
 }
 
@@ -465,6 +471,7 @@ export function blobThreadHasDisallowedKeys(thread: unknown): boolean {
       blobRowHasUnexpectedCamelKey(row) ||
       blobRowHasKebabCaseKey(row) ||
       blobRowHasDottedKey(row) ||
+      blobThreadEntryAtHasDisallowedValue(row.at) ||
       !parseThreadEntry(item)
     ) {
       return true;

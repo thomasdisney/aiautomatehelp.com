@@ -101849,6 +101849,117 @@ assert.equal(
 );
 assert.equal(toIntakePathPayload(record)?.dueAt, "");
 
+const dirtyNonTimestampThreadAtBlob = {
+  ...record,
+  path: `INTAKE/${id}.JSON`,
+  thread: [
+    {
+      role: "customer",
+      text: "Need a quote for the inbox",
+      at: "https://pay.example.test/receipts/hosted",
+    },
+  ],
+};
+assert.equal(
+  parseIntakeRecordAtPath(JSON.stringify(dirtyNonTimestampThreadAtBlob), `intake/${id}.json`),
+  null,
+);
+assert.equal(parseIntakeRecord(JSON.stringify(dirtyNonTimestampThreadAtBlob))?.id, id);
+assert.equal(
+  parseIntakeRecord(JSON.stringify(dirtyNonTimestampThreadAtBlob))?.thread[0]?.at,
+  "https://pay.example.test/receipts/hosted",
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      path: `INTAKE/${id}.JSON`,
+      thread: [
+        {
+          role: "customer",
+          text: "Need a quote for the inbox",
+          at: "not-a-timestamp",
+        },
+      ],
+    }),
+    `intake/${id}.json`,
+  ),
+  null,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      path: `INTAKE/${id}.JSON`,
+      thread: [
+        {
+          role: "customer",
+          text: "Need a quote for the inbox",
+          at: record.receivedAt,
+        },
+      ],
+    }),
+    `intake/${id}.json`,
+  )?.id,
+  id,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      path: `INTAKE/${id}.JSON`,
+      thread: [
+        {
+          role: "customer",
+          text: "Need a quote for the inbox",
+          at: record.receivedAt,
+        },
+      ],
+    }),
+    `intake/${id}.json`,
+  )?.thread[0]?.at,
+  record.receivedAt,
+);
+assert.deepEqual(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      path: `INTAKE/${id}.JSON`,
+      thread: [],
+    }),
+    `intake/${id}.json`,
+  )?.thread,
+  [],
+);
+
+const dirtyNonTimestampThreadAtWrite = toIntakePathPayload({
+  ...record,
+  thread: [
+    {
+      role: "customer",
+      text: "Need a quote for the inbox",
+      at: "https://pay.example.test/receipts/hosted",
+    },
+  ],
+});
+const dirtyNonTimestampThreadAtJson = JSON.stringify(dirtyNonTimestampThreadAtWrite);
+assert.equal(dirtyNonTimestampThreadAtWrite, null);
+assert.equal(dirtyNonTimestampThreadAtJson.includes("receipts/hosted"), false);
+assert.equal(
+  toIntakePathPayload({
+    ...record,
+    thread: [
+      {
+        role: "customer",
+        text: "Need a quote for the inbox",
+        at: record.receivedAt,
+      },
+    ],
+  })?.thread[0]?.at,
+  record.receivedAt,
+);
+assert.deepEqual(toIntakePathPayload(record)?.thread, []);
+
 const publicAppFiles = [
   "../app/page.tsx",
   "../app/agent/page.tsx",
