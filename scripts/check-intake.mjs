@@ -1637,6 +1637,12 @@ assert.deepEqual(updateOnly, {
 const updateNeedsText = parseInboxPatch({ id });
 assert.deepEqual(updateNeedsText, { ok: false, error: "invalid" });
 
+const urlUpdate = parseInboxPatch({
+  id,
+  updateText: "https://pay.example.test/receipts/hosted",
+});
+assert.deepEqual(urlUpdate, { ok: false, error: "invalid" });
+
 const deliveredNeedsText = parseInboxPatch({ id, status: "delivered" });
 assert.deepEqual(deliveredNeedsText, { ok: false, error: "invalid" });
 

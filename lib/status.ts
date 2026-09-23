@@ -9,6 +9,7 @@ import {
   parseDueAt,
   parseIntakeCustomerReply,
   parseIntakeStatus,
+  parseIntakeUpdateText,
   sanitizeText,
   type IntakeRecord,
   type IntakeStatus,
@@ -404,6 +405,9 @@ export function parseInboxPatch(body: unknown): InboxPatch {
   const updateText = sanitizeText(raw.updateText, FIELD_LIMITS.updateText);
   const operatorNote = sanitizeText(raw.operatorNote, FIELD_LIMITS.operatorNote);
   if (!status && !updateText && !operatorNote) return { ok: false, error: "invalid" };
+  if (updateText && parseIntakeUpdateText(updateText) === null) {
+    return { ok: false, error: "invalid" };
+  }
   if (status === "quoted" && !quoteText) return { ok: false, error: "invalid" };
   if (status === "declined" && !updateText) return { ok: false, error: "invalid" };
   if (status === "delivered" && !updateText) return { ok: false, error: "invalid" };
