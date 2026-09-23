@@ -9,6 +9,7 @@ import {
   parseDueAt,
   parseIntakeCustomerReply,
   parseIntakeOperatorNote,
+  parseIntakeQuoteText,
   parseIntakeStatus,
   parseIntakeUpdateText,
   sanitizeText,
@@ -410,6 +411,9 @@ export function parseInboxPatch(body: unknown): InboxPatch {
     return { ok: false, error: "invalid" };
   }
   if (operatorNote && parseIntakeOperatorNote(operatorNote) === null) {
+    return { ok: false, error: "invalid" };
+  }
+  if (quoteText && parseIntakeQuoteText(quoteText) === null) {
     return { ok: false, error: "invalid" };
   }
   if (status === "quoted" && !quoteText) return { ok: false, error: "invalid" };

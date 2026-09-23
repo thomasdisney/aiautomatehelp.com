@@ -1016,6 +1016,16 @@ assert.deepEqual(quotedClientPriceIgnored, { ok: false, error: "invalid" });
 const quotedNeedsText = parseInboxPatch({ id, status: "quoted", quoteText: "  " });
 assert.deepEqual(quotedNeedsText, { ok: false, error: "invalid" });
 
+const urlQuoteText = parseInboxPatch({
+  id,
+  status: "quoted",
+  quoteText: "https://pay.example.test/receipts/hosted",
+  amountCents: 80000,
+  dueAt: dueSoon,
+  doneWhen: doneWhenText,
+});
+assert.deepEqual(urlQuoteText, { ok: false, error: "invalid" });
+
 const badStatus = parseInboxPatch({ id, status: "paid", quoteText: "nope" });
 assert.deepEqual(badStatus, { ok: false, error: "invalid" });
 
