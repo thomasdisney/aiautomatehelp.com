@@ -102586,6 +102586,71 @@ assert.equal(
 );
 assert.equal(toIntakePathPayload(record)?.company, record.company);
 
+const messageStamp = "Trigger: a new row\n\nTools: Sheets\n\nDone when: a test row appears";
+const dirtyReceiptUrlMessageBlob = {
+  ...record,
+  message: "https://pay.example.test/receipts/hosted",
+  path: `INTAKE/${id}.JSON`,
+};
+assert.equal(
+  parseIntakeRecordAtPath(JSON.stringify(dirtyReceiptUrlMessageBlob), `intake/${id}.json`),
+  null,
+);
+assert.equal(parseIntakeRecord(JSON.stringify(dirtyReceiptUrlMessageBlob))?.id, id);
+assert.equal(
+  parseIntakeRecord(JSON.stringify(dirtyReceiptUrlMessageBlob))?.message,
+  "https://pay.example.test/receipts/hosted",
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      message: messageStamp,
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.id,
+  id,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      message: messageStamp,
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.message,
+  messageStamp,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      message: record.message,
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.message,
+  record.message,
+);
+
+const dirtyReceiptUrlMessageWrite = toIntakePathPayload({
+  ...record,
+  message: "https://pay.example.test/receipts/hosted",
+});
+const dirtyReceiptUrlMessageJson = JSON.stringify(dirtyReceiptUrlMessageWrite);
+assert.equal(dirtyReceiptUrlMessageWrite, null);
+assert.equal(dirtyReceiptUrlMessageJson.includes("receipts/hosted"), false);
+assert.equal(
+  toIntakePathPayload({
+    ...record,
+    message: messageStamp,
+  })?.message,
+  messageStamp,
+);
+assert.equal(toIntakePathPayload(record)?.message, record.message);
+
 const publicAppFiles = [
   "../app/page.tsx",
   "../app/agent/page.tsx",

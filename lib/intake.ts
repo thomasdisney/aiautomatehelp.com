@@ -325,6 +325,22 @@ export function blobIntakeCompanyHasDisallowedValue(company: unknown): boolean {
   return parseIntakeCompany(company) === null;
 }
 
+const INTAKE_MESSAGE_URL_RE = /^https?:\/\//i;
+
+export function parseIntakeMessage(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const raw = sanitizeText(value, FIELD_LIMITS.message);
+  if (!raw || INTAKE_MESSAGE_URL_RE.test(raw)) return null;
+  return raw;
+}
+
+export function blobIntakeMessageHasDisallowedValue(message: unknown): boolean {
+  if (typeof message !== "string") return false;
+  const raw = sanitizeText(message, FIELD_LIMITS.message);
+  if (!raw) return false;
+  return parseIntakeMessage(message) === null;
+}
+
 export function composeIntakeMessage(input: {
   trigger: string;
   tools: string;
@@ -507,6 +523,7 @@ export function toIntakePathPayload(
   if (blobIntakeDoneWhenHasDisallowedValue(payload.doneWhen)) return null;
   if (blobIntakeNameHasDisallowedValue(payload.name)) return null;
   if (blobIntakeCompanyHasDisallowedValue(payload.company)) return null;
+  if (blobIntakeMessageHasDisallowedValue(payload.message)) return null;
   if (blobIntakeAcceptedAtHasDisallowedValue(parsed.acceptedAt)) return null;
   if (blobIntakeConfirmedAtHasDisallowedValue(parsed.confirmedAt)) return null;
   if (blobIntakeDeliveredAtHasDisallowedValue(parsed.deliveredAt)) return null;
@@ -784,6 +801,7 @@ export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeR
   if (blobIntakeDoneWhenHasDisallowedValue(row.doneWhen)) return null;
   if (blobIntakeNameHasDisallowedValue(row.name)) return null;
   if (blobIntakeCompanyHasDisallowedValue(row.company)) return null;
+  if (blobIntakeMessageHasDisallowedValue(row.message)) return null;
   const path = typeof row.path === "string" ? row.path.trim().toLowerCase() : "";
   if (path !== expectedPath) return null;
   const parsed = parseIntakeRecord(raw);
