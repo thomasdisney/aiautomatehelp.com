@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { paymentConfigured } from "@/lib/payment";
-import { termsMaterialsCopy, termsOfferCopy, termsScopeCopy } from "@/lib/site-copy";
+import { termsMaterialsCopy, termsMetaCopy, termsOfferCopy, termsScopeCopy } from "@/lib/site-copy";
 
 export const metadata: Metadata = {
   title: "Terms",
-  description: "Terms for using AutomateAI and a scoped job.",
+  description: termsMetaCopy(),
   alternates: { canonical: "/terms" },
 };
 
