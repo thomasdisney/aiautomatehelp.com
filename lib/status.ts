@@ -8,6 +8,7 @@ import {
   isValidEmail,
   parseDueAt,
   parseIntakeCustomerReply,
+  parseIntakeDoneWhen,
   parseIntakeOperatorNote,
   parseIntakeQuoteText,
   parseIntakeStatus,
@@ -427,6 +428,9 @@ export function parseInboxPatch(body: unknown): InboxPatch {
   }
   const doneWhen = status === "quoted" ? sanitizeText(raw.doneWhen, FIELD_LIMITS.doneWhen) : "";
   if (status === "quoted" && !doneWhen) return { ok: false, error: "invalid" };
+  if (doneWhen && parseIntakeDoneWhen(doneWhen) === null) {
+    return { ok: false, error: "invalid" };
+  }
   return {
     ok: true,
     id,
