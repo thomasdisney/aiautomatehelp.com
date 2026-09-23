@@ -137,6 +137,11 @@ export function blobIntakeUpdateAtHasDisallowedValue(updateAt: unknown): boolean
   return parseIntakeAt(updateAt) === null;
 }
 
+export function blobIntakePaidAtHasDisallowedValue(paidAt: unknown): boolean {
+  if (paidAt === undefined || paidAt === "") return false;
+  return parseIntakeAt(paidAt) === null;
+}
+
 export function composeIntakeMessage(input: {
   trigger: string;
   tools: string;
@@ -309,6 +314,7 @@ export function toIntakePathPayload(
   if (blobIntakeQuotedAtHasDisallowedValue(parsed.quotedAt)) return null;
   if (blobIntakeCustomerReplyAtHasDisallowedValue(parsed.customerReplyAt)) return null;
   if (blobIntakeUpdateAtHasDisallowedValue(parsed.updateAt)) return null;
+  if (blobIntakePaidAtHasDisallowedValue(parsed.paidAt)) return null;
   return { ...parsed, receivedAt, path };
 }
 
@@ -561,6 +567,7 @@ export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeR
   if (blobIntakeQuotedAtHasDisallowedValue(row.quotedAt)) return null;
   if (blobIntakeCustomerReplyAtHasDisallowedValue(row.customerReplyAt)) return null;
   if (blobIntakeUpdateAtHasDisallowedValue(row.updateAt)) return null;
+  if (blobIntakePaidAtHasDisallowedValue(row.paidAt)) return null;
   const path = typeof row.path === "string" ? row.path.trim().toLowerCase() : "";
   if (path !== expectedPath) return null;
   const parsed = parseIntakeRecord(raw);

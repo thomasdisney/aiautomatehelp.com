@@ -101244,6 +101244,82 @@ assert.equal(
 );
 assert.equal(toIntakePathPayload(record)?.updateAt, "");
 
+const paidAtStamp = "2026-08-12T15:00:00.000Z";
+const dirtyNonTimestampPaidAtBlob = {
+  ...record,
+  paidAt: "https://pay.example.test/receipts/hosted",
+  path: `INTAKE/${id}.JSON`,
+};
+assert.equal(
+  parseIntakeRecordAtPath(JSON.stringify(dirtyNonTimestampPaidAtBlob), `intake/${id}.json`),
+  null,
+);
+assert.equal(parseIntakeRecord(JSON.stringify(dirtyNonTimestampPaidAtBlob))?.id, id);
+assert.equal(
+  parseIntakeRecord(JSON.stringify(dirtyNonTimestampPaidAtBlob))?.paidAt,
+  "https://pay.example.test/receipts/hosted",
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      paidAt: "not-a-timestamp",
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  ),
+  null,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      paidAt: paidAtStamp,
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.id,
+  id,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      paidAt: paidAtStamp,
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.paidAt,
+  paidAtStamp,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      paidAt: "",
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.paidAt,
+  "",
+);
+
+const dirtyNonTimestampPaidAtWrite = toIntakePathPayload({
+  ...record,
+  paidAt: "https://pay.example.test/receipts/hosted",
+});
+const dirtyNonTimestampPaidAtJson = JSON.stringify(dirtyNonTimestampPaidAtWrite);
+assert.equal(dirtyNonTimestampPaidAtWrite, null);
+assert.equal(dirtyNonTimestampPaidAtJson.includes("receipts/hosted"), false);
+assert.equal(
+  toIntakePathPayload({
+    ...record,
+    paidAt: paidAtStamp,
+  })?.paidAt,
+  paidAtStamp,
+);
+assert.equal(toIntakePathPayload(record)?.paidAt, "");
+
 const publicAppFiles = [
   "../app/page.tsx",
   "../app/agent/page.tsx",
