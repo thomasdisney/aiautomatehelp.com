@@ -255,6 +255,29 @@ const emptyName = parseIntake({
 });
 assert.deepEqual(emptyName, { ok: false, error: "required" });
 
+const urlCompany = parseIntake({
+  name: "Pat",
+  email: "pat@example.com",
+  company: "https://pay.example.test/receipts/hosted",
+  trigger: "A form is submitted",
+  tools: "Sheets",
+  outcome: "A test row appears",
+});
+assert.deepEqual(urlCompany, { ok: false, error: "invalid" });
+
+const emptyCompany = parseIntake({
+  name: "Pat",
+  email: "pat@example.com",
+  company: "",
+  trigger: "A form is submitted",
+  tools: "Sheets",
+  outcome: "A test row appears",
+});
+assert.equal(emptyCompany.ok && "dropped" in emptyCompany && emptyCompany.dropped === false, true);
+if (emptyCompany.ok && !emptyCompany.dropped) {
+  assert.equal(emptyCompany.data.company, "");
+}
+
 const normalEmail = parseIntake({
   name: "Pat",
   email: "pat@example.com",

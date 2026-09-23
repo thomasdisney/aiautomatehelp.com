@@ -387,6 +387,9 @@ export function parseIntake(body: unknown): IntakeParse {
   if (parseIntakeName(name) === null) {
     return { ok: false, error: "invalid" };
   }
+  if (company && parseIntakeCompany(company) === null) {
+    return { ok: false, error: "invalid" };
+  }
   if (!isValidEmail(email) || parseIntakeEmail(email) === null) {
     return { ok: false, error: "email" };
   }
