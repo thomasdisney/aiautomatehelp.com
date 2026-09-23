@@ -101548,6 +101548,82 @@ assert.equal(
 );
 assert.equal(toIntakePathPayload(record)?.deliveredAt, "");
 
+const withdrawnAtStamp = "2026-08-12T18:00:00.000Z";
+const dirtyNonTimestampWithdrawnAtBlob = {
+  ...record,
+  withdrawnAt: "https://pay.example.test/receipts/hosted",
+  path: `INTAKE/${id}.JSON`,
+};
+assert.equal(
+  parseIntakeRecordAtPath(JSON.stringify(dirtyNonTimestampWithdrawnAtBlob), `intake/${id}.json`),
+  null,
+);
+assert.equal(parseIntakeRecord(JSON.stringify(dirtyNonTimestampWithdrawnAtBlob))?.id, id);
+assert.equal(
+  parseIntakeRecord(JSON.stringify(dirtyNonTimestampWithdrawnAtBlob))?.withdrawnAt,
+  "https://pay.example.test/receipts/hosted",
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      withdrawnAt: "not-a-timestamp",
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  ),
+  null,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      withdrawnAt: withdrawnAtStamp,
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.id,
+  id,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      withdrawnAt: withdrawnAtStamp,
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.withdrawnAt,
+  withdrawnAtStamp,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      withdrawnAt: "",
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.withdrawnAt,
+  "",
+);
+
+const dirtyNonTimestampWithdrawnAtWrite = toIntakePathPayload({
+  ...record,
+  withdrawnAt: "https://pay.example.test/receipts/hosted",
+});
+const dirtyNonTimestampWithdrawnAtJson = JSON.stringify(dirtyNonTimestampWithdrawnAtWrite);
+assert.equal(dirtyNonTimestampWithdrawnAtWrite, null);
+assert.equal(dirtyNonTimestampWithdrawnAtJson.includes("receipts/hosted"), false);
+assert.equal(
+  toIntakePathPayload({
+    ...record,
+    withdrawnAt: withdrawnAtStamp,
+  })?.withdrawnAt,
+  withdrawnAtStamp,
+);
+assert.equal(toIntakePathPayload(record)?.withdrawnAt, "");
+
 const publicAppFiles = [
   "../app/page.tsx",
   "../app/agent/page.tsx",

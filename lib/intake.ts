@@ -157,6 +157,11 @@ export function blobIntakeDeliveredAtHasDisallowedValue(deliveredAt: unknown): b
   return parseIntakeAt(deliveredAt) === null;
 }
 
+export function blobIntakeWithdrawnAtHasDisallowedValue(withdrawnAt: unknown): boolean {
+  if (withdrawnAt === undefined || withdrawnAt === "") return false;
+  return parseIntakeAt(withdrawnAt) === null;
+}
+
 export function composeIntakeMessage(input: {
   trigger: string;
   tools: string;
@@ -333,6 +338,7 @@ export function toIntakePathPayload(
   if (blobIntakeAcceptedAtHasDisallowedValue(parsed.acceptedAt)) return null;
   if (blobIntakeConfirmedAtHasDisallowedValue(parsed.confirmedAt)) return null;
   if (blobIntakeDeliveredAtHasDisallowedValue(parsed.deliveredAt)) return null;
+  if (blobIntakeWithdrawnAtHasDisallowedValue(parsed.withdrawnAt)) return null;
   return { ...parsed, receivedAt, path };
 }
 
@@ -589,6 +595,7 @@ export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeR
   if (blobIntakeAcceptedAtHasDisallowedValue(row.acceptedAt)) return null;
   if (blobIntakeConfirmedAtHasDisallowedValue(row.confirmedAt)) return null;
   if (blobIntakeDeliveredAtHasDisallowedValue(row.deliveredAt)) return null;
+  if (blobIntakeWithdrawnAtHasDisallowedValue(row.withdrawnAt)) return null;
   const path = typeof row.path === "string" ? row.path.trim().toLowerCase() : "";
   if (path !== expectedPath) return null;
   const parsed = parseIntakeRecord(raw);
