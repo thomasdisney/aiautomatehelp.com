@@ -72,6 +72,10 @@ export function sendBriefStepCopy(): string {
   return "Describe one named workflow — what starts it, which tools, and what done looks like.";
 }
 
+export function quoteStepCopy(): string {
+  return "You get a written scope for that named workflow — price, delivery date, and done-when test — on the status page.";
+}
+
 export function handoffStepCopy(): string {
   return "You get that named workflow and how it runs. Confirm the done-when test when it passes.";
 }

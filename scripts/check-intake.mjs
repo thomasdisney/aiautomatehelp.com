@@ -59,6 +59,7 @@ import {
   briefSecretsFaqCopy,
   exampleWorkflowsHeadingCopy,
   sendBriefStepCopy,
+  quoteStepCopy,
   startHereNameCopy,
   automationHeroCopy,
   offerCopy,
@@ -577,6 +578,21 @@ assert.equal(sendBriefStep.includes("what done looks like"), true);
 assert.equal(sendBriefStep.toLowerCase().includes("mailto"), false);
 assert.equal(sendBriefStep.includes("thomasdisney"), false);
 assert.equal(sendBriefStep.includes("gmail.com"), false);
+
+const quoteStep = quoteStepCopy();
+assert.equal(
+  quoteStep.includes(
+    "You get a written scope, price, delivery date, and done-when test on the status page.",
+  ),
+  false,
+);
+assert.equal(quoteStep.includes("the job"), false);
+assert.equal(quoteStep.includes("named workflow"), true);
+assert.equal(quoteStep.includes("written scope"), true);
+assert.equal(quoteStep.includes("status page"), true);
+assert.equal(quoteStep.toLowerCase().includes("mailto"), false);
+assert.equal(quoteStep.includes("thomasdisney"), false);
+assert.equal(quoteStep.includes("gmail.com"), false);
 
 const startHereName = startHereNameCopy();
 assert.equal(startHereName.includes("Name one workflow"), false);
@@ -101041,6 +101057,13 @@ assert.equal(automationSource.includes("after the brief"), false);
 assert.equal(automationSource.includes("briefSecretsFaqCopy"), true);
 assert.equal(automationSource.includes("exampleWorkflowsHeadingCopy"), true);
 assert.equal(automationSource.includes("sendBriefStepCopy"), true);
+assert.equal(automationSource.includes("quoteStepCopy"), true);
+assert.equal(
+  automationSource.includes(
+    "You get a written scope, price, delivery date, and done-when test on the status page.",
+  ),
+  false,
+);
 assert.equal(automationSource.includes("startHereNameCopy"), true);
 assert.equal(automationSource.includes("automationHeroCopy"), true);
 assert.equal(automationSource.includes("offerCopy"), true);
