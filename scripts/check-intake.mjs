@@ -102101,6 +102101,71 @@ assert.equal(
 );
 assert.equal(toIntakePathPayload(record)?.quoteText, "");
 
+const customerReplyStamp = "Please quote a smaller version.";
+const dirtyReceiptUrlCustomerReplyBlob = {
+  ...record,
+  customerReply: "https://pay.example.test/receipts/hosted",
+  path: `INTAKE/${id}.JSON`,
+};
+assert.equal(
+  parseIntakeRecordAtPath(JSON.stringify(dirtyReceiptUrlCustomerReplyBlob), `intake/${id}.json`),
+  null,
+);
+assert.equal(parseIntakeRecord(JSON.stringify(dirtyReceiptUrlCustomerReplyBlob))?.id, id);
+assert.equal(
+  parseIntakeRecord(JSON.stringify(dirtyReceiptUrlCustomerReplyBlob))?.customerReply,
+  "https://pay.example.test/receipts/hosted",
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      customerReply: customerReplyStamp,
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.id,
+  id,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      customerReply: customerReplyStamp,
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.customerReply,
+  customerReplyStamp,
+);
+assert.equal(
+  parseIntakeRecordAtPath(
+    JSON.stringify({
+      ...record,
+      customerReply: "",
+      path: `INTAKE/${id}.JSON`,
+    }),
+    `intake/${id}.json`,
+  )?.customerReply,
+  "",
+);
+
+const dirtyReceiptUrlCustomerReplyWrite = toIntakePathPayload({
+  ...record,
+  customerReply: "https://pay.example.test/receipts/hosted",
+});
+const dirtyReceiptUrlCustomerReplyJson = JSON.stringify(dirtyReceiptUrlCustomerReplyWrite);
+assert.equal(dirtyReceiptUrlCustomerReplyWrite, null);
+assert.equal(dirtyReceiptUrlCustomerReplyJson.includes("receipts/hosted"), false);
+assert.equal(
+  toIntakePathPayload({
+    ...record,
+    customerReply: customerReplyStamp,
+  })?.customerReply,
+  customerReplyStamp,
+);
+assert.equal(toIntakePathPayload(record)?.customerReply, "");
+
 const publicAppFiles = [
   "../app/page.tsx",
   "../app/agent/page.tsx",

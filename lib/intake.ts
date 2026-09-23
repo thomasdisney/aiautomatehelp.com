@@ -213,6 +213,22 @@ export function blobIntakeQuoteTextHasDisallowedValue(quoteText: unknown): boole
   return parseIntakeQuoteText(quoteText) === null;
 }
 
+const INTAKE_CUSTOMER_REPLY_URL_RE = /^https?:\/\//i;
+
+export function parseIntakeCustomerReply(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const raw = sanitizeText(value, FIELD_LIMITS.customerReply);
+  if (!raw || INTAKE_CUSTOMER_REPLY_URL_RE.test(raw)) return null;
+  return raw;
+}
+
+export function blobIntakeCustomerReplyHasDisallowedValue(customerReply: unknown): boolean {
+  if (typeof customerReply !== "string") return false;
+  const raw = sanitizeText(customerReply, FIELD_LIMITS.customerReply);
+  if (!raw) return false;
+  return parseIntakeCustomerReply(customerReply) === null;
+}
+
 export function composeIntakeMessage(input: {
   trigger: string;
   tools: string;
@@ -389,6 +405,7 @@ export function toIntakePathPayload(
   if (blobIntakeDueAtHasDisallowedValue(payload.dueAt)) return null;
   if (blobIntakePaymentRefHasDisallowedValue(payload.paymentRef)) return null;
   if (blobIntakeQuoteTextHasDisallowedValue(payload.quoteText)) return null;
+  if (blobIntakeCustomerReplyHasDisallowedValue(payload.customerReply)) return null;
   if (blobIntakeAcceptedAtHasDisallowedValue(parsed.acceptedAt)) return null;
   if (blobIntakeConfirmedAtHasDisallowedValue(parsed.confirmedAt)) return null;
   if (blobIntakeDeliveredAtHasDisallowedValue(parsed.deliveredAt)) return null;
@@ -659,6 +676,7 @@ export function parseIntakeRecordAtPath(raw: string, pathname: unknown): IntakeR
   if (blobIntakeNotedAtHasDisallowedValue(row.notedAt)) return null;
   if (blobIntakePaymentRefHasDisallowedValue(row.paymentRef)) return null;
   if (blobIntakeQuoteTextHasDisallowedValue(row.quoteText)) return null;
+  if (blobIntakeCustomerReplyHasDisallowedValue(row.customerReply)) return null;
   const path = typeof row.path === "string" ? row.path.trim().toLowerCase() : "";
   if (path !== expectedPath) return null;
   const parsed = parseIntakeRecord(raw);
