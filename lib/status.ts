@@ -111,6 +111,21 @@ export function sanitizeStatusEmailParam(value: unknown): string {
   return parsed;
 }
 
+/** Drop a hostile ?email= so Next.js does not serialize it into the page. */
+export function statusSearchRedirect(input: {
+  ref?: unknown;
+  email?: unknown;
+}): string | null {
+  const refRaw = typeof input.ref === "string" ? input.ref.trim().toLowerCase() : "";
+  const ref = intakeBlobPath(refRaw) ? refRaw : "";
+  const rawEmail = typeof input.email === "string" ? input.email : "";
+  const email = sanitizeStatusEmailParam(rawEmail);
+  if (rawEmail.trim() && !email) {
+    return ref ? `/status?ref=${encodeURIComponent(ref)}` : "/status";
+  }
+  return null;
+}
+
 export type InboxFind =
   | { ok: true; email: string }
   | { ok: false; error: "invalid" };

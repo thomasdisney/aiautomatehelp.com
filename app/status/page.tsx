@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { StatusEmailPrefiller } from "@/app/components/status-email-prefiller";
 import { StatusForm } from "@/app/components/status-form";
 import { intakeBlobPath } from "@/lib/intake";
 import { paymentConfigured } from "@/lib/payment";
 import { statusIntroCopy } from "@/lib/site-copy";
-import { sanitizeStatusEmailParam } from "@/lib/status";
+import { sanitizeStatusEmailParam, statusSearchRedirect } from "@/lib/status";
 
 export const metadata: Metadata = {
   title: "Check a brief",
@@ -18,6 +19,8 @@ export default async function StatusPage({
   searchParams: Promise<{ ref?: string; email?: string }>;
 }) {
   const params = await searchParams;
+  const stripped = statusSearchRedirect(params);
+  if (stripped) redirect(stripped);
   const ref = typeof params.ref === "string" ? params.ref.trim().toLowerCase() : "";
   const initialId = intakeBlobPath(ref) ? ref : "";
   const initialEmail = sanitizeStatusEmailParam(params.email);
