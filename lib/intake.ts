@@ -254,6 +254,7 @@ export function parseIntakeUpdateText(value: unknown): string | null {
   const normalized = raw
     .replace(/\r\n/g, "\n")
     .replace(/\r/g, "\n")
+    .replace(/\u2028/g, "\n")
     .replace(/\u0085/g, "\n");
   if (normalized.split("\n").some((line) => line.replace(/[\p{Cf}\p{M}\uFFFC]/gu, "").trim() === "")) {
     return null;
