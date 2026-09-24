@@ -373,6 +373,7 @@ export function parseIntakeOutcome(value: unknown): string | null {
   if (typeof value !== "string") return null;
   const raw = sanitizeText(value, FIELD_LIMITS.outcome);
   if (!raw || INTAKE_OUTCOME_URL_RE.test(raw)) return null;
+  if (raw.length > FIELD_LIMITS.quoteText) return null;
   return raw;
 }
 

@@ -15,6 +15,7 @@ import {
   parseIntakeRecord,
   parseIntakeRecordAtPath,
   parseNamedWorkflow,
+  parseIntakeOutcome,
   composeIntakeMessage,
   FIELD_LIMITS,
   sanitizeText,
@@ -282,6 +283,11 @@ assert.equal(
     }),
   ),
   null,
+);
+assert.equal(parseIntakeOutcome("x".repeat(FIELD_LIMITS.quoteText + 1)), null);
+assert.equal(
+  parseIntakeOutcome("x".repeat(FIELD_LIMITS.quoteText)),
+  "x".repeat(FIELD_LIMITS.quoteText),
 );
 assert.equal(parseNamedWorkflow("Trigger: A form is submitted\n\nTools: Sheets"), null);
 assert.equal(
