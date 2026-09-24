@@ -278,7 +278,7 @@ export function IntakeForm({ connected }: { connected: boolean }) {
             name="outcome"
             required
             rows={3}
-            maxLength={FIELD_LIMITS.outcome}
+            maxLength={FIELD_LIMITS.doneWhen}
             placeholder="A checkable result: a row appears, an email goes out…"
             className="mt-1.5 w-full resize-y rounded-lg border border-ink/15 px-3 py-2.5 text-base outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
           />

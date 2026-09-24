@@ -103252,6 +103252,8 @@ const intakeFormSource = readFileSync(
 assert.equal(intakeFormSource.includes('name="trigger"'), true);
 assert.equal(intakeFormSource.includes('name="tools"'), true);
 assert.equal(intakeFormSource.includes('name="outcome"'), true);
+assert.equal(intakeFormSource.includes("maxLength={FIELD_LIMITS.outcome}"), false);
+assert.equal(intakeFormSource.includes("maxLength={FIELD_LIMITS.doneWhen}"), true);
 assert.equal(intakeFormSource.includes('name="message"'), false);
 assert.equal(intakeFormSource.includes("triggerPlaceholderCopy"), true);
 assert.equal(intakeFormSource.includes("intakeFormNameCopy"), true);
