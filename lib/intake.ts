@@ -349,6 +349,7 @@ export function parseIntakeTrigger(value: unknown): string | null {
   if (typeof value !== "string") return null;
   const raw = sanitizeText(value, FIELD_LIMITS.trigger);
   if (!raw || INTAKE_TRIGGER_URL_RE.test(raw)) return null;
+  if (raw.length > FIELD_LIMITS.quoteText) return null;
   const normalized = raw.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
   if (normalized.split("\n").some((line) => line.trim() === "")) return null;
   return raw;
