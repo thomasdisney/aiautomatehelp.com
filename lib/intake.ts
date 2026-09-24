@@ -367,7 +367,7 @@ export function parseIntakeTools(value: unknown): string | null {
   if (!raw || INTAKE_TOOLS_URL_RE.test(raw)) return null;
   if (raw.length > FIELD_LIMITS.quoteText) return null;
   const normalized = raw.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
-  if (normalized.split("\n").some((line) => line.replace(/[\u200B\u200C\u200D\u2060\u2061\u2062\u2063\u2064\u2066\u2067\u2068\u2069\u200E\u200F]/g, "").trim() === "")) {
+  if (normalized.split("\n").some((line) => line.replace(/[\u200B\u200C\u200D\u2060\u2061\u2062\u2063\u2064\u2066\u2067\u2068\u2069\u200E\u200F\u202A]/g, "").trim() === "")) {
     return null;
   }
   return raw;
