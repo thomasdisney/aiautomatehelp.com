@@ -377,7 +377,8 @@ export function parseIntakeOutcome(value: unknown): string | null {
   const normalized = raw
     .replace(/\r\n/g, "\n")
     .replace(/\r/g, "\n")
-    .replace(/\u2028/g, "\n");
+    .replace(/\u2028/g, "\n")
+    .replace(/\u2029/g, "\n");
   if (normalized.split("\n").some((line) => line.trim() === "")) return null;
   return raw;
 }
