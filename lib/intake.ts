@@ -348,6 +348,7 @@ export function parseIntakeTrigger(value: unknown): string | null {
   if (typeof value !== "string") return null;
   const raw = sanitizeText(value, FIELD_LIMITS.trigger);
   if (!raw || INTAKE_TRIGGER_URL_RE.test(raw)) return null;
+  if (raw.includes("\n\n")) return null;
   return raw;
 }
 
