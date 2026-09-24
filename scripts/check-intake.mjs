@@ -390,6 +390,16 @@ const emptyOutcome = parseIntake({
 });
 assert.deepEqual(emptyOutcome, { ok: false, error: "required" });
 
+const longOutcome = parseIntake({
+  name: "Pat",
+  email: "pat@example.com",
+  company: "Co",
+  trigger: "A form is submitted",
+  tools: "Sheets",
+  outcome: "x".repeat(FIELD_LIMITS.doneWhen + 1),
+});
+assert.deepEqual(longOutcome, { ok: false, error: "invalid" });
+
 const normalEmail = parseIntake({
   name: "Pat",
   email: "pat@example.com",

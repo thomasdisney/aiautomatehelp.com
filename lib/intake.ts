@@ -463,6 +463,9 @@ export function parseIntake(body: unknown): IntakeParse {
   if (parseIntakeOutcome(outcome) === null) {
     return { ok: false, error: "invalid" };
   }
+  if (parseIntakeDoneWhen(outcome) !== outcome) {
+    return { ok: false, error: "invalid" };
+  }
   if (!isValidEmail(email) || parseIntakeEmail(email) === null) {
     return { ok: false, error: "email" };
   }
