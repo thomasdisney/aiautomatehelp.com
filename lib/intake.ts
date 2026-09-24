@@ -288,7 +288,10 @@ export function parseIntakeDoneWhen(value: unknown): string | null {
   if (typeof value !== "string") return null;
   const raw = sanitizeText(value, FIELD_LIMITS.doneWhen);
   if (!raw || INTAKE_DONE_WHEN_URL_RE.test(raw)) return null;
-  const normalized = raw.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+  const normalized = raw
+    .replace(/\r\n/g, "\n")
+    .replace(/\r/g, "\n")
+    .replace(/\u0085/g, "\n");
   if (normalized.split("\n").some((line) => line.replace(/[\p{Cf}\p{M}\uFFFC]/gu, "").trim() === "")) {
     return null;
   }
