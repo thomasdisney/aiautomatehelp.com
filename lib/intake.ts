@@ -374,7 +374,8 @@ export function parseIntakeOutcome(value: unknown): string | null {
   const raw = sanitizeText(value, FIELD_LIMITS.outcome);
   if (!raw || INTAKE_OUTCOME_URL_RE.test(raw)) return null;
   if (raw.length > FIELD_LIMITS.quoteText) return null;
-  if (raw.includes("\n\n")) return null;
+  const normalized = raw.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+  if (normalized.includes("\n\n")) return null;
   return raw;
 }
 
