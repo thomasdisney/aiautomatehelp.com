@@ -374,7 +374,10 @@ export function parseIntakeOutcome(value: unknown): string | null {
   const raw = sanitizeText(value, FIELD_LIMITS.outcome);
   if (!raw || INTAKE_OUTCOME_URL_RE.test(raw)) return null;
   if (raw.length > FIELD_LIMITS.quoteText) return null;
-  const normalized = raw.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+  const normalized = raw
+    .replace(/\r\n/g, "\n")
+    .replace(/\r/g, "\n")
+    .replace(/\u2028/g, "\n");
   if (normalized.split("\n").some((line) => line.trim() === "")) return null;
   return raw;
 }
