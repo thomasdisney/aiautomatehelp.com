@@ -8,7 +8,7 @@ import {
   listIntakeForList,
   updateIntake,
 } from "@/lib/intake-store";
-import { parseInboxListView, toInboxIdRows, toInboxIdRowsForEmail } from "@/lib/ops-queue";
+import { parseInboxListView, toInboxIdRows, toInboxIdRowsForEmail, toInboxItem } from "@/lib/ops-queue";
 import { allowInboxRequest, requestIp } from "@/lib/rate-limit";
 import { parseInboxFind, parseInboxId, parseInboxPatch, toPublicStatus } from "@/lib/status";
 
@@ -57,7 +57,7 @@ export async function GET(request: Request) {
       );
     }
     return NextResponse.json(
-      { ok: true, item },
+      { ok: true, item: toInboxItem(item) },
       { headers: { "cache-control": "no-store" } },
     );
   }

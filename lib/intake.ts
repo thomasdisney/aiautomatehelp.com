@@ -398,6 +398,38 @@ export function composeIntakeMessage(input: {
   );
 }
 
+export type NamedWorkflow = {
+  trigger: string;
+  tools: string;
+  outcome: string;
+};
+
+const NAMED_WORKFLOW_TRIGGER_PREFIX = "Trigger: ";
+const NAMED_WORKFLOW_TOOLS_MARK = "\n\nTools: ";
+const NAMED_WORKFLOW_OUTCOME_MARK = "\n\nDone when: ";
+
+export function parseNamedWorkflow(value: unknown): NamedWorkflow | null {
+  const raw = parseIntakeMessage(value);
+  if (!raw) return null;
+  if (!raw.startsWith(NAMED_WORKFLOW_TRIGGER_PREFIX)) return null;
+  const toolsAt = raw.indexOf(NAMED_WORKFLOW_TOOLS_MARK);
+  if (toolsAt < NAMED_WORKFLOW_TRIGGER_PREFIX.length) return null;
+  const outcomeAt = raw.indexOf(
+    NAMED_WORKFLOW_OUTCOME_MARK,
+    toolsAt + NAMED_WORKFLOW_TOOLS_MARK.length,
+  );
+  if (outcomeAt < 0) return null;
+  const trigger = raw.slice(NAMED_WORKFLOW_TRIGGER_PREFIX.length, toolsAt);
+  const tools = raw.slice(toolsAt + NAMED_WORKFLOW_TOOLS_MARK.length, outcomeAt);
+  const outcome = raw.slice(outcomeAt + NAMED_WORKFLOW_OUTCOME_MARK.length);
+  if (!trigger || !tools || !outcome) return null;
+  if (parseIntakeTrigger(trigger) !== trigger) return null;
+  if (parseIntakeTools(tools) !== tools) return null;
+  if (parseIntakeOutcome(outcome) !== outcome) return null;
+  if (composeIntakeMessage({ trigger, tools, outcome }) !== raw) return null;
+  return { trigger, tools, outcome };
+}
+
 export function parseIntake(body: unknown): IntakeParse {
   if (!body || typeof body !== "object") return { ok: false, error: "invalid" };
   const raw = body as Record<string, unknown>;

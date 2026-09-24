@@ -11,11 +11,13 @@ import {
   isValidEmail,
   parseDueAt,
   parseIntakeEmail,
+  parseNamedWorkflow,
   parseIntakeStatus,
   sanitizeText,
   FIELD_LIMITS,
   type IntakeRecord,
   type IntakeStatus,
+  type NamedWorkflow,
 } from "./intake.ts";
 import { parseAmountCents } from "./payment.ts";
 import { emailsMatch, hasOpenQuestion, openQuestionAt } from "./status.ts";
@@ -526,6 +528,12 @@ export function toWaitingItem(
     event,
     at: at.slice(0, 40),
   };
+}
+
+export function toInboxItem(
+  record: IntakeRecord,
+): IntakeRecord & { workflow: NamedWorkflow | null } {
+  return { ...record, workflow: parseNamedWorkflow(record.message) };
 }
 
 export function summarizeQueue(

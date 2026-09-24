@@ -95,6 +95,22 @@ if (cmd === "show" && id) {
     console.log("doneWhen");
     console.log(item.doneWhen);
   }
+  const workflow =
+    item.workflow && typeof item.workflow === "object" ? item.workflow : null;
+  const trigger = workflow && typeof workflow.trigger === "string" ? workflow.trigger : "";
+  const tools = workflow && typeof workflow.tools === "string" ? workflow.tools : "";
+  const outcome = workflow && typeof workflow.outcome === "string" ? workflow.outcome : "";
+  if (trigger && tools && outcome) {
+    console.log("workflow");
+    console.log("trigger");
+    console.log(trigger);
+    console.log("tools");
+    console.log(tools);
+    console.log("outcome");
+    console.log(outcome);
+  } else {
+    console.log("workflow none");
+  }
   if (item.confirmedAt) console.log(`confirmedAt ${item.confirmedAt}`);
   if (item.acceptedAt) console.log(`acceptedAt ${item.acceptedAt}`);
   if (item.paidAt) console.log(`paidAt ${item.paidAt}`);
