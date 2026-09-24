@@ -385,7 +385,7 @@ export function parseIntakeOutcome(value: unknown): string | null {
   if (
     normalized.split("\n").some(
       (line) =>
-        line.replace(/[\p{C}\p{Z}\p{M}\u2800\u115F\u1160\u3164\uFFA0]/gu, "").trim() ===
+        line.replace(/[\p{C}\p{Z}\p{M}\u2800\u115F\u1160\u3164\uFFA0\uFFFC]/gu, "").trim() ===
         "",
     )
   ) {
