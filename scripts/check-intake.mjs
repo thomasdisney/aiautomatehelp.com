@@ -495,6 +495,19 @@ assert.equal(
   }),
   "/status?email=pat%40example.com",
 );
+assert.equal(
+  statusSearchRedirect({
+    ref: ["https://pay.example.test/receipts", id],
+  }),
+  `/status?ref=${id}`,
+);
+assert.equal(
+  statusSearchRedirect({
+    ref: id,
+    next: "https://pay.example.test/receipts",
+  }),
+  `/status?ref=${id}`,
+);
 
 assert.equal(emailsMatch("Pat@Example.com", "pat@example.com"), true);
 assert.equal(emailsMatch("pat@example.com", "other@example.com"), false);

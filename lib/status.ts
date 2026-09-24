@@ -111,18 +111,35 @@ export function sanitizeStatusEmailParam(value: unknown): string {
   return parsed;
 }
 
-/** Drop a hostile ?email= or ?ref= so Next.js does not serialize it into the page. */
+function firstValidStatusRef(value: unknown): { raw: boolean; ref: string; array: boolean } {
+  const items = Array.isArray(value) ? value : [value];
+  let raw = false;
+  let ref = "";
+  for (const item of items) {
+    if (typeof item !== "string") continue;
+    const trimmed = item.trim();
+    if (!trimmed) continue;
+    raw = true;
+    const candidate = trimmed.toLowerCase();
+    if (!ref && intakeBlobPath(candidate)) ref = candidate;
+  }
+  return { raw, ref, array: Array.isArray(value) };
+}
+
+/** Drop a hostile or duplicate ?email= / ?ref= (and unknown keys) so Next.js does not serialize them. */
 export function statusSearchRedirect(input: {
   ref?: unknown;
   email?: unknown;
+  [key: string]: unknown;
 }): string | null {
-  const refRaw = typeof input.ref === "string" ? input.ref.trim().toLowerCase() : "";
-  const ref = intakeBlobPath(refRaw) ? refRaw : "";
+  const parsedRef = firstValidStatusRef(input.ref);
+  const ref = parsedRef.ref;
   const rawEmail = typeof input.email === "string" ? input.email : "";
   const email = sanitizeStatusEmailParam(rawEmail);
   const dropEmail = Boolean(rawEmail.trim() && !email);
-  const dropRef = Boolean(refRaw && !ref);
-  if (!dropEmail && !dropRef) return null;
+  const dropRef = parsedRef.array ? parsedRef.raw : Boolean(parsedRef.raw && !ref);
+  const extra = Object.keys(input).some((key) => key !== "ref" && key !== "email");
+  if (!dropEmail && !dropRef && !extra) return null;
   const params = [];
   if (ref) params.push(`ref=${encodeURIComponent(ref)}`);
   if (email) params.push(`email=${encodeURIComponent(email)}`);

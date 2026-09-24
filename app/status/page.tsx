@@ -16,7 +16,11 @@ export const metadata: Metadata = {
 export default async function StatusPage({
   searchParams,
 }: {
-  searchParams: Promise<{ ref?: string; email?: string }>;
+  searchParams: Promise<{
+    ref?: string | string[];
+    email?: string | string[];
+    [key: string]: string | string[] | undefined;
+  }>;
 }) {
   const params = await searchParams;
   const stripped = statusSearchRedirect(params);
