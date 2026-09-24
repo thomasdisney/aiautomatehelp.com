@@ -367,7 +367,9 @@ export function parseIntakeTools(value: unknown): string | null {
   if (!raw || INTAKE_TOOLS_URL_RE.test(raw)) return null;
   if (raw.length > FIELD_LIMITS.quoteText) return null;
   const normalized = raw.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
-  if (normalized.split("\n").some((line) => line.trim() === "")) return null;
+  if (normalized.split("\n").some((line) => line.replace(/\u200B/g, "").trim() === "")) {
+    return null;
+  }
   return raw;
 }
 
