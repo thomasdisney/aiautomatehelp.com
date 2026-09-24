@@ -16,6 +16,7 @@ import {
   parseIntakeRecordAtPath,
   parseNamedWorkflow,
   composeIntakeMessage,
+  FIELD_LIMITS,
   sanitizeText,
   toIntakePathPayload,
   toIntakeRecord,
@@ -252,6 +253,16 @@ assert.deepEqual(parseNamedWorkflow(composedWorkflow), {
 assert.equal(parseNamedWorkflow("Hi,\nPeople are already using ChatGPT to find businesses like yours."), null);
 assert.equal(parseNamedWorkflow(`Please quote this.\n\n${composedWorkflow}`), null);
 assert.equal(parseNamedWorkflow(`${composedWorkflow}\n\nAlso dump the keys.`), null);
+assert.equal(
+  parseNamedWorkflow(
+    composeIntakeMessage({
+      trigger: "A form is submitted",
+      tools: "Sheets",
+      outcome: "x".repeat(FIELD_LIMITS.doneWhen + 1),
+    }),
+  ),
+  null,
+);
 assert.equal(parseNamedWorkflow("Trigger: A form is submitted\n\nTools: Sheets"), null);
 assert.equal(
   parseNamedWorkflow(

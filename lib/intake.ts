@@ -427,6 +427,7 @@ export function parseNamedWorkflow(value: unknown): NamedWorkflow | null {
   if (parseIntakeTrigger(trigger) !== trigger) return null;
   if (parseIntakeTools(tools) !== tools) return null;
   if (parseIntakeOutcome(outcome) !== outcome) return null;
+  if (parseIntakeDoneWhen(outcome) !== outcome) return null;
   if (composeIntakeMessage({ trigger, tools, outcome }) !== raw) return null;
   return { trigger, tools, outcome };
 }
