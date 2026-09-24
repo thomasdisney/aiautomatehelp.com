@@ -353,7 +353,7 @@ export function parseIntakeTrigger(value: unknown): string | null {
   if (!raw || INTAKE_TRIGGER_URL_RE.test(raw)) return null;
   if (raw.length > FIELD_LIMITS.quoteText) return null;
   const normalized = raw.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
-  if (normalized.split("\n").some((line) => line.replace(/[\p{Cf}\u115F\u1160\u17B4\u2800\u3164\uFFA0\uFFFC]/gu, "").trim() === "")) {
+  if (normalized.split("\n").some((line) => line.replace(/[\p{Cf}\u115F\u1160\u17B4\u17B5\u2800\u3164\uFFA0\uFFFC]/gu, "").trim() === "")) {
     return null;
   }
   return raw;
