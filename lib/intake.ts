@@ -423,6 +423,7 @@ export function parseNamedWorkflow(value: unknown): NamedWorkflow | null {
   const tools = raw.slice(toolsAt + NAMED_WORKFLOW_TOOLS_MARK.length, outcomeAt);
   const outcome = raw.slice(outcomeAt + NAMED_WORKFLOW_OUTCOME_MARK.length);
   if (!trigger || !tools || !outcome) return null;
+  if (outcome.includes("\n\n")) return null;
   if (parseIntakeTrigger(trigger) !== trigger) return null;
   if (parseIntakeTools(tools) !== tools) return null;
   if (parseIntakeOutcome(outcome) !== outcome) return null;
