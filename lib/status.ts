@@ -103,6 +103,14 @@ export function parseInboxId(value: unknown): string | null {
   return intakeBlobPath(id) ? id : null;
 }
 
+/** Same-device ?email= convenience. Empty means do not prefill. */
+export function sanitizeStatusEmailParam(value: unknown): string {
+  if (typeof value !== "string") return "";
+  const parsed = parseIntakeEmail(value);
+  if (!parsed || !isValidEmail(parsed)) return "";
+  return parsed;
+}
+
 export type InboxFind =
   | { ok: true; email: string }
   | { ok: false; error: "invalid" };

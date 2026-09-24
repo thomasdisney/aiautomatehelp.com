@@ -4,20 +4,13 @@ import { StatusForm } from "@/app/components/status-form";
 import { intakeBlobPath } from "@/lib/intake";
 import { paymentConfigured } from "@/lib/payment";
 import { statusIntroCopy } from "@/lib/site-copy";
+import { sanitizeStatusEmailParam } from "@/lib/status";
 
 export const metadata: Metadata = {
   title: "Check a brief",
   description: "Check a brief you already sent to AutomateAI. Support stays on this site.",
   alternates: { canonical: "/status" },
 };
-
-function sanitizeEmailParam(value: string): string {
-  const trimmed = value.trim();
-  if (!trimmed || trimmed.length > 120) return "";
-  // Same-device convenience only; never treat as trusted identity.
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) return "";
-  return trimmed;
-}
 
 export default async function StatusPage({
   searchParams,
@@ -27,8 +20,7 @@ export default async function StatusPage({
   const params = await searchParams;
   const ref = typeof params.ref === "string" ? params.ref.trim().toLowerCase() : "";
   const initialId = intakeBlobPath(ref) ? ref : "";
-  const initialEmail =
-    typeof params.email === "string" ? sanitizeEmailParam(params.email) : "";
+  const initialEmail = sanitizeStatusEmailParam(params.email);
   const paymentConnected = paymentConfigured();
 
   return (
