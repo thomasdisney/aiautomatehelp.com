@@ -103476,6 +103476,7 @@ assert.equal(intakeFormSource.includes("maxLength={FIELD_LIMITS.outcome}"), fals
 assert.equal(intakeFormSource.includes("maxLength={FIELD_LIMITS.doneWhen}"), true);
 assert.equal(intakeFormSource.includes("maxLength={FIELD_LIMITS.trigger}"), false);
 assert.equal(intakeFormSource.includes("maxLength={FIELD_LIMITS.quoteText}"), true);
+assert.equal(intakeFormSource.includes("maxLength={FIELD_LIMITS.tools}"), false);
 assert.equal(intakeFormSource.includes('name="message"'), false);
 assert.equal(intakeFormSource.includes("triggerPlaceholderCopy"), true);
 assert.equal(intakeFormSource.includes("intakeFormNameCopy"), true);

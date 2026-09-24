@@ -264,7 +264,7 @@ export function IntakeForm({ connected }: { connected: boolean }) {
             name="tools"
             required
             rows={3}
-            maxLength={FIELD_LIMITS.tools}
+            maxLength={FIELD_LIMITS.quoteText}
             placeholder="Email, a sheet, a CRM, a form…"
             className="mt-1.5 w-full resize-y rounded-lg border border-ink/15 px-3 py-2.5 text-base outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
           />
