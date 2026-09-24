@@ -485,6 +485,16 @@ assert.equal(
   `/status?ref=${id}`,
 );
 assert.equal(statusSearchRedirect({ ref: id, email: "pat@example.com" }), null);
+assert.equal(statusSearchRedirect({ ref: "https://pay.example.test/receipts" }), "/status");
+assert.equal(statusSearchRedirect({ ref: "javascript:alert(1)" }), "/status");
+assert.equal(statusSearchRedirect({ ref: id }), null);
+assert.equal(
+  statusSearchRedirect({
+    ref: "https://pay.example.test/receipts",
+    email: "pat@example.com",
+  }),
+  "/status?email=pat%40example.com",
+);
 
 assert.equal(emailsMatch("Pat@Example.com", "pat@example.com"), true);
 assert.equal(emailsMatch("pat@example.com", "other@example.com"), false);
@@ -571,7 +581,7 @@ const metaDisconnected = siteMetaDescription(false);
 assert.equal(metaConnected.includes("Paid before I start."), true);
 assert.equal(metaDisconnected.includes("Paid before I start"), false);
 assert.equal(metaDisconnected.includes("Checkout is not open on this site yet."), true);
-assert.equal(metaDisconnected.includes("I may build and hand off after you accept."), true);
+assert.equal(metaDisconnected.includes("After you accept, I may build and hand off before payment."), true);
 assert.equal(metaConnected.includes("I may build and hand off"), false);
 assert.equal(metaConnected.includes("after a brief"), false);
 assert.equal(metaDisconnected.includes("after a brief"), false);
@@ -611,9 +621,9 @@ assert.equal(termsScopeCopy(false).includes("named workflow"), true);
 const termsMaterials = termsMaterialsCopy();
 assert.equal(termsMaterials.includes("job description"), false);
 assert.equal(termsMaterials.includes("job text"), false);
-assert.equal(termsMaterials.includes("what starts it"), true);
-assert.equal(termsMaterials.includes("which tools"), true);
-assert.equal(termsMaterials.includes("what done looks like"), true);
+assert.equal(termsMaterials.includes("what starts it"), false);
+assert.equal(termsMaterials.includes("which tools"), false);
+assert.equal(termsMaterials.includes("what done looks like"), false);
 assert.equal(termsMaterials.includes("named workflow"), true);
 assert.equal(termsMaterials.toLowerCase().includes("mailto"), false);
 assert.equal(termsMaterials.includes("thomasdisney"), false);
@@ -623,9 +633,9 @@ const termsMeta = termsMetaCopy();
 assert.equal(termsMeta.includes("scoped job"), false);
 assert.equal(termsMeta.includes("job description"), false);
 assert.equal(termsMeta.includes("job text"), false);
-assert.equal(termsMeta.includes("what starts it"), true);
-assert.equal(termsMeta.includes("which tools"), true);
-assert.equal(termsMeta.includes("what done looks like"), true);
+assert.equal(termsMeta.includes("what starts it"), false);
+assert.equal(termsMeta.includes("which tools"), false);
+assert.equal(termsMeta.includes("what done looks like"), false);
 assert.equal(termsMeta.includes("named workflow"), true);
 assert.equal(termsMeta.toLowerCase().includes("mailto"), false);
 assert.equal(termsMeta.includes("thomasdisney"), false);
@@ -636,9 +646,9 @@ assert.equal(termsIntro.includes("scoped work"), false);
 assert.equal(termsIntro.includes("scoped job"), false);
 assert.equal(termsIntro.includes("job description"), false);
 assert.equal(termsIntro.includes("job text"), false);
-assert.equal(termsIntro.includes("what starts it"), true);
-assert.equal(termsIntro.includes("which tools"), true);
-assert.equal(termsIntro.includes("what done looks like"), true);
+assert.equal(termsIntro.includes("what starts it"), false);
+assert.equal(termsIntro.includes("which tools"), false);
+assert.equal(termsIntro.includes("what done looks like"), false);
 assert.equal(termsIntro.includes("named workflow"), true);
 assert.equal(termsIntro.toLowerCase().includes("mailto"), false);
 assert.equal(termsIntro.includes("thomasdisney"), false);
@@ -648,9 +658,9 @@ const staffedAgencyFaq = staffedAgencyFaqCopy();
 assert.equal(staffedAgencyFaq.includes("scoped job"), false);
 assert.equal(staffedAgencyFaq.includes("job description"), false);
 assert.equal(staffedAgencyFaq.includes("job text"), false);
-assert.equal(staffedAgencyFaq.includes("what starts it"), true);
-assert.equal(staffedAgencyFaq.includes("which tools"), true);
-assert.equal(staffedAgencyFaq.includes("what done looks like"), true);
+assert.equal(staffedAgencyFaq.includes("what starts it"), false);
+assert.equal(staffedAgencyFaq.includes("which tools"), false);
+assert.equal(staffedAgencyFaq.includes("what done looks like"), false);
 assert.equal(staffedAgencyFaq.includes("named workflow"), true);
 assert.equal(staffedAgencyFaq.toLowerCase().includes("mailto"), false);
 assert.equal(staffedAgencyFaq.includes("thomasdisney"), false);
@@ -691,10 +701,10 @@ assert.equal(costsDisconnected.includes("named workflow"), true);
 assert.equal(costsConnected.includes("Paid in full before I build."), true);
 assert.equal(costsDisconnected.includes("Paid in full before I build"), false);
 assert.equal(costsDisconnected.includes("Checkout is not open on this site yet."), true);
-assert.equal(costsDisconnected.includes("I may build and hand off after you accept."), true);
+assert.equal(costsDisconnected.includes("After you accept, I may build and hand off before payment."), true);
 assert.equal(
   costsDisconnected.includes("pay the stored amount on the status page"),
-  true,
+  false,
 );
 assert.equal(costsConnected.toLowerCase().includes("mailto"), false);
 assert.equal(costsDisconnected.toLowerCase().includes("mailto"), false);
@@ -727,9 +737,9 @@ const sendBriefStep = sendBriefStepCopy();
 assert.equal(sendBriefStep.includes("Describe one workflow"), false);
 assert.equal(sendBriefStep.includes("the job"), false);
 assert.equal(sendBriefStep.includes("named workflow"), true);
-assert.equal(sendBriefStep.includes("what starts it"), true);
-assert.equal(sendBriefStep.includes("which tools"), true);
-assert.equal(sendBriefStep.includes("what done looks like"), true);
+assert.equal(sendBriefStep.includes("what starts it"), false);
+assert.equal(sendBriefStep.includes("which tools"), false);
+assert.equal(sendBriefStep.includes("what done looks like"), false);
 assert.equal(sendBriefStep.toLowerCase().includes("mailto"), false);
 assert.equal(sendBriefStep.includes("thomasdisney"), false);
 assert.equal(sendBriefStep.includes("gmail.com"), false);
@@ -754,8 +764,8 @@ assert.equal(startHereName.includes("Name one workflow"), false);
 assert.equal(startHereName.includes("the job"), false);
 assert.equal(startHereName.includes("named workflow"), true);
 assert.equal(startHereName.includes("what starts it"), true);
-assert.equal(startHereName.includes("which tools"), true);
-assert.equal(startHereName.includes("what done looks like"), true);
+assert.equal(startHereName.includes("which tools"), false);
+assert.equal(startHereName.includes("what done looks like"), false);
 assert.equal(startHereName.toLowerCase().includes("mailto"), false);
 assert.equal(startHereName.includes("thomasdisney"), false);
 assert.equal(startHereName.includes("gmail.com"), false);
@@ -764,9 +774,9 @@ const automationHero = automationHeroCopy();
 assert.equal(automationHero.includes("Name one repetitive workflow"), false);
 assert.equal(automationHero.includes("the job"), false);
 assert.equal(automationHero.includes("named workflow"), true);
-assert.equal(automationHero.includes("what starts it"), true);
-assert.equal(automationHero.includes("which tools"), true);
-assert.equal(automationHero.includes("what done looks like"), true);
+assert.equal(automationHero.includes("what starts it"), false);
+assert.equal(automationHero.includes("which tools"), false);
+assert.equal(automationHero.includes("what done looks like"), false);
 assert.equal(automationHero.includes("lead intake"), true);
 assert.equal(automationHero.toLowerCase().includes("mailto"), false);
 assert.equal(automationHero.includes("thomasdisney"), false);
@@ -777,9 +787,9 @@ assert.equal(offer.includes("weekly process"), false);
 assert.equal(offer.includes("that process"), false);
 assert.equal(offer.includes("the job"), false);
 assert.equal(offer.includes("named workflow"), true);
-assert.equal(offer.includes("what starts it"), true);
-assert.equal(offer.includes("which tools"), true);
-assert.equal(offer.includes("what done looks like"), true);
+assert.equal(offer.includes("what starts it"), false);
+assert.equal(offer.includes("which tools"), false);
+assert.equal(offer.includes("what done looks like"), false);
 assert.equal(offer.includes("common tools"), true);
 assert.equal(offer.toLowerCase().includes("mailto"), false);
 assert.equal(offer.includes("thomasdisney"), false);
@@ -829,9 +839,9 @@ const intakeFormName = intakeFormNameCopy();
 assert.equal(intakeFormName.includes("Name one workflow"), false);
 assert.equal(intakeFormName.includes("the job"), false);
 assert.equal(intakeFormName.includes("named workflow"), true);
-assert.equal(intakeFormName.includes("what starts it"), true);
-assert.equal(intakeFormName.includes("which tools"), true);
-assert.equal(intakeFormName.includes("what done looks like"), true);
+assert.equal(intakeFormName.includes("what starts it"), false);
+assert.equal(intakeFormName.includes("which tools"), false);
+assert.equal(intakeFormName.includes("what done looks like"), false);
 assert.equal(intakeFormName.includes("Do not send secrets"), true);
 assert.equal(intakeFormName.toLowerCase().includes("mailto"), false);
 assert.equal(intakeFormName.includes("thomasdisney"), false);
@@ -842,9 +852,9 @@ assert.equal(intakeRequired.includes("one workflow"), false);
 assert.equal(intakeRequired.includes("the job"), false);
 assert.equal(intakeRequired.includes("named workflow"), true);
 assert.equal(intakeRequired.includes("Name, email"), true);
-assert.equal(intakeRequired.includes("what starts it"), true);
-assert.equal(intakeRequired.includes("which tools"), true);
-assert.equal(intakeRequired.includes("what done looks like"), true);
+assert.equal(intakeRequired.includes("what starts it"), false);
+assert.equal(intakeRequired.includes("which tools"), false);
+assert.equal(intakeRequired.includes("what done looks like"), false);
 assert.equal(intakeRequired.toLowerCase().includes("mailto"), false);
 assert.equal(intakeRequired.includes("thomasdisney"), false);
 assert.equal(intakeRequired.includes("gmail.com"), false);
@@ -880,9 +890,9 @@ const briefReceiptsOmit = briefReceiptsOmitCopy();
 assert.equal(briefReceiptsOmit.includes("the job text"), false);
 assert.equal(briefReceiptsOmit.includes("job text"), false);
 assert.equal(briefReceiptsOmit.includes("the job"), false);
-assert.equal(briefReceiptsOmit.includes("what starts it"), true);
-assert.equal(briefReceiptsOmit.includes("which tools"), true);
-assert.equal(briefReceiptsOmit.includes("what done looks like"), true);
+assert.equal(briefReceiptsOmit.includes("what starts it"), false);
+assert.equal(briefReceiptsOmit.includes("which tools"), false);
+assert.equal(briefReceiptsOmit.includes("what done looks like"), false);
 assert.equal(briefReceiptsOmit.toLowerCase().includes("mailto"), false);
 assert.equal(briefReceiptsOmit.includes("thomasdisney"), false);
 assert.equal(briefReceiptsOmit.includes("gmail.com"), false);
@@ -893,10 +903,10 @@ assert.equal(priceFaqConnected.includes("You pay after you accept, before I buil
 assert.equal(priceFaqDisconnected.includes("before I build"), false);
 assert.equal(priceFaqDisconnected.includes("pay after you accept"), false);
 assert.equal(priceFaqDisconnected.includes("Checkout is not open on this site yet."), true);
-assert.equal(priceFaqDisconnected.includes("I may build and hand off after you accept."), true);
+assert.equal(priceFaqDisconnected.includes("After you accept, I may build and hand off before payment."), false);
 assert.equal(
   priceFaqDisconnected.includes("pay the stored amount on the status page"),
-  true,
+  false,
 );
 assert.equal(priceFaqConnected.includes("after the brief"), false);
 assert.equal(priceFaqDisconnected.includes("after the brief"), false);
@@ -915,9 +925,9 @@ const privacyCollect = privacyCollectCopy();
 assert.equal(privacyCollect.includes("job description"), false);
 assert.equal(privacyCollect.includes("deliver the job"), false);
 assert.equal(privacyCollect.includes("deliver that workflow"), true);
-assert.equal(privacyCollect.includes("what starts it"), true);
-assert.equal(privacyCollect.includes("which tools"), true);
-assert.equal(privacyCollect.includes("what done looks like"), true);
+assert.equal(privacyCollect.includes("what starts it"), false);
+assert.equal(privacyCollect.includes("which tools"), false);
+assert.equal(privacyCollect.includes("what done looks like"), false);
 assert.equal(privacyCollect.includes("named workflow"), true);
 assert.equal(privacyCollect.toLowerCase().includes("mailto"), false);
 assert.equal(privacyCollect.includes("thomasdisney"), false);
@@ -926,9 +936,9 @@ assert.equal(privacyCollect.includes("gmail.com"), false);
 const privacyLookup = privacyLookupCopy();
 assert.equal(privacyLookup.includes("job text"), false);
 assert.equal(privacyLookup.includes("job description"), false);
-assert.equal(privacyLookup.includes("what starts it"), true);
-assert.equal(privacyLookup.includes("which tools"), true);
-assert.equal(privacyLookup.includes("what done looks like"), true);
+assert.equal(privacyLookup.includes("what starts it"), false);
+assert.equal(privacyLookup.includes("which tools"), false);
+assert.equal(privacyLookup.includes("what done looks like"), false);
 assert.equal(privacyLookup.includes("status page"), true);
 assert.equal(privacyLookup.includes("those workflow fields"), true);
 assert.equal(privacyLookup.toLowerCase().includes("mailto"), false);
@@ -955,7 +965,7 @@ assert.equal(
 assert.equal(jsonLdConnected.includes("Paid before I start."), true);
 assert.equal(jsonLdDisconnected.includes("Paid before I start"), false);
 assert.equal(jsonLdDisconnected.includes("Checkout is not open on this site yet."), true);
-assert.equal(jsonLdDisconnected.includes("I may build and hand off after you accept."), true);
+assert.equal(jsonLdDisconnected.includes("After you accept, I may build and hand off before payment."), true);
 assert.equal(jsonLdConnected.includes("I may build and hand off"), false);
 assert.equal(jsonLdDisconnected.includes("payment processors"), false);
 assert.equal(jsonLdConnected.includes("after a brief"), false);
@@ -983,11 +993,13 @@ assert.equal(statusIntroDisconnected.includes("from your confirmation"), false);
 assert.equal(statusIntroDisconnected.includes("confirmation"), false);
 assert.equal(statusIntroDisconnected.includes("saved reference"), true);
 assert.equal(statusIntroDisconnected.includes("I will not send mail here."), true);
-assert.equal(statusIntroDisconnected.includes("Payment is not open on this page yet."), true);
+assert.equal(statusIntroDisconnected.includes("Payment is not open on this page yet."), false);
+assert.equal(statusIntroDisconnected.includes("Checkout is not open on this site yet."), true);
 assert.equal(statusIntroDisconnected.includes("pay after you accept"), false);
 assert.equal(statusIntroDisconnected.includes("confirm the done-when test"), true);
 assert.equal(statusIntroDisconnected.includes("I may build and hand off"), true);
-assert.equal(statusIntroDisconnected.includes("before checkout is available"), true);
+assert.equal(statusIntroDisconnected.includes("before checkout is available"), false);
+assert.equal(statusIntroDisconnected.includes("before payment"), true);
 assert.equal(statusIntroDisconnected.includes("when you can pay"), false);
 assert.equal(statusIntroConnected.includes("from your confirmation"), false);
 assert.equal(statusIntroConnected.includes("confirmation"), false);
@@ -103166,7 +103178,7 @@ assert.equal(
 );
 assert.equal(
   automationSource.includes("I may build and hand off before checkout is available."),
-  true,
+  false,
 );
 assert.equal(
   automationSource.includes(
@@ -103178,20 +103190,22 @@ assert.equal(
   automationSource.includes(
     "Accept the quote on the status page. I may build and hand off before checkout is available.",
   ),
-  true,
+  false,
 );
+assert.equal(automationSource.includes("acceptBuildStepCopy"), true);
 assert.equal(automationSource.includes("understand the job"), false);
 assert.equal(homeSource.includes('canonical: "/"'), true);
 assert.equal(homeSource.includes('href="/automation#start"'), true);
+assert.equal(homeSource.includes("checkoutClosedCopy"), true);
 assert.equal(
   homeSource.includes(
     "Checkout is not open yet;",
   ),
-  true,
+  false,
 );
 assert.equal(
   homeSource.includes("handoff may arrive before payment."),
-  true,
+  false,
 );
 assert.equal(automationSource.includes('canonical: "/automation"'), true);
 assert.equal(statusPageSource.includes('canonical: "/status"'), true);

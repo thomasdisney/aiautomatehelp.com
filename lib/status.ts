@@ -111,7 +111,7 @@ export function sanitizeStatusEmailParam(value: unknown): string {
   return parsed;
 }
 
-/** Drop a hostile ?email= so Next.js does not serialize it into the page. */
+/** Drop a hostile ?email= or ?ref= so Next.js does not serialize it into the page. */
 export function statusSearchRedirect(input: {
   ref?: unknown;
   email?: unknown;
@@ -120,10 +120,13 @@ export function statusSearchRedirect(input: {
   const ref = intakeBlobPath(refRaw) ? refRaw : "";
   const rawEmail = typeof input.email === "string" ? input.email : "";
   const email = sanitizeStatusEmailParam(rawEmail);
-  if (rawEmail.trim() && !email) {
-    return ref ? `/status?ref=${encodeURIComponent(ref)}` : "/status";
-  }
-  return null;
+  const dropEmail = Boolean(rawEmail.trim() && !email);
+  const dropRef = Boolean(refRaw && !ref);
+  if (!dropEmail && !dropRef) return null;
+  const params = [];
+  if (ref) params.push(`ref=${encodeURIComponent(ref)}`);
+  if (email) params.push(`email=${encodeURIComponent(email)}`);
+  return params.length ? `/status?${params.join("&")}` : "/status";
 }
 
 export type InboxFind =
