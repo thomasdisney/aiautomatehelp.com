@@ -126,6 +126,21 @@ function firstValidStatusRef(value: unknown): { raw: boolean; ref: string; array
   return { raw, ref, array: Array.isArray(value) };
 }
 
+function firstValidStatusEmail(value: unknown): { raw: boolean; email: string; array: boolean } {
+  const items = Array.isArray(value) ? value : [value];
+  let raw = false;
+  let email = "";
+  for (const item of items) {
+    if (typeof item !== "string") continue;
+    const trimmed = item.trim();
+    if (!trimmed) continue;
+    raw = true;
+    const candidate = sanitizeStatusEmailParam(item);
+    if (!email && candidate) email = candidate;
+  }
+  return { raw, email, array: Array.isArray(value) };
+}
+
 /** Drop a hostile or duplicate ?email= / ?ref= (and unknown keys) so Next.js does not serialize them. */
 export function statusSearchRedirect(input: {
   ref?: unknown;
@@ -134,9 +149,9 @@ export function statusSearchRedirect(input: {
 }): string | null {
   const parsedRef = firstValidStatusRef(input.ref);
   const ref = parsedRef.ref;
-  const rawEmail = typeof input.email === "string" ? input.email : "";
-  const email = sanitizeStatusEmailParam(rawEmail);
-  const dropEmail = Boolean(rawEmail.trim() && !email);
+  const parsedEmail = firstValidStatusEmail(input.email);
+  const email = parsedEmail.email;
+  const dropEmail = parsedEmail.array ? parsedEmail.raw : Boolean(parsedEmail.raw && !email);
   const dropRef = parsedRef.array ? parsedRef.raw : Boolean(parsedRef.raw && !ref);
   const extra = Object.keys(input).some((key) => key !== "ref" && key !== "email");
   if (!dropEmail && !dropRef && !extra) return null;

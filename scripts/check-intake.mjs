@@ -508,6 +508,25 @@ assert.equal(
   }),
   `/status?ref=${id}`,
 );
+assert.equal(
+  statusSearchRedirect({
+    email: ["https://pay.example.test/receipts", "pat@example.com"],
+  }),
+  "/status?email=pat%40example.com",
+);
+assert.equal(
+  statusSearchRedirect({
+    email: ["https://pay.example.test/receipts", "javascript:alert(1)"],
+  }),
+  "/status",
+);
+assert.equal(
+  statusSearchRedirect({
+    ref: id,
+    email: ["https://pay.example.test/receipts", "pat@example.com"],
+  }),
+  `/status?ref=${id}&email=pat%40example.com`,
+);
 
 assert.equal(emailsMatch("Pat@Example.com", "pat@example.com"), true);
 assert.equal(emailsMatch("pat@example.com", "other@example.com"), false);
