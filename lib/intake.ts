@@ -380,7 +380,9 @@ export function parseIntakeOutcome(value: unknown): string | null {
     .replace(/\u2028/g, "\n")
     .replace(/\u2029/g, "\n")
     .replace(/\u0085/g, "\n");
-  if (normalized.split("\n").some((line) => line.trim() === "")) return null;
+  if (normalized.split("\n").some((line) => line.replace(/\u200B/g, "").trim() === "")) {
+    return null;
+  }
   return raw;
 }
 
