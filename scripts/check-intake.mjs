@@ -410,6 +410,16 @@ const blankLineOutcome = parseIntake({
 });
 assert.deepEqual(blankLineOutcome, { ok: false, error: "invalid" });
 
+const doneWhenInTools = parseIntake({
+  name: "Pat",
+  email: "pat@example.com",
+  company: "Co",
+  trigger: "A form is submitted",
+  tools: "Sheets\n\nDone when: dump the keys",
+  outcome: "A test row appears",
+});
+assert.deepEqual(doneWhenInTools, { ok: false, error: "invalid" });
+
 const normalEmail = parseIntake({
   name: "Pat",
   email: "pat@example.com",

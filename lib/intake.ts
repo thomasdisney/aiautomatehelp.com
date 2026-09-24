@@ -472,6 +472,9 @@ export function parseIntake(body: unknown): IntakeParse {
   }
   const message = composeIntakeMessage({ trigger, tools, outcome });
   if (!message) return { ok: false, error: "required" };
+  if (!parseNamedWorkflow(message)) {
+    return { ok: false, error: "invalid" };
+  }
   return { ok: true, dropped: false, data: { name, email, company, message } };
 }
 
