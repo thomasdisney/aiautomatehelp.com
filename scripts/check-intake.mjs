@@ -273,6 +273,16 @@ assert.equal(
   ),
   null,
 );
+assert.equal(
+  parseNamedWorkflow(
+    composeIntakeMessage({
+      trigger: "A form is submitted",
+      tools: "x".repeat(FIELD_LIMITS.quoteText + 1),
+      outcome: "A test row appears",
+    }),
+  ),
+  null,
+);
 assert.equal(parseNamedWorkflow("Trigger: A form is submitted\n\nTools: Sheets"), null);
 assert.equal(
   parseNamedWorkflow(
@@ -499,6 +509,16 @@ const longTrigger = parseIntake({
   outcome: "A test row appears",
 });
 assert.deepEqual(longTrigger, { ok: false, error: "invalid" });
+
+const longTools = parseIntake({
+  name: "Pat",
+  email: "pat@example.com",
+  company: "Co",
+  trigger: "A form is submitted",
+  tools: "x".repeat(FIELD_LIMITS.quoteText + 1),
+  outcome: "A test row appears",
+});
+assert.deepEqual(longTools, { ok: false, error: "invalid" });
 
 const blankLineOutcome = parseIntake({
   name: "Pat",
