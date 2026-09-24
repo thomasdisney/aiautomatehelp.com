@@ -358,7 +358,8 @@ export function parseIntakeTools(value: unknown): string | null {
   if (typeof value !== "string") return null;
   const raw = sanitizeText(value, FIELD_LIMITS.tools);
   if (!raw || INTAKE_TOOLS_URL_RE.test(raw)) return null;
-  if (raw.includes("\n\n")) return null;
+  const normalized = raw.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+  if (normalized.includes("\n\n")) return null;
   return raw;
 }
 
