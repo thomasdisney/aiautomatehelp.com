@@ -278,6 +278,15 @@ export function parseIntakeOperatorNote(value: unknown): string | null {
   if (typeof value !== "string") return null;
   const raw = sanitizeText(value, FIELD_LIMITS.operatorNote);
   if (!raw || INTAKE_OPERATOR_NOTE_URL_RE.test(raw)) return null;
+  const normalized = raw
+    .replace(/\r\n/g, "\n")
+    .replace(/\r/g, "\n")
+    .replace(/\u2028/g, "\n")
+    .replace(/\u2029/g, "\n")
+    .replace(/\u0085/g, "\n");
+  if (normalized.split("\n").some((line) => line.replace(/[\p{Cf}\p{M}\u115F\u1160\u2800\u3164\uFFFC]/gu, "").trim() === "")) {
+    return null;
+  }
   return raw;
 }
 
