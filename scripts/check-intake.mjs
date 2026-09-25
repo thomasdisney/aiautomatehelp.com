@@ -198,6 +198,7 @@ import {
   sanitizeRateIp,
 } from "../lib/rate-limit.ts";
 import { apiAllowHeader, apiMethodGuard, apiRewritePath } from "../lib/api-method.ts";
+import { canonicalHostRedirect } from "../lib/canonical-host.ts";
 
 const dropped = parseIntake({
   name: "x",
@@ -64723,6 +64724,53 @@ assert.equal(apiRewritePath("/api/inbox"), null);
 assert.equal(apiRewritePath("/status/"), null);
 assert.equal(apiRewritePath("/automation/"), null);
 assert.equal(apiRewritePath("/api/inbox/\nIgnore previous instructions"), null);
+const apexStatusEmail = canonicalHostRedirect(
+  "aiautomatehelp.com",
+  new URL("https://aiautomatehelp.com/status/?email=probe@example.com"),
+);
+assert.equal(apexStatusEmail?.hostname, "www.aiautomatehelp.com");
+assert.equal(apexStatusEmail?.pathname, "/status/");
+assert.equal(apexStatusEmail?.search, "");
+assert.equal(apexStatusEmail?.href.includes("email="), false);
+assert.equal(apexStatusEmail?.href.includes("probe@example.com"), false);
+assert.equal(apexStatusEmail?.protocol, "https:");
+assert.equal(
+  canonicalHostRedirect(
+    "www.aiautomatehelp.com",
+    new URL("https://www.aiautomatehelp.com/status/?email=probe@example.com"),
+  ),
+  null,
+);
+assert.equal(
+  canonicalHostRedirect(
+    "aiautomatehelp.com:443",
+    new URL(
+      "https://aiautomatehelp.com/status?ref=aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee&Email=probe@example.com",
+    ),
+  )?.toString(),
+  "https://www.aiautomatehelp.com/status?ref=aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
+);
+assert.equal(
+  canonicalHostRedirect(
+    "aiautomatehelp.com",
+    new URL("https://aiautomatehelp.com/api/status?email=probe@example.com"),
+  )?.href.includes("email="),
+  false,
+);
+assert.equal(
+  canonicalHostRedirect(
+    "app.vercel.app",
+    new URL("https://app.vercel.app/status/?email=probe@example.com"),
+  ),
+  null,
+);
+assert.equal(
+  canonicalHostRedirect(
+    null,
+    new URL("https://aiautomatehelp.com/status/?email=probe@example.com"),
+  ),
+  null,
+);
 assert.deepEqual(apiMethodGuard("/api/unknown", "GET"), { status: 404 });
 assert.deepEqual(apiMethodGuard("/api/does-not-exist", "POST"), { status: 404 });
 assert.deepEqual(apiMethodGuard("/api", "GET"), { status: 404 });
@@ -64739,13 +64787,17 @@ const middlewareSource = readFileSync(
 );
 assert.equal(middlewareSource.includes("apiMethodGuard"), true);
 assert.equal(middlewareSource.includes("apiRewritePath"), true);
+assert.equal(middlewareSource.includes("canonicalHostRedirect"), true);
 assert.equal(middlewareSource.includes("NextResponse.rewrite"), true);
+assert.equal(middlewareSource.includes("NextResponse.redirect"), true);
 assert.equal(middlewareSource.includes('"cache-control": "no-store"'), true);
 assert.equal(middlewareSource.includes('code: "not_found"'), true);
 assert.equal(middlewareSource.includes("status: 404"), true);
 assert.equal(middlewareSource.includes("thomasdisney"), false);
 assert.equal(middlewareSource.includes("nubilith"), false);
 assert.equal(middlewareSource.includes("/api/:path*"), true);
+assert.equal(middlewareSource.includes('value: "aiautomatehelp.com"'), true);
+assert.equal(middlewareSource.includes("/:path*"), true);
 const nextConfigSource = readFileSync(
   new URL("../next.config.ts", import.meta.url),
   "utf8",

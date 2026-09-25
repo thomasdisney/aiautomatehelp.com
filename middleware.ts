@@ -1,8 +1,18 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { apiMethodGuard, apiRewritePath } from "@/lib/api-method";
+import { canonicalHostRedirect } from "@/lib/canonical-host";
 
 export function middleware(request: NextRequest) {
+  const canonical = canonicalHostRedirect(
+    request.headers.get("host"),
+    request.nextUrl,
+  );
+  if (canonical) {
+    const redirect = NextResponse.redirect(canonical);
+    redirect.headers.set("cache-control", "no-store");
+    return redirect;
+  }
   const pathname = request.nextUrl.pathname;
   const guard = apiMethodGuard(pathname, request.method);
   if (!guard) {
@@ -49,5 +59,11 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: "/api/:path*",
+  matcher: [
+    {
+      source: "/:path*",
+      has: [{ type: "host", value: "aiautomatehelp.com" }],
+    },
+    "/api/:path*",
+  ],
 };
