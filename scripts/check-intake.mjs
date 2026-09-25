@@ -64627,6 +64627,18 @@ const statusJsonCalls = statusRouteSource.split("NextResponse.json(").length - 1
 const statusNoStore = statusRouteSource.split('"cache-control": "no-store"').length - 1;
 assert.equal(statusJsonCalls > 0, true);
 assert.equal(statusNoStore, statusJsonCalls);
+const statusReplyRouteSource = readFileSync(
+  new URL("../app/api/status/reply/route.ts", import.meta.url),
+  "utf8",
+);
+assert.equal(statusReplyRouteSource.includes("thomasdisney"), false);
+assert.equal(statusReplyRouteSource.includes("nubilith"), false);
+const statusReplyJsonCalls =
+  statusReplyRouteSource.split("NextResponse.json(").length - 1;
+const statusReplyNoStore =
+  statusReplyRouteSource.split('"cache-control": "no-store"').length - 1;
+assert.equal(statusReplyJsonCalls > 0, true);
+assert.equal(statusReplyNoStore, statusReplyJsonCalls);
 assert.equal(
   allowPublicRequest(publicHits, {
     ip: "203.0.113.9",
