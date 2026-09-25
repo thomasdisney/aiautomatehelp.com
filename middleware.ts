@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { apiMethodGuard, apiRewritePath } from "@/lib/api-method";
-import { canonicalHostRedirect } from "@/lib/canonical-host";
+import {
+  canonicalHostRedirect,
+  repeatedSlashRedirect,
+} from "@/lib/canonical-host";
 
 export function middleware(request: NextRequest) {
   const canonical = canonicalHostRedirect(
@@ -10,6 +13,12 @@ export function middleware(request: NextRequest) {
   );
   if (canonical) {
     const redirect = NextResponse.redirect(canonical);
+    redirect.headers.set("cache-control", "no-store");
+    return redirect;
+  }
+  const slash = repeatedSlashRedirect(request.nextUrl);
+  if (slash) {
+    const redirect = NextResponse.redirect(slash);
     redirect.headers.set("cache-control", "no-store");
     return redirect;
   }
@@ -61,9 +70,10 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     {
-      source: "/:path*",
+      source: "/((?!_next/static|_next/image).*)",
       has: [{ type: "host", value: "aiautomatehelp.com" }],
     },
     "/api/:path*",
+    "/((?!_next/static|_next/image).*)",
   ],
 };

@@ -198,7 +198,10 @@ import {
   sanitizeRateIp,
 } from "../lib/rate-limit.ts";
 import { apiAllowHeader, apiMethodGuard, apiRewritePath } from "../lib/api-method.ts";
-import { canonicalHostRedirect } from "../lib/canonical-host.ts";
+import {
+  canonicalHostRedirect,
+  repeatedSlashRedirect,
+} from "../lib/canonical-host.ts";
 
 const dropped = parseIntake({
   name: "x",
@@ -64771,6 +64774,44 @@ assert.equal(
   ),
   null,
 );
+const slashStatusEmail = repeatedSlashRedirect(
+  new URL("https://www.aiautomatehelp.com/status//?email=probe@example.com"),
+);
+assert.equal(slashStatusEmail?.pathname, "/status/");
+assert.equal(slashStatusEmail?.search, "");
+assert.equal(slashStatusEmail?.href.includes("email="), false);
+assert.equal(slashStatusEmail?.href.includes("probe@example.com"), false);
+assert.equal(slashStatusEmail?.hostname, "www.aiautomatehelp.com");
+assert.equal(
+  repeatedSlashRedirect(
+    new URL("https://www.aiautomatehelp.com/status/?email=probe@example.com"),
+  ),
+  null,
+);
+assert.equal(
+  repeatedSlashRedirect(
+    new URL("https://www.aiautomatehelp.com/status?email=probe@example.com"),
+  ),
+  null,
+);
+const slashRootEmail = repeatedSlashRedirect(
+  new URL("https://www.aiautomatehelp.com//?email=probe@example.com"),
+);
+assert.equal(slashRootEmail?.pathname, "/");
+assert.equal(slashRootEmail?.href.includes("email="), false);
+assert.equal(slashRootEmail?.href.includes("probe@example.com"), false);
+assert.equal(
+  repeatedSlashRedirect(
+    new URL("https://www.aiautomatehelp.com/automation///?email=probe@example.com"),
+  )?.pathname,
+  "/automation/",
+);
+assert.equal(
+  repeatedSlashRedirect(
+    new URL("https://www.aiautomatehelp.com/status//"),
+  )?.pathname,
+  "/status/",
+);
 assert.deepEqual(apiMethodGuard("/api/unknown", "GET"), { status: 404 });
 assert.deepEqual(apiMethodGuard("/api/does-not-exist", "POST"), { status: 404 });
 assert.deepEqual(apiMethodGuard("/api", "GET"), { status: 404 });
@@ -64788,6 +64829,7 @@ const middlewareSource = readFileSync(
 assert.equal(middlewareSource.includes("apiMethodGuard"), true);
 assert.equal(middlewareSource.includes("apiRewritePath"), true);
 assert.equal(middlewareSource.includes("canonicalHostRedirect"), true);
+assert.equal(middlewareSource.includes("repeatedSlashRedirect"), true);
 assert.equal(middlewareSource.includes("NextResponse.rewrite"), true);
 assert.equal(middlewareSource.includes("NextResponse.redirect"), true);
 assert.equal(middlewareSource.includes('"cache-control": "no-store"'), true);
@@ -64798,11 +64840,16 @@ assert.equal(middlewareSource.includes("nubilith"), false);
 assert.equal(middlewareSource.includes("/api/:path*"), true);
 assert.equal(middlewareSource.includes('value: "aiautomatehelp.com"'), true);
 assert.equal(middlewareSource.includes("/:path*"), true);
+assert.equal(
+  middlewareSource.includes("/((?!_next/static|_next/image).*)"),
+  true,
+);
 const nextConfigSource = readFileSync(
   new URL("../next.config.ts", import.meta.url),
   "utf8",
 );
 assert.equal(nextConfigSource.includes("skipTrailingSlashRedirect: true"), true);
+assert.equal(nextConfigSource.includes("skipProxyUrlNormalize: true"), true);
 assert.equal(
   /source:\s*"\/status\/"[\s\S]{0,80}permanent:\s*true/.test(nextConfigSource),
   false,
