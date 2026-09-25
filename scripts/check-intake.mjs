@@ -64819,6 +64819,47 @@ assert.equal(
   )?.pathname,
   "/status/",
 );
+const encodedSlashStatusEmail = repeatedSlashRedirect(
+  new URL(
+    "https://www.aiautomatehelp.com/status%2F%2F?email=probe@example.com",
+  ),
+);
+assert.equal(encodedSlashStatusEmail?.pathname, "/status/");
+assert.equal(encodedSlashStatusEmail?.search, "");
+assert.equal(encodedSlashStatusEmail?.href.includes("email="), false);
+assert.equal(encodedSlashStatusEmail?.href.includes("probe@example.com"), false);
+assert.equal(
+  repeatedSlashRedirect(
+    new URL(
+      "https://www.aiautomatehelp.com/status%2f%2f?email=probe@example.com",
+    ),
+  )?.pathname,
+  "/status/",
+);
+assert.equal(
+  repeatedSlashRedirect(
+    new URL(
+      "https://www.aiautomatehelp.com/automation%2F%2F%2F?email=probe@example.com",
+    ),
+  )?.pathname,
+  "/automation/",
+);
+assert.equal(
+  repeatedSlashRedirect(
+    new URL(
+      "https://www.aiautomatehelp.com/%2F%2F?email=probe@example.com",
+    ),
+  )?.pathname,
+  "/",
+);
+assert.equal(
+  repeatedSlashRedirect(
+    new URL(
+      "https://www.aiautomatehelp.com/status%5C?email=probe@example.com",
+    ),
+  )?.pathname,
+  "/status/",
+);
 assert.deepEqual(apiMethodGuard("/api/unknown", "GET"), { status: 404 });
 assert.deepEqual(apiMethodGuard("/api/does-not-exist", "POST"), { status: 404 });
 assert.deepEqual(apiMethodGuard("/api", "GET"), { status: 404 });

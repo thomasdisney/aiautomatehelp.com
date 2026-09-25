@@ -22,9 +22,31 @@ export function canonicalHostRedirect(
   return next;
 }
 
-/** Collapse // and \\ so Next.js cannot 308 with a public Location that includes ?email=. */
+/**
+ * Decode %2F / %5C (and a few nested encodings) so encoded consecutive slashes
+ * are visible. The URL parser keeps %2F in pathname; Next.js then 500s that
+ * path with a public Location-less 500, or a public 308 if it decodes later.
+ */
+function decodePathSlashes(pathname: string): string {
+  let current = pathname;
+  for (let i = 0; i < 4; i++) {
+    let next = current.replace(/%5c/gi, "\\").replace(/%2f/gi, "/");
+    if (next === current) {
+      try {
+        next = decodeURIComponent(current);
+      } catch {
+        break;
+      }
+    }
+    if (next === current) break;
+    current = next;
+  }
+  return current;
+}
+
+/** Collapse //, \\, and encoded slashes so a public 308/500 cannot keep ?email=. */
 export function repeatedSlashRedirect(url: URL): URL | null {
-  const pathname = url.pathname;
+  const pathname = decodePathSlashes(url.pathname);
   if (!pathname.includes("//") && !pathname.includes("\\")) return null;
   const next = new URL(url.href);
   next.pathname = pathname.replace(/\\/g, "/").replace(/\/{2,}/g, "/") || "/";
