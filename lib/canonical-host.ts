@@ -69,6 +69,11 @@ function canonicalPublicCachePath(pathname: string): string {
   return collapsed;
 }
 
+function isPublicCachePath(pathname: string): boolean {
+  if (PUBLIC_CACHE_PATHS.has(pathname)) return true;
+  return pathname === "/_next/static" || pathname.startsWith("/_next/static/");
+}
+
 function searchHasEmailParam(url: URL): boolean {
   return [...url.searchParams.keys()].some((key) => key.toLowerCase() === "email");
 }
@@ -79,7 +84,7 @@ function searchHasEmailParam(url: URL): boolean {
  */
 export function publicCacheEmailRedirect(url: URL): URL | null {
   const pathname = canonicalPublicCachePath(url.pathname);
-  if (!PUBLIC_CACHE_PATHS.has(pathname)) return null;
+  if (!isPublicCachePath(pathname)) return null;
   if (!searchHasEmailParam(url)) return null;
   const next = new URL(url.href);
   next.pathname = pathname;

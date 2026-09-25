@@ -64930,6 +64930,34 @@ assert.equal(
   )?.search,
   "",
 );
+const nextStaticEmail = publicCacheEmailRedirect(
+  new URL(
+    "https://www.aiautomatehelp.com/_next/static/immutable/chunks/foo.js?email=probe@example.com",
+  ),
+);
+assert.equal(
+  nextStaticEmail?.pathname,
+  "/_next/static/immutable/chunks/foo.js",
+);
+assert.equal(nextStaticEmail?.search, "");
+assert.equal(nextStaticEmail?.href.includes("email="), false);
+assert.equal(nextStaticEmail?.href.includes("probe@example.com"), false);
+assert.equal(
+  publicCacheEmailRedirect(
+    new URL(
+      "https://www.aiautomatehelp.com/_next/static/immutable/chunks/foo.js",
+    ),
+  ),
+  null,
+);
+assert.equal(
+  publicCacheEmailRedirect(
+    new URL(
+      "https://www.aiautomatehelp.com/_next/staticfoo.js?email=probe@example.com",
+    ),
+  ),
+  null,
+);
 assert.deepEqual(apiMethodGuard("/api/unknown", "GET"), { status: 404 });
 assert.deepEqual(apiMethodGuard("/api/does-not-exist", "POST"), { status: 404 });
 assert.deepEqual(apiMethodGuard("/api", "GET"), { status: 404 });
@@ -64963,6 +64991,9 @@ assert.equal(
   middlewareSource.includes("/((?!_next/static|_next/image).*)"),
   true,
 );
+assert.equal(middlewareSource.includes("/_next/static/:path*"), true);
+assert.equal(middlewareSource.includes('type: "query"'), true);
+assert.equal(middlewareSource.includes('key: "email"'), true);
 const nextConfigSource = readFileSync(
   new URL("../next.config.ts", import.meta.url),
   "utf8",

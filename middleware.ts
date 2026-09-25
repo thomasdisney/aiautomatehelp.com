@@ -82,5 +82,9 @@ export const config = {
     },
     "/api/:path*",
     "/((?!_next/static|_next/image).*)",
+    {
+      source: "/_next/static/:path*",
+      has: [{ type: "query", key: "email" }],
+    },
   ],
 };
