@@ -64604,6 +64604,7 @@ const agentCodeRouteSource = readFileSync(
 );
 assert.equal(agentCodeRouteSource.includes('bucket: "agent"'), true);
 assert.equal(agentCodeRouteSource.includes("rate_limited"), true);
+assert.equal(agentCodeRouteSource.includes('"cache-control": "no-store"'), true);
 assert.equal(agentCodeRouteSource.includes("thomasdisney"), false);
 assert.equal(agentCodeRouteSource.includes("nubilith"), false);
 assert.equal(
