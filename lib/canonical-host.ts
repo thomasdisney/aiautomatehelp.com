@@ -23,6 +23,13 @@ function stripEmailSearchParams(url: URL): void {
   }
 }
 
+/** Apex → www Location may only keep ?ref= (brief id). Contact aliases are not email-like. */
+function keepStatusRefSearch(url: URL): void {
+  const ref = url.searchParams.get("ref");
+  url.search = "";
+  if (typeof ref === "string" && ref) url.searchParams.set("ref", ref);
+}
+
 export function canonicalHostRedirect(
   hostHeader: unknown,
   url: URL,
@@ -35,6 +42,7 @@ export function canonicalHostRedirect(
   next.hostname = CANONICAL_HOST;
   next.port = "";
   stripEmailSearchParams(next);
+  keepStatusRefSearch(next);
   return publicCacheEmailRedirect(next) ?? next;
 }
 

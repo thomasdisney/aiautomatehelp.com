@@ -64836,7 +64836,43 @@ const apexStatusPhone = canonicalHostRedirect(
 );
 assert.equal(apexStatusPhone?.hostname, "www.aiautomatehelp.com");
 assert.equal(apexStatusPhone?.pathname, "/status");
-assert.equal(apexStatusPhone?.searchParams.get("phone"), "probe@example.com");
+assert.equal(apexStatusPhone?.search, "");
+assert.equal(apexStatusPhone?.searchParams.get("phone"), null);
+assert.equal(apexStatusPhone?.href.includes("phone="), false);
+assert.equal(apexStatusPhone?.href.includes("probe@example.com"), false);
+assert.equal(
+  canonicalHostRedirect(
+    "aiautomatehelp.com",
+    new URL("https://aiautomatehelp.com/status?from=probe@example.com"),
+  )?.href.includes("probe@example.com"),
+  false,
+);
+assert.equal(
+  canonicalHostRedirect(
+    "aiautomatehelp.com",
+    new URL("https://aiautomatehelp.com/status?name=probe@example.com"),
+  )?.href.includes("probe@example.com"),
+  false,
+);
+assert.equal(
+  canonicalHostRedirect(
+    "aiautomatehelp.com",
+    new URL("https://aiautomatehelp.com/automation?from=probe@example.com"),
+  )?.search,
+  "",
+);
+const apexStatusRefPhone = canonicalHostRedirect(
+  "aiautomatehelp.com",
+  new URL(
+    "https://aiautomatehelp.com/status?ref=aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee&phone=probe@example.com",
+  ),
+);
+assert.equal(
+  apexStatusRefPhone?.toString(),
+  "https://www.aiautomatehelp.com/status?ref=aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
+);
+assert.equal(apexStatusRefPhone?.href.includes("phone="), false);
+assert.equal(apexStatusRefPhone?.href.includes("probe@example.com"), false);
 const slashStatusEmail = repeatedSlashRedirect(
   new URL("https://www.aiautomatehelp.com/status//?email=probe@example.com"),
 );
