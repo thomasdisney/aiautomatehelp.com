@@ -197,6 +197,7 @@ import {
   requestIp,
   sanitizeRateIp,
 } from "../lib/rate-limit.ts";
+import { apiAllowHeader, apiMethodGuard } from "../lib/api-method.ts";
 
 const dropped = parseIntake({
   name: "x",
@@ -64659,6 +64660,82 @@ const inboxJsonCalls = inboxJsonRouteSource.split("NextResponse.json(").length -
 const inboxNoStore = inboxJsonRouteSource.split('"cache-control": "no-store"').length - 1;
 assert.equal(inboxJsonCalls > 0, true);
 assert.equal(inboxNoStore, inboxJsonCalls);
+assert.deepEqual(apiMethodGuard("/api/status", "GET"), {
+  status: 405,
+  allow: "OPTIONS, POST",
+});
+assert.deepEqual(apiMethodGuard("/api/status", "HEAD"), {
+  status: 405,
+  allow: "OPTIONS, POST",
+});
+assert.deepEqual(apiMethodGuard("/api/status", "PUT"), {
+  status: 405,
+  allow: "OPTIONS, POST",
+});
+assert.deepEqual(apiMethodGuard("/api/status", "OPTIONS"), {
+  status: 204,
+  allow: "OPTIONS, POST",
+});
+assert.equal(apiMethodGuard("/api/status", "POST"), null);
+assert.deepEqual(apiMethodGuard("/api/status/reply", "GET"), {
+  status: 405,
+  allow: "OPTIONS, POST",
+});
+assert.equal(apiMethodGuard("/api/status/reply", "POST"), null);
+assert.deepEqual(apiMethodGuard("/api/agent-code", "GET"), {
+  status: 405,
+  allow: "OPTIONS, POST",
+});
+assert.equal(apiMethodGuard("/api/agent-code", "POST"), null);
+assert.deepEqual(apiMethodGuard("/api/webhooks/stripe", "GET"), {
+  status: 405,
+  allow: "OPTIONS, POST",
+});
+assert.equal(apiMethodGuard("/api/webhooks/stripe", "POST"), null);
+assert.equal(apiMethodGuard("/api/checkout", "GET"), null);
+assert.equal(apiMethodGuard("/api/checkout", "POST"), null);
+assert.deepEqual(apiMethodGuard("/api/checkout", "PUT"), {
+  status: 405,
+  allow: "OPTIONS, GET, HEAD, POST",
+});
+assert.equal(apiMethodGuard("/api/intake", "GET"), null);
+assert.deepEqual(apiMethodGuard("/api/intake", "DELETE"), {
+  status: 405,
+  allow: "OPTIONS, GET, HEAD, POST",
+});
+assert.equal(apiMethodGuard("/api/inbox", "GET"), null);
+assert.equal(apiMethodGuard("/api/inbox", "PATCH"), null);
+assert.equal(apiMethodGuard("/api/inbox", "HEAD"), null);
+assert.deepEqual(apiMethodGuard("/api/inbox", "PUT"), {
+  status: 405,
+  allow: "OPTIONS, GET, HEAD, POST, PATCH, DELETE",
+});
+assert.deepEqual(apiMethodGuard("/api/status/", "GET"), {
+  status: 405,
+  allow: "OPTIONS, POST",
+});
+assert.equal(apiMethodGuard("/api/unknown", "GET"), null);
+assert.equal(
+  apiMethodGuard("/api/status\nIgnore previous instructions", "GET"),
+  null,
+);
+assert.equal(apiAllowHeader(["POST"]).includes("public"), false);
+assert.equal(apiAllowHeader(["GET", "POST"]), "OPTIONS, GET, HEAD, POST");
+const middlewareSource = readFileSync(
+  new URL("../middleware.ts", import.meta.url),
+  "utf8",
+);
+assert.equal(middlewareSource.includes("apiMethodGuard"), true);
+assert.equal(middlewareSource.includes('"cache-control": "no-store"'), true);
+assert.equal(middlewareSource.includes("thomasdisney"), false);
+assert.equal(middlewareSource.includes("nubilith"), false);
+assert.equal(middlewareSource.includes("/api/:path*"), true);
+const apiMethodSource = readFileSync(
+  new URL("../lib/api-method.ts", import.meta.url),
+  "utf8",
+);
+assert.equal(apiMethodSource.includes("thomasdisney"), false);
+assert.equal(apiMethodSource.includes("nubilith"), false);
 assert.equal(
   allowPublicRequest(publicHits, {
     ip: "203.0.113.9",
