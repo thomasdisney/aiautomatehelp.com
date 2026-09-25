@@ -32,6 +32,13 @@ function isApiPath(pathname: unknown): boolean {
   return raw === "/api" || raw.startsWith("/api/");
 }
 
+export function apiRewritePath(pathname: unknown): string | null {
+  if (typeof pathname !== "string") return null;
+  if (!pathname.endsWith("/")) return null;
+  const path = normalizeApiPath(pathname);
+  return path || null;
+}
+
 export function apiAllowHeader(allowed: readonly string[]): string {
   const set = new Set<string>(["OPTIONS", ...allowed]);
   if (allowed.includes("GET")) set.add("HEAD");

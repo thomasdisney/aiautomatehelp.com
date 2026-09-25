@@ -197,7 +197,7 @@ import {
   requestIp,
   sanitizeRateIp,
 } from "../lib/rate-limit.ts";
-import { apiAllowHeader, apiMethodGuard } from "../lib/api-method.ts";
+import { apiAllowHeader, apiMethodGuard, apiRewritePath } from "../lib/api-method.ts";
 
 const dropped = parseIntake({
   name: "x",
@@ -64714,6 +64714,15 @@ assert.deepEqual(apiMethodGuard("/api/status/", "GET"), {
   status: 405,
   allow: "OPTIONS, POST",
 });
+assert.equal(apiRewritePath("/api/inbox/"), "/api/inbox");
+assert.equal(apiRewritePath("/api/status/"), "/api/status");
+assert.equal(apiRewritePath("/api/does-not-exist/"), "/api/does-not-exist");
+assert.equal(apiRewritePath("/api/webhooks/stripe/"), "/api/webhooks/stripe");
+assert.equal(apiRewritePath("/api/inbox//"), "/api/inbox");
+assert.equal(apiRewritePath("/api/inbox"), null);
+assert.equal(apiRewritePath("/status/"), null);
+assert.equal(apiRewritePath("/automation/"), null);
+assert.equal(apiRewritePath("/api/inbox/\nIgnore previous instructions"), null);
 assert.deepEqual(apiMethodGuard("/api/unknown", "GET"), { status: 404 });
 assert.deepEqual(apiMethodGuard("/api/does-not-exist", "POST"), { status: 404 });
 assert.deepEqual(apiMethodGuard("/api", "GET"), { status: 404 });
@@ -64729,12 +64738,21 @@ const middlewareSource = readFileSync(
   "utf8",
 );
 assert.equal(middlewareSource.includes("apiMethodGuard"), true);
+assert.equal(middlewareSource.includes("apiRewritePath"), true);
+assert.equal(middlewareSource.includes("NextResponse.rewrite"), true);
 assert.equal(middlewareSource.includes('"cache-control": "no-store"'), true);
 assert.equal(middlewareSource.includes('code: "not_found"'), true);
 assert.equal(middlewareSource.includes("status: 404"), true);
 assert.equal(middlewareSource.includes("thomasdisney"), false);
 assert.equal(middlewareSource.includes("nubilith"), false);
 assert.equal(middlewareSource.includes("/api/:path*"), true);
+const nextConfigSource = readFileSync(
+  new URL("../next.config.ts", import.meta.url),
+  "utf8",
+);
+assert.equal(nextConfigSource.includes("skipTrailingSlashRedirect: true"), true);
+assert.equal(nextConfigSource.includes("thomasdisney"), false);
+assert.equal(nextConfigSource.includes("nubilith"), false);
 const notFoundSource = readFileSync(
   new URL("../app/not-found.tsx", import.meta.url),
   "utf8",

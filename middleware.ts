@@ -1,10 +1,21 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { apiMethodGuard } from "@/lib/api-method";
+import { apiMethodGuard, apiRewritePath } from "@/lib/api-method";
 
 export function middleware(request: NextRequest) {
-  const guard = apiMethodGuard(request.nextUrl.pathname, request.method);
-  if (!guard) return NextResponse.next();
+  const pathname = request.nextUrl.pathname;
+  const guard = apiMethodGuard(pathname, request.method);
+  if (!guard) {
+    const rewritePath = apiRewritePath(pathname);
+    if (rewritePath) {
+      const url = request.nextUrl.clone();
+      url.pathname = rewritePath;
+      const rewrite = NextResponse.rewrite(url);
+      rewrite.headers.set("cache-control", "no-store");
+      return rewrite;
+    }
+    return NextResponse.next();
+  }
   if (guard.status === 204) {
     return new NextResponse(null, {
       status: 204,
