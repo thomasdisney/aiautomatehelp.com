@@ -6,52 +6,47 @@ import { allowPublicRequest, requestIp } from "@/lib/rate-limit";
 
 const hits = new Map<string, number[]>();
 
+function json(body: unknown, status = 200) {
+  return NextResponse.json(body, {
+    status,
+    headers: { "cache-control": "no-store" },
+  });
+}
+
 export function GET() {
-  return NextResponse.json(
-    { connected: intakeStoreConfigured() },
-    { headers: { "cache-control": "no-store" } },
-  );
+  return json({ connected: intakeStoreConfigured() });
 }
 
 export async function POST(request: Request) {
   if (!allowPublicRequest(hits, { ip: requestIp(request.headers), bucket: "intake" })) {
-    return NextResponse.json({ ok: false, code: "rate_limited" }, { status: 429 });
+    return json({ ok: false, code: "rate_limited" }, 429);
   }
 
   let body: unknown;
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ ok: false, code: "invalid" }, { status: 400 });
+    return json({ ok: false, code: "invalid" }, 400);
   }
 
   const parsed = parseIntake(body);
   if (!parsed.ok) {
-    return NextResponse.json({ ok: false, code: parsed.error }, { status: 400 });
+    return json({ ok: false, code: parsed.error }, 400);
   }
   if (parsed.dropped) {
-    return NextResponse.json({ ok: true, id: "ok" });
+    return json({ ok: true, id: "ok" });
   }
   if (!intakeStoreConfigured()) {
-    return NextResponse.json(
-      { ok: false, code: "intake_not_connected" },
-      { status: 503 },
-    );
+    return json({ ok: false, code: "intake_not_connected" }, 503);
   }
 
   const result = await persistIntake(parsed.data);
   if (!result.stored) {
-    return NextResponse.json(
-      { ok: false, code: "intake_not_connected" },
-      { status: 503 },
-    );
+    return json({ ok: false, code: "intake_not_connected" }, 503);
   }
   const created = toPublicIntakeCreate({ id: result.id, receivedAt: result.receivedAt });
   if (!created) {
-    return NextResponse.json(
-      { ok: false, code: "intake_not_connected" },
-      { status: 503 },
-    );
+    return json({ ok: false, code: "intake_not_connected" }, 503);
   }
-  return NextResponse.json(created);
+  return json(created);
 }

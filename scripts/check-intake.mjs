@@ -64607,6 +64607,16 @@ assert.equal(agentCodeRouteSource.includes("rate_limited"), true);
 assert.equal(agentCodeRouteSource.includes('"cache-control": "no-store"'), true);
 assert.equal(agentCodeRouteSource.includes("thomasdisney"), false);
 assert.equal(agentCodeRouteSource.includes("nubilith"), false);
+const intakeRouteSource = readFileSync(
+  new URL("../app/api/intake/route.ts", import.meta.url),
+  "utf8",
+);
+assert.equal(intakeRouteSource.includes("thomasdisney"), false);
+assert.equal(intakeRouteSource.includes("nubilith"), false);
+const intakeJsonCalls = intakeRouteSource.split("NextResponse.json(").length - 1;
+const intakeNoStore = intakeRouteSource.split('"cache-control": "no-store"').length - 1;
+assert.equal(intakeJsonCalls > 0, true);
+assert.equal(intakeNoStore, intakeJsonCalls);
 assert.equal(
   allowPublicRequest(publicHits, {
     ip: "203.0.113.9",
