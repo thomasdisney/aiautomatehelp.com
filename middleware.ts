@@ -84,6 +84,7 @@ export const config = {
     "/((?!_next/static|_next/image).*)",
     "/_next/static/:path*",
     "/_next/image",
+    "/_vercel/:path*",
     {
       source: "/_next/static/:path*",
       has: [{ type: "query", key: "email" }],

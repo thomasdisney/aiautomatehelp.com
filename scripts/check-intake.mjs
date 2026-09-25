@@ -65025,6 +65025,50 @@ assert.equal(
   )?.search,
   "",
 );
+const speedInsightsEmail = publicCacheEmailRedirect(
+  new URL(
+    "https://www.aiautomatehelp.com/_vercel/speed-insights/script.js?email=probe@example.com",
+  ),
+);
+assert.equal(
+  speedInsightsEmail?.pathname,
+  "/_vercel/speed-insights/script.js",
+);
+assert.equal(speedInsightsEmail?.search, "");
+assert.equal(speedInsightsEmail?.href.includes("email="), false);
+assert.equal(speedInsightsEmail?.href.includes("probe@example.com"), false);
+assert.equal(
+  publicCacheEmailRedirect(
+    new URL(
+      "https://www.aiautomatehelp.com/_vercel/speed-insights/script.js",
+    ),
+  ),
+  null,
+);
+assert.equal(
+  publicCacheEmailRedirect(
+    new URL(
+      "https://www.aiautomatehelp.com/_vercel/speed-insights/script.js?Email=probe@example.com",
+    ),
+  )?.search,
+  "",
+);
+assert.equal(
+  publicCacheEmailRedirect(
+    new URL(
+      "https://www.aiautomatehelp.com/_vercel/speed-insights/script.js?email[]=probe@example.com",
+    ),
+  )?.href.includes("probe@example.com"),
+  false,
+);
+assert.equal(
+  publicCacheEmailRedirect(
+    new URL(
+      "https://www.aiautomatehelp.com/_vercel/speed-insightsfoo.js?email=probe@example.com",
+    ),
+  ),
+  null,
+);
 assert.deepEqual(apiMethodGuard("/api/unknown", "GET"), { status: 404 });
 assert.deepEqual(apiMethodGuard("/api/does-not-exist", "POST"), { status: 404 });
 assert.deepEqual(apiMethodGuard("/api", "GET"), { status: 404 });
@@ -65067,6 +65111,7 @@ assert.equal(
   middlewareSource.includes('    "/_next/image",'),
   true,
 );
+assert.equal(middlewareSource.includes('    "/_vercel/:path*",'), true);
 assert.equal(middlewareSource.includes('type: "query"'), true);
 assert.equal(middlewareSource.includes('key: "email"'), true);
 assert.equal(middlewareSource.includes('key: "Email"'), true);

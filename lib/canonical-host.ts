@@ -78,7 +78,13 @@ function isPublicCachePath(pathname: string): boolean {
   if (pathname === "/_next/static" || pathname.startsWith("/_next/static/")) {
     return true;
   }
-  return pathname === "/_next/image" || pathname.startsWith("/_next/image/");
+  if (pathname === "/_next/image" || pathname.startsWith("/_next/image/")) {
+    return true;
+  }
+  return (
+    pathname === "/_vercel/speed-insights" ||
+    pathname.startsWith("/_vercel/speed-insights/")
+  );
 }
 
 function searchHasEmailParam(url: URL): boolean {
