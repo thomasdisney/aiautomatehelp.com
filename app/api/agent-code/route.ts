@@ -1,9 +1,16 @@
 import { NextResponse } from "next/server";
+import { allowPublicRequest, requestIp } from "@/lib/rate-limit";
 
 const AGENT_URL = "https://agent.aiautomatehelp.com";
 const CODE_RE = /^[a-z0-9-]{4,64}$/;
 
+const hits = new Map<string, number[]>();
+
 export async function POST(request: Request) {
+  if (!allowPublicRequest(hits, { ip: requestIp(request.headers), bucket: "agent" })) {
+    return NextResponse.json({ ok: false, code: "rate_limited" }, { status: 429 });
+  }
+
   let body: unknown;
   try {
     body = await request.json();

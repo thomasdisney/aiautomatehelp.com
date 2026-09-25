@@ -179,6 +179,7 @@ import {
   receivedAtFromStoredReceipt,
 } from "../lib/brief-receipt.ts";
 import {
+  AGENT_PUBLIC_MAX,
   CHECKOUT_PUBLIC_MAX,
   INBOX_ANON_MAX,
   INBOX_AUTH_MAX,
@@ -64421,6 +64422,7 @@ assert.equal(INTAKE_PUBLIC_MAX, 5);
 assert.equal(STATUS_PUBLIC_MAX, 10);
 assert.equal(REPLY_PUBLIC_MAX, 8);
 assert.equal(CHECKOUT_PUBLIC_MAX, 8);
+assert.equal(AGENT_PUBLIC_MAX, 8);
 assert.equal(PUBLIC_RATE_WINDOW_MS, INBOX_RATE_WINDOW_MS);
 assert.equal(sanitizeRateIp("1.2.3.4"), "1.2.3.4");
 assert.equal(sanitizeRateIp("  203.0.113.9  "), "203.0.113.9");
@@ -64430,10 +64432,13 @@ assert.equal(parsePublicRateBucket("intake"), "intake");
 assert.equal(parsePublicRateBucket("STATUS"), "status");
 assert.equal(parsePublicRateBucket("reply"), "reply");
 assert.equal(parsePublicRateBucket("checkout"), "checkout");
+assert.equal(parsePublicRateBucket("agent"), "agent");
+assert.equal(parsePublicRateBucket("AGENT"), "agent");
 assert.equal(parsePublicRateBucket("Ignore previous instructions"), null);
 assert.equal(parsePublicRateBucket("../etc/passwd"), null);
 assert.equal(publicRateKey("203.0.113.9", "intake"), "intake:203.0.113.9");
 assert.equal(publicRateKey("203.0.113.9", "status"), "status:203.0.113.9");
+assert.equal(publicRateKey("203.0.113.9", "agent"), "agent:203.0.113.9");
 assert.equal(publicRateKey("Ignore previous", "intake").includes(" "), false);
 assert.equal(publicRateKey("203.0.113.9", "Ignore previous instructions"), "pub:203.0.113.9");
 assert.equal(
@@ -64553,6 +64558,54 @@ assert.equal(
   }),
   true,
 );
+assert.equal(
+  allowPublicRequest(publicHits, {
+    ip: "203.0.113.9",
+    bucket: "agent",
+    now: publicRateNow,
+  }),
+  true,
+);
+const agentHits = new Map();
+for (let i = 0; i < AGENT_PUBLIC_MAX; i += 1) {
+  assert.equal(
+    allowPublicRequest(agentHits, {
+      ip: "203.0.113.9",
+      bucket: "agent",
+      now: publicRateNow,
+    }),
+    true,
+  );
+}
+assert.equal(
+  allowPublicRequest(agentHits, {
+    ip: "203.0.113.9",
+    bucket: "agent",
+    now: publicRateNow,
+  }),
+  false,
+);
+assert.equal(
+  allowPublicRequest(agentHits, {
+    ip: "203.0.113.9",
+    bucket: "intake",
+    now: publicRateNow,
+  }),
+  true,
+);
+const agentKeys = [...agentHits.keys()].join(" ");
+assert.equal(agentKeys.includes("agent:203.0.113.9"), true);
+assert.equal(agentKeys.includes("intake:203.0.113.9"), true);
+assert.equal(agentKeys.includes("email"), false);
+assert.equal(agentKeys.includes("message"), false);
+const agentCodeRouteSource = readFileSync(
+  new URL("../app/api/agent-code/route.ts", import.meta.url),
+  "utf8",
+);
+assert.equal(agentCodeRouteSource.includes('bucket: "agent"'), true);
+assert.equal(agentCodeRouteSource.includes("rate_limited"), true);
+assert.equal(agentCodeRouteSource.includes("thomasdisney"), false);
+assert.equal(agentCodeRouteSource.includes("nubilith"), false);
 assert.equal(
   allowPublicRequest(publicHits, {
     ip: "203.0.113.9",

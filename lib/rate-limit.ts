@@ -6,9 +6,10 @@ export const INTAKE_PUBLIC_MAX = 5;
 export const STATUS_PUBLIC_MAX = 10;
 export const REPLY_PUBLIC_MAX = 8;
 export const CHECKOUT_PUBLIC_MAX = 8;
+export const AGENT_PUBLIC_MAX = 8;
 
 const IP_KEY_RE = /[^A-Za-z0-9.:_-]/g;
-const PUBLIC_BUCKETS = ["intake", "status", "reply", "checkout"] as const;
+const PUBLIC_BUCKETS = ["intake", "status", "reply", "checkout", "agent"] as const;
 export type PublicRateBucket = (typeof PUBLIC_BUCKETS)[number];
 
 export type RateLimitStore = Map<string, number[]>;
@@ -83,6 +84,7 @@ function publicMax(bucket: PublicRateBucket): number {
   if (bucket === "intake") return INTAKE_PUBLIC_MAX;
   if (bucket === "status") return STATUS_PUBLIC_MAX;
   if (bucket === "reply") return REPLY_PUBLIC_MAX;
+  if (bucket === "agent") return AGENT_PUBLIC_MAX;
   return CHECKOUT_PUBLIC_MAX;
 }
 
