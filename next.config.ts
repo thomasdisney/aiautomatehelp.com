@@ -21,11 +21,7 @@ const nextConfig: NextConfig = {
       { source: "/automation/", destination: "/automation" },
       { source: "/privacy/", destination: "/privacy" },
       { source: "/terms/", destination: "/terms" },
-    ];
-  },
-  async redirects() {
-    return [
-      { source: "/agent/", destination: "/", permanent: true },
+      { source: "/agent/", destination: "/agent" },
     ];
   },
 };
