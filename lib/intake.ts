@@ -334,7 +334,7 @@ export function parseIntakeThreadText(value: unknown): string | null {
     .replace(/\u2028/g, "\n")
     .replace(/\u2029/g, "\n")
     .replace(/\u0085/g, "\n");
-  if (normalized.split("\n").some((line) => line.replace(/[\p{Cf}\p{M}\u115F\u1160\u2800\u3164\uFFA0\uE000\uFFFC]/gu, "").trim() === "")) {
+  if (normalized.split("\n").some((line) => line.replace(/[\p{Cf}\p{M}\u115F\u1160\u2800\u3164\uFFA0\uE000\uE001\uFFFC]/gu, "").trim() === "")) {
     return null;
   }
   return raw;
