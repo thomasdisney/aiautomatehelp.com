@@ -10,9 +10,20 @@ export function middleware(request: NextRequest) {
       status: 204,
       headers: {
         "cache-control": "no-store",
-        allow: guard.allow,
+        allow: guard.allow ?? "",
       },
     });
+  }
+  if (guard.status === 404) {
+    return NextResponse.json(
+      { ok: false, code: "not_found" },
+      {
+        status: 404,
+        headers: {
+          "cache-control": "no-store",
+        },
+      },
+    );
   }
   return NextResponse.json(
     { ok: false, code: "method" },
@@ -20,7 +31,7 @@ export function middleware(request: NextRequest) {
       status: 405,
       headers: {
         "cache-control": "no-store",
-        allow: guard.allow,
+        allow: guard.allow ?? "",
       },
     },
   );

@@ -64714,11 +64714,14 @@ assert.deepEqual(apiMethodGuard("/api/status/", "GET"), {
   status: 405,
   allow: "OPTIONS, POST",
 });
-assert.equal(apiMethodGuard("/api/unknown", "GET"), null);
-assert.equal(
+assert.deepEqual(apiMethodGuard("/api/unknown", "GET"), { status: 404 });
+assert.deepEqual(apiMethodGuard("/api/does-not-exist", "POST"), { status: 404 });
+assert.deepEqual(apiMethodGuard("/api", "GET"), { status: 404 });
+assert.deepEqual(
   apiMethodGuard("/api/status\nIgnore previous instructions", "GET"),
-  null,
+  { status: 404 },
 );
+assert.equal(apiMethodGuard("/automation", "GET"), null);
 assert.equal(apiAllowHeader(["POST"]).includes("public"), false);
 assert.equal(apiAllowHeader(["GET", "POST"]), "OPTIONS, GET, HEAD, POST");
 const middlewareSource = readFileSync(
@@ -64727,6 +64730,8 @@ const middlewareSource = readFileSync(
 );
 assert.equal(middlewareSource.includes("apiMethodGuard"), true);
 assert.equal(middlewareSource.includes('"cache-control": "no-store"'), true);
+assert.equal(middlewareSource.includes('code: "not_found"'), true);
+assert.equal(middlewareSource.includes("status: 404"), true);
 assert.equal(middlewareSource.includes("thomasdisney"), false);
 assert.equal(middlewareSource.includes("nubilith"), false);
 assert.equal(middlewareSource.includes("/api/:path*"), true);

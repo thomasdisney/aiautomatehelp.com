@@ -26,6 +26,12 @@ function normalizeApiPath(pathname: unknown): string {
   return raw.replace(/\/+$/g, "");
 }
 
+function isApiPath(pathname: unknown): boolean {
+  if (typeof pathname !== "string") return false;
+  const raw = pathname.trim();
+  return raw === "/api" || raw.startsWith("/api/");
+}
+
 export function apiAllowHeader(allowed: readonly string[]): string {
   const set = new Set<string>(["OPTIONS", ...allowed]);
   if (allowed.includes("GET")) set.add("HEAD");
@@ -35,10 +41,13 @@ export function apiAllowHeader(allowed: readonly string[]): string {
 export function apiMethodGuard(
   pathname: unknown,
   method: unknown,
-): { status: 204 | 405; allow: string } | null {
+): { status: 204 | 404 | 405; allow?: string } | null {
   const path = normalizeApiPath(pathname);
   const allowed = path ? API_ALLOWED_METHODS[path] : undefined;
-  if (!allowed) return null;
+  if (!allowed) {
+    if (isApiPath(pathname)) return { status: 404 };
+    return null;
+  }
   const allow = apiAllowHeader(allowed);
   const verb = typeof method === "string" ? method.trim().toUpperCase() : "";
   if (verb === "OPTIONS") return { status: 204, allow };
