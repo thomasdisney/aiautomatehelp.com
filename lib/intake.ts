@@ -198,20 +198,26 @@ export function blobIntakePaymentRefHasDisallowedValue(paymentRef: unknown): boo
 }
 
 const INTAKE_QUOTE_TEXT_URL_RE = /^https?:\/\//i;
+const INTAKE_BLANK_LINE_FILLERS =
+  /[\p{Cf}\p{M}\p{Co}\u115F\u1160\u2800\u3164\uFFA0\uFFFC]/gu;
 
-export function parseIntakeQuoteText(value: unknown): string | null {
-  if (typeof value !== "string") return null;
-  const raw = sanitizeText(value, FIELD_LIMITS.quoteText);
-  if (!raw || INTAKE_QUOTE_TEXT_URL_RE.test(raw)) return null;
-  const normalized = raw
+function intakeHasBlankLine(value: string): boolean {
+  const normalized = value
     .replace(/\r\n/g, "\n")
     .replace(/\r/g, "\n")
     .replace(/\u2028/g, "\n")
     .replace(/\u2029/g, "\n")
     .replace(/\u0085/g, "\n");
-  if (normalized.split("\n").some((line) => line.replace(/[\p{Cf}\p{M}\u115F\u1160\u2800\u3164\uFFA0\uE000\uE001\uFFFC]/gu, "").trim() === "")) {
-    return null;
-  }
+  return normalized.split("\n").some(
+    (line) => line.replace(INTAKE_BLANK_LINE_FILLERS, "").trim() === "",
+  );
+}
+
+export function parseIntakeQuoteText(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const raw = sanitizeText(value, FIELD_LIMITS.quoteText);
+  if (!raw || INTAKE_QUOTE_TEXT_URL_RE.test(raw)) return null;
+  if (intakeHasBlankLine(raw)) return null;
   return raw;
 }
 
@@ -228,15 +234,7 @@ export function parseIntakeCustomerReply(value: unknown): string | null {
   if (typeof value !== "string") return null;
   const raw = sanitizeText(value, FIELD_LIMITS.customerReply);
   if (!raw || INTAKE_CUSTOMER_REPLY_URL_RE.test(raw)) return null;
-  const normalized = raw
-    .replace(/\r\n/g, "\n")
-    .replace(/\r/g, "\n")
-    .replace(/\u2028/g, "\n")
-    .replace(/\u2029/g, "\n")
-    .replace(/\u0085/g, "\n");
-  if (normalized.split("\n").some((line) => line.replace(/[\p{Cf}\p{M}\u115F\u1160\u2800\u3164\uFFA0\uE000\uE001\uFFFC]/gu, "").trim() === "")) {
-    return null;
-  }
+  if (intakeHasBlankLine(raw)) return null;
   return raw;
 }
 
@@ -253,15 +251,7 @@ export function parseIntakeUpdateText(value: unknown): string | null {
   if (typeof value !== "string") return null;
   const raw = sanitizeText(value, FIELD_LIMITS.updateText);
   if (!raw || INTAKE_UPDATE_TEXT_URL_RE.test(raw)) return null;
-  const normalized = raw
-    .replace(/\r\n/g, "\n")
-    .replace(/\r/g, "\n")
-    .replace(/\u2028/g, "\n")
-    .replace(/\u2029/g, "\n")
-    .replace(/\u0085/g, "\n");
-  if (normalized.split("\n").some((line) => line.replace(/[\p{Cf}\p{M}\u115F\u1160\u2800\u3164\uFFA0\uE000\uE001\uFFFC]/gu, "").trim() === "")) {
-    return null;
-  }
+  if (intakeHasBlankLine(raw)) return null;
   return raw;
 }
 
@@ -278,15 +268,7 @@ export function parseIntakeOperatorNote(value: unknown): string | null {
   if (typeof value !== "string") return null;
   const raw = sanitizeText(value, FIELD_LIMITS.operatorNote);
   if (!raw || INTAKE_OPERATOR_NOTE_URL_RE.test(raw)) return null;
-  const normalized = raw
-    .replace(/\r\n/g, "\n")
-    .replace(/\r/g, "\n")
-    .replace(/\u2028/g, "\n")
-    .replace(/\u2029/g, "\n")
-    .replace(/\u0085/g, "\n");
-  if (normalized.split("\n").some((line) => line.replace(/[\p{Cf}\p{M}\u115F\u1160\u2800\u3164\uFFA0\uE000\uE001\uFFFC]/gu, "").trim() === "")) {
-    return null;
-  }
+  if (intakeHasBlankLine(raw)) return null;
   return raw;
 }
 
@@ -303,15 +285,7 @@ export function parseIntakeDoneWhen(value: unknown): string | null {
   if (typeof value !== "string") return null;
   const raw = sanitizeText(value, FIELD_LIMITS.doneWhen);
   if (!raw || INTAKE_DONE_WHEN_URL_RE.test(raw)) return null;
-  const normalized = raw
-    .replace(/\r\n/g, "\n")
-    .replace(/\r/g, "\n")
-    .replace(/\u2028/g, "\n")
-    .replace(/\u2029/g, "\n")
-    .replace(/\u0085/g, "\n");
-  if (normalized.split("\n").some((line) => line.replace(/[\p{Cf}\p{M}\u115F\u1160\u2800\u3164\uFFA0\uE000\uE001\uFFFC]/gu, "").trim() === "")) {
-    return null;
-  }
+  if (intakeHasBlankLine(raw)) return null;
   return raw;
 }
 
@@ -328,15 +302,7 @@ export function parseIntakeThreadText(value: unknown): string | null {
   if (typeof value !== "string") return null;
   const raw = sanitizeText(value, FIELD_LIMITS.customerReply);
   if (!raw || INTAKE_THREAD_TEXT_URL_RE.test(raw)) return null;
-  const normalized = raw
-    .replace(/\r\n/g, "\n")
-    .replace(/\r/g, "\n")
-    .replace(/\u2028/g, "\n")
-    .replace(/\u2029/g, "\n")
-    .replace(/\u0085/g, "\n");
-  if (normalized.split("\n").some((line) => line.replace(/[\p{Cf}\p{M}\u115F\u1160\u2800\u3164\uFFA0\uE000\uE001\uFFFC]/gu, "").trim() === "")) {
-    return null;
-  }
+  if (intakeHasBlankLine(raw)) return null;
   return raw;
 }
 
