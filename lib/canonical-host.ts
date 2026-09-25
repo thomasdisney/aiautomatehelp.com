@@ -1,9 +1,13 @@
 const APEX_HOST = "aiautomatehelp.com";
 const CANONICAL_HOST = "www.aiautomatehelp.com";
 
+function isEmailSearchParamKey(key: string): boolean {
+  return key.toLowerCase().startsWith("email");
+}
+
 function stripEmailSearchParams(url: URL): void {
   for (const key of [...url.searchParams.keys()]) {
-    if (key.toLowerCase() === "email") url.searchParams.delete(key);
+    if (isEmailSearchParamKey(key)) url.searchParams.delete(key);
   }
 }
 
@@ -78,7 +82,7 @@ function isPublicCachePath(pathname: string): boolean {
 }
 
 function searchHasEmailParam(url: URL): boolean {
-  return [...url.searchParams.keys()].some((key) => key.toLowerCase() === "email");
+  return [...url.searchParams.keys()].some((key) => isEmailSearchParamKey(key));
 }
 
 /**
