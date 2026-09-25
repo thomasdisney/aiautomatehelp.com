@@ -7,7 +7,9 @@ function isEmailSearchParamKey(key: string): boolean {
     n.startsWith("email") ||
     n.endsWith("email") ||
     n.startsWith("mail") ||
-    n.endsWith("mail")
+    n.endsWith("mail") ||
+    n.startsWith("address") ||
+    n.endsWith("address")
   );
 }
 
