@@ -35,7 +35,7 @@ export function canonicalHostRedirect(
   next.hostname = CANONICAL_HOST;
   next.port = "";
   stripEmailSearchParams(next);
-  return next;
+  return publicCacheEmailRedirect(next) ?? next;
 }
 
 /**
