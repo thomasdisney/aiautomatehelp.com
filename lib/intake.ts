@@ -300,7 +300,7 @@ export function parseIntakeDoneWhen(value: unknown): string | null {
     .replace(/\u2028/g, "\n")
     .replace(/\u2029/g, "\n")
     .replace(/\u0085/g, "\n");
-  if (normalized.split("\n").some((line) => line.replace(/[\p{Cf}\p{M}\u115F\u3164\uFFFC]/gu, "").trim() === "")) {
+  if (normalized.split("\n").some((line) => line.replace(/[\p{Cf}\p{M}\u115F\u1160\u3164\uFFFC]/gu, "").trim() === "")) {
     return null;
   }
   return raw;
