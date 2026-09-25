@@ -64617,6 +64617,16 @@ const intakeJsonCalls = intakeRouteSource.split("NextResponse.json(").length - 1
 const intakeNoStore = intakeRouteSource.split('"cache-control": "no-store"').length - 1;
 assert.equal(intakeJsonCalls > 0, true);
 assert.equal(intakeNoStore, intakeJsonCalls);
+const statusRouteSource = readFileSync(
+  new URL("../app/api/status/route.ts", import.meta.url),
+  "utf8",
+);
+assert.equal(statusRouteSource.includes("thomasdisney"), false);
+assert.equal(statusRouteSource.includes("nubilith"), false);
+const statusJsonCalls = statusRouteSource.split("NextResponse.json(").length - 1;
+const statusNoStore = statusRouteSource.split('"cache-control": "no-store"').length - 1;
+assert.equal(statusJsonCalls > 0, true);
+assert.equal(statusNoStore, statusJsonCalls);
 assert.equal(
   allowPublicRequest(publicHits, {
     ip: "203.0.113.9",
