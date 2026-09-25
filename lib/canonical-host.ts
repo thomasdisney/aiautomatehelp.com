@@ -3,7 +3,12 @@ const CANONICAL_HOST = "www.aiautomatehelp.com";
 
 function isEmailSearchParamKey(key: string): boolean {
   const n = key.toLowerCase().replace(/[-_]/g, "");
-  return n.startsWith("email") || n.endsWith("email") || n.startsWith("mail");
+  return (
+    n.startsWith("email") ||
+    n.endsWith("email") ||
+    n.startsWith("mail") ||
+    n.endsWith("mail")
+  );
 }
 
 function stripEmailSearchParams(url: URL): void {
