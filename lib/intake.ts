@@ -199,7 +199,7 @@ export function blobIntakePaymentRefHasDisallowedValue(paymentRef: unknown): boo
 
 const INTAKE_QUOTE_TEXT_URL_RE = /^https?:\/\//i;
 const INTAKE_BLANK_LINE_FILLERS =
-  /[\p{Cf}\p{M}\p{Co}\u115F\u1160\u2800\u3164\uFFA0\uFFFC]/gu;
+  /[\p{C}\p{M}\u115F\u1160\u2800\u3164\uFFA0\uFFFC]/gu;
 
 function intakeHasBlankLine(value: string): boolean {
   const normalized = value
