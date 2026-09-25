@@ -15,10 +15,12 @@ const nextConfig: NextConfig = {
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
+  async rewrites() {
+    return [{ source: "/status/", destination: "/status" }];
+  },
   async redirects() {
     return [
       { source: "/automation/", destination: "/automation", permanent: true },
-      { source: "/status/", destination: "/status", permanent: true },
       { source: "/privacy/", destination: "/privacy", permanent: true },
       { source: "/terms/", destination: "/terms", permanent: true },
       { source: "/agent/", destination: "/", permanent: true },

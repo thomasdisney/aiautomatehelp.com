@@ -64751,6 +64751,17 @@ const nextConfigSource = readFileSync(
   "utf8",
 );
 assert.equal(nextConfigSource.includes("skipTrailingSlashRedirect: true"), true);
+assert.equal(
+  /source:\s*"\/status\/"[\s\S]{0,80}permanent:\s*true/.test(nextConfigSource),
+  false,
+);
+assert.equal(/async rewrites\(/.test(nextConfigSource), true);
+assert.equal(
+  /async rewrites\(\)[\s\S]*source:\s*"\/status\/"[\s\S]{0,80}destination:\s*"\/status"/.test(
+    nextConfigSource,
+  ),
+  true,
+);
 assert.equal(nextConfigSource.includes("thomasdisney"), false);
 assert.equal(nextConfigSource.includes("nubilith"), false);
 const notFoundSource = readFileSync(
