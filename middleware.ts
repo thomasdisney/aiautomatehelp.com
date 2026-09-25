@@ -86,5 +86,13 @@ export const config = {
       source: "/_next/static/:path*",
       has: [{ type: "query", key: "email" }],
     },
+    {
+      source: "/_next/static/:path*",
+      has: [{ type: "query", key: "Email" }],
+    },
+    {
+      source: "/_next/static/:path*",
+      has: [{ type: "query", key: "EMAIL" }],
+    },
   ],
 };

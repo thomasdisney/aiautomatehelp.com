@@ -64994,6 +64994,8 @@ assert.equal(
 assert.equal(middlewareSource.includes("/_next/static/:path*"), true);
 assert.equal(middlewareSource.includes('type: "query"'), true);
 assert.equal(middlewareSource.includes('key: "email"'), true);
+assert.equal(middlewareSource.includes('key: "Email"'), true);
+assert.equal(middlewareSource.includes('key: "EMAIL"'), true);
 const nextConfigSource = readFileSync(
   new URL("../next.config.ts", import.meta.url),
   "utf8",
