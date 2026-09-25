@@ -1,6 +1,10 @@
+import { connection } from "next/server";
 import Link from "next/link";
 
-export default function NotFound() {
+export const dynamic = "force-dynamic";
+
+export default async function NotFound() {
+  await connection();
   return (
     <article className="mx-auto max-w-3xl px-5 py-16 sm:py-24">
       <p className="text-sm font-medium uppercase tracking-[0.18em] text-ink/50">404</p>

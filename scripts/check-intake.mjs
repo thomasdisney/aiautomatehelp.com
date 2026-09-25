@@ -64735,6 +64735,15 @@ assert.equal(middlewareSource.includes("status: 404"), true);
 assert.equal(middlewareSource.includes("thomasdisney"), false);
 assert.equal(middlewareSource.includes("nubilith"), false);
 assert.equal(middlewareSource.includes("/api/:path*"), true);
+const notFoundSource = readFileSync(
+  new URL("../app/not-found.tsx", import.meta.url),
+  "utf8",
+);
+assert.equal(notFoundSource.includes('export const dynamic = "force-dynamic"'), true);
+assert.equal(notFoundSource.includes("connection()"), true);
+assert.equal(notFoundSource.includes("thomasdisney"), false);
+assert.equal(notFoundSource.includes("nubilith"), false);
+assert.equal(notFoundSource.includes("mailto:"), false);
 const apiMethodSource = readFileSync(
   new URL("../lib/api-method.ts", import.meta.url),
   "utf8",
