@@ -20,11 +20,11 @@ const nextConfig: NextConfig = {
       { source: "/status/", destination: "/status" },
       { source: "/automation/", destination: "/automation" },
       { source: "/privacy/", destination: "/privacy" },
+      { source: "/terms/", destination: "/terms" },
     ];
   },
   async redirects() {
     return [
-      { source: "/terms/", destination: "/terms", permanent: true },
       { source: "/agent/", destination: "/", permanent: true },
     ];
   },
