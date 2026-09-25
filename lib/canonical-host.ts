@@ -53,3 +53,37 @@ export function repeatedSlashRedirect(url: URL): URL | null {
   stripEmailSearchParams(next);
   return next;
 }
+
+/** Public, cacheable files. A shared cache must not store ?email= on these URLs. */
+const PUBLIC_CACHE_PATHS = new Set([
+  "/robots.txt",
+  "/sitemap.xml",
+  "/opengraph-image",
+  "/apple-icon",
+  "/icon.svg",
+  "/workflow.svg",
+]);
+
+function canonicalPublicCachePath(pathname: string): string {
+  const collapsed = pathname.replace(/\/+$/, "") || "/";
+  return collapsed;
+}
+
+function searchHasEmailParam(url: URL): boolean {
+  return [...url.searchParams.keys()].some((key) => key.toLowerCase() === "email");
+}
+
+/**
+ * Drop ?email= on publicly cached assets so a shared cache cannot store a
+ * customer address in the cache key. Status ?email= prefilling is unchanged.
+ */
+export function publicCacheEmailRedirect(url: URL): URL | null {
+  const pathname = canonicalPublicCachePath(url.pathname);
+  if (!PUBLIC_CACHE_PATHS.has(pathname)) return null;
+  if (!searchHasEmailParam(url)) return null;
+  const next = new URL(url.href);
+  next.pathname = pathname;
+  stripEmailSearchParams(next);
+  if (next.pathname === url.pathname && next.search === url.search) return null;
+  return next;
+}

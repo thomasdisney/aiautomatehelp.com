@@ -3,6 +3,7 @@ import type { NextRequest } from "next/server";
 import { apiMethodGuard, apiRewritePath } from "@/lib/api-method";
 import {
   canonicalHostRedirect,
+  publicCacheEmailRedirect,
   repeatedSlashRedirect,
 } from "@/lib/canonical-host";
 
@@ -19,6 +20,12 @@ export function middleware(request: NextRequest) {
   const slash = repeatedSlashRedirect(request.nextUrl);
   if (slash) {
     const redirect = NextResponse.redirect(slash);
+    redirect.headers.set("cache-control", "no-store");
+    return redirect;
+  }
+  const publicEmail = publicCacheEmailRedirect(request.nextUrl);
+  if (publicEmail) {
+    const redirect = NextResponse.redirect(publicEmail);
     redirect.headers.set("cache-control", "no-store");
     return redirect;
   }

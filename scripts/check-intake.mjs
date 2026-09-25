@@ -200,6 +200,7 @@ import {
 import { apiAllowHeader, apiMethodGuard, apiRewritePath } from "../lib/api-method.ts";
 import {
   canonicalHostRedirect,
+  publicCacheEmailRedirect,
   repeatedSlashRedirect,
 } from "../lib/canonical-host.ts";
 
@@ -64860,6 +64861,75 @@ assert.equal(
   )?.pathname,
   "/status/",
 );
+const robotsEmail = publicCacheEmailRedirect(
+  new URL("https://www.aiautomatehelp.com/robots.txt?email=probe@example.com"),
+);
+assert.equal(robotsEmail?.pathname, "/robots.txt");
+assert.equal(robotsEmail?.search, "");
+assert.equal(robotsEmail?.href.includes("email="), false);
+assert.equal(robotsEmail?.href.includes("probe@example.com"), false);
+assert.equal(
+  publicCacheEmailRedirect(
+    new URL("https://www.aiautomatehelp.com/robots.txt"),
+  ),
+  null,
+);
+assert.equal(
+  publicCacheEmailRedirect(
+    new URL("https://www.aiautomatehelp.com/status?email=probe@example.com"),
+  ),
+  null,
+);
+assert.equal(
+  publicCacheEmailRedirect(
+    new URL(
+      "https://www.aiautomatehelp.com/opengraph-image?email=probe@example.com",
+    ),
+  )?.pathname,
+  "/opengraph-image",
+);
+assert.equal(
+  publicCacheEmailRedirect(
+    new URL(
+      "https://www.aiautomatehelp.com/sitemap.xml?email=probe@example.com",
+    ),
+  )?.href.includes("email="),
+  false,
+);
+assert.equal(
+  publicCacheEmailRedirect(
+    new URL("https://www.aiautomatehelp.com/apple-icon?email=probe@example.com"),
+  )?.pathname,
+  "/apple-icon",
+);
+assert.equal(
+  publicCacheEmailRedirect(
+    new URL("https://www.aiautomatehelp.com/icon.svg?email=probe@example.com"),
+  )?.pathname,
+  "/icon.svg",
+);
+assert.equal(
+  publicCacheEmailRedirect(
+    new URL(
+      "https://www.aiautomatehelp.com/workflow.svg?email=probe@example.com",
+    ),
+  )?.pathname,
+  "/workflow.svg",
+);
+assert.equal(
+  publicCacheEmailRedirect(
+    new URL(
+      "https://www.aiautomatehelp.com/robots.txt/?email=probe@example.com",
+    ),
+  )?.pathname,
+  "/robots.txt",
+);
+assert.equal(
+  publicCacheEmailRedirect(
+    new URL("https://www.aiautomatehelp.com/robots.txt?Email=probe@example.com"),
+  )?.search,
+  "",
+);
 assert.deepEqual(apiMethodGuard("/api/unknown", "GET"), { status: 404 });
 assert.deepEqual(apiMethodGuard("/api/does-not-exist", "POST"), { status: 404 });
 assert.deepEqual(apiMethodGuard("/api", "GET"), { status: 404 });
@@ -64878,6 +64948,7 @@ assert.equal(middlewareSource.includes("apiMethodGuard"), true);
 assert.equal(middlewareSource.includes("apiRewritePath"), true);
 assert.equal(middlewareSource.includes("canonicalHostRedirect"), true);
 assert.equal(middlewareSource.includes("repeatedSlashRedirect"), true);
+assert.equal(middlewareSource.includes("publicCacheEmailRedirect"), true);
 assert.equal(middlewareSource.includes("NextResponse.rewrite"), true);
 assert.equal(middlewareSource.includes("NextResponse.redirect"), true);
 assert.equal(middlewareSource.includes('"cache-control": "no-store"'), true);
