@@ -64762,6 +64762,16 @@ assert.equal(
   ),
   true,
 );
+assert.equal(
+  /source:\s*"\/automation\/"[\s\S]{0,80}permanent:\s*true/.test(nextConfigSource),
+  false,
+);
+assert.equal(
+  /async rewrites\(\)[\s\S]*source:\s*"\/automation\/"[\s\S]{0,80}destination:\s*"\/automation"/.test(
+    nextConfigSource,
+  ),
+  true,
+);
 assert.equal(nextConfigSource.includes("thomasdisney"), false);
 assert.equal(nextConfigSource.includes("nubilith"), false);
 const notFoundSource = readFileSync(

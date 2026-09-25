@@ -16,11 +16,13 @@ const nextConfig: NextConfig = {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
   async rewrites() {
-    return [{ source: "/status/", destination: "/status" }];
+    return [
+      { source: "/status/", destination: "/status" },
+      { source: "/automation/", destination: "/automation" },
+    ];
   },
   async redirects() {
     return [
-      { source: "/automation/", destination: "/automation", permanent: true },
       { source: "/privacy/", destination: "/privacy", permanent: true },
       { source: "/terms/", destination: "/terms", permanent: true },
       { source: "/agent/", destination: "/", permanent: true },
