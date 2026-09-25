@@ -14,6 +14,13 @@ import { parseInboxFind, parseInboxId, parseInboxPatch, toPublicStatus } from "@
 
 const hits = new Map<string, number[]>();
 
+function json(body: unknown, status = 200) {
+  return NextResponse.json(body, {
+    status,
+    headers: { "cache-control": "no-store" },
+  });
+}
+
 function clientIp(request: Request): string {
   return requestIp(request.headers);
 }
@@ -23,10 +30,7 @@ function allowRequest(request: Request, authorized: boolean): boolean {
 }
 
 function unauthorized() {
-  return NextResponse.json(
-    { ok: false, code: "unauthorized" },
-    { status: 401, headers: { "cache-control": "no-store" } },
-  );
+  return json({ ok: false, code: "unauthorized" }, 401);
 }
 
 function authorize(request: Request): boolean {
@@ -36,58 +40,40 @@ function authorize(request: Request): boolean {
 export async function GET(request: Request) {
   const authorized = authorize(request);
   if (!allowRequest(request, authorized)) {
-    return NextResponse.json({ ok: false, code: "rate_limited" }, { status: 429 });
+    return json({ ok: false, code: "rate_limited" }, 429);
   }
   if (!authorized) return unauthorized();
 
   const url = new URL(request.url);
   const requestedId = parseInboxId(url.searchParams.get("id"));
   if (url.searchParams.has("id") && !requestedId) {
-    return NextResponse.json(
-      { ok: false, code: "invalid" },
-      { status: 400, headers: { "cache-control": "no-store" } },
-    );
+    return json({ ok: false, code: "invalid" }, 400);
   }
   if (requestedId) {
     const item = await getIntake(requestedId);
     if (!item) {
-      return NextResponse.json(
-        { ok: false, code: "not_found" },
-        { status: 404, headers: { "cache-control": "no-store" } },
-      );
+      return json({ ok: false, code: "not_found" }, 404);
     }
-    return NextResponse.json(
-      { ok: true, item: toInboxItem(item) },
-      { headers: { "cache-control": "no-store" } },
-    );
+    return json({ ok: true, item: toInboxItem(item) });
   }
 
   const view = parseInboxListView(url.searchParams.get("view"));
   if (view === "invalid") {
-    return NextResponse.json(
-      { ok: false, code: "invalid" },
-      { status: 400, headers: { "cache-control": "no-store" } },
-    );
+    return json({ ok: false, code: "invalid" }, 400);
   }
   if (view === "ids") {
     const ids = toInboxIdRows(await listIntakeForList(20));
-    return NextResponse.json(
-      { ok: true, ids },
-      { headers: { "cache-control": "no-store" } },
-    );
+    return json({ ok: true, ids });
   }
 
   const queue = await getOpsQueue();
-  return NextResponse.json(
-    { ok: true, queue },
-    { headers: { "cache-control": "no-store" } },
-  );
+  return json({ ok: true, queue });
 }
 
 export async function POST(request: Request) {
   const authorized = authorize(request);
   if (!allowRequest(request, authorized)) {
-    return NextResponse.json({ ok: false, code: "rate_limited" }, { status: 429 });
+    return json({ ok: false, code: "rate_limited" }, 429);
   }
   if (!authorized) return unauthorized();
 
@@ -95,28 +81,22 @@ export async function POST(request: Request) {
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ ok: false, code: "invalid" }, { status: 400 });
+    return json({ ok: false, code: "invalid" }, 400);
   }
 
   const parsed = parseInboxFind(body);
   if (!parsed.ok) {
-    return NextResponse.json(
-      { ok: false, code: parsed.error },
-      { status: 400, headers: { "cache-control": "no-store" } },
-    );
+    return json({ ok: false, code: parsed.error }, 400);
   }
 
   const ids = toInboxIdRowsForEmail(await listIntakeByEmail(parsed.email), parsed.email);
-  return NextResponse.json(
-    { ok: true, ids },
-    { headers: { "cache-control": "no-store" } },
-  );
+  return json({ ok: true, ids });
 }
 
 export async function PATCH(request: Request) {
   const authorized = authorize(request);
   if (!allowRequest(request, authorized)) {
-    return NextResponse.json({ ok: false, code: "rate_limited" }, { status: 429 });
+    return json({ ok: false, code: "rate_limited" }, 429);
   }
   if (!authorized) return unauthorized();
 
@@ -124,12 +104,12 @@ export async function PATCH(request: Request) {
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ ok: false, code: "invalid" }, { status: 400 });
+    return json({ ok: false, code: "invalid" }, 400);
   }
 
   const parsed = parseInboxPatch(body);
   if (!parsed.ok) {
-    return NextResponse.json({ ok: false, code: parsed.error }, { status: 400 });
+    return json({ ok: false, code: parsed.error }, 400);
   }
 
   const updated = await updateIntake(parsed.id, {
@@ -144,24 +124,15 @@ export async function PATCH(request: Request) {
   if (!updated.ok) {
     const status =
       updated.error === "not_found" ? 404 : updated.error === "not_allowed" ? 409 : 503;
-    return NextResponse.json(
-      { ok: false, code: updated.error },
-      {
-        status,
-        headers: { "cache-control": "no-store" },
-      },
-    );
+    return json({ ok: false, code: updated.error }, status);
   }
-  return NextResponse.json(
-    { ok: true, ...toPublicStatus(updated.record) },
-    { headers: { "cache-control": "no-store" } },
-  );
+  return json({ ok: true, ...toPublicStatus(updated.record) });
 }
 
 export async function DELETE(request: Request) {
   const authorized = authorize(request);
   if (!allowRequest(request, authorized)) {
-    return NextResponse.json({ ok: false, code: "rate_limited" }, { status: 429 });
+    return json({ ok: false, code: "rate_limited" }, 429);
   }
   if (!authorized) return unauthorized();
 
@@ -169,15 +140,12 @@ export async function DELETE(request: Request) {
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ ok: false, code: "invalid" }, { status: 400 });
+    return json({ ok: false, code: "invalid" }, 400);
   }
   const id = parseInboxId(body && typeof body === "object" ? (body as { id?: unknown }).id : "");
   if (!id) {
-    return NextResponse.json({ ok: false, code: "invalid" }, { status: 400 });
+    return json({ ok: false, code: "invalid" }, 400);
   }
   const deleted = await deleteIntake(id);
-  return NextResponse.json(
-    { ok: deleted },
-    { status: deleted ? 200 : 404, headers: { "cache-control": "no-store" } },
-  );
+  return json({ ok: deleted }, deleted ? 200 : 404);
 }

@@ -64649,6 +64649,16 @@ const checkoutJsonCalls = checkoutRouteSource.split("NextResponse.json(").length
 const checkoutNoStore = checkoutRouteSource.split('"cache-control": "no-store"').length - 1;
 assert.equal(checkoutJsonCalls > 0, true);
 assert.equal(checkoutNoStore, checkoutJsonCalls);
+const inboxJsonRouteSource = readFileSync(
+  new URL("../app/api/inbox/route.ts", import.meta.url),
+  "utf8",
+);
+assert.equal(inboxJsonRouteSource.includes("thomasdisney"), false);
+assert.equal(inboxJsonRouteSource.includes("nubilith"), false);
+const inboxJsonCalls = inboxJsonRouteSource.split("NextResponse.json(").length - 1;
+const inboxNoStore = inboxJsonRouteSource.split('"cache-control": "no-store"').length - 1;
+assert.equal(inboxJsonCalls > 0, true);
+assert.equal(inboxNoStore, inboxJsonCalls);
 assert.equal(
   allowPublicRequest(publicHits, {
     ip: "203.0.113.9",
