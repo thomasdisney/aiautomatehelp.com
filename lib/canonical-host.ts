@@ -99,17 +99,38 @@ function isPublicCachePath(pathname: string): boolean {
   );
 }
 
+/** Hashed static files and robots/icons never need a query string. */
+function pathDropsAllSearch(pathname: string): boolean {
+  if (PUBLIC_CACHE_PATHS.has(pathname)) return true;
+  if (pathname === "/_next/static" || pathname.startsWith("/_next/static/")) {
+    return true;
+  }
+  return (
+    pathname === "/_vercel/speed-insights" ||
+    pathname.startsWith("/_vercel/speed-insights/")
+  );
+}
+
 function searchHasEmailParam(url: URL): boolean {
   return [...url.searchParams.keys()].some((key) => isEmailSearchParamKey(key));
 }
 
 /**
- * Drop ?email= on publicly cached assets so a shared cache cannot store a
- * customer address in the cache key. Status ?email= prefilling is unchanged.
+ * Drop query strings on publicly cached assets so a shared cache cannot store
+ * a customer address in the cache key. Status ?email= prefilling is unchanged.
+ * /_next/image still needs optimizer params, so only email-like keys are
+ * stripped there.
  */
 export function publicCacheEmailRedirect(url: URL): URL | null {
   const pathname = canonicalPublicCachePath(url.pathname);
   if (!isPublicCachePath(pathname)) return null;
+  if (pathDropsAllSearch(pathname)) {
+    if (!url.search) return null;
+    const next = new URL(url.href);
+    next.pathname = pathname;
+    next.search = "";
+    return next;
+  }
   if (!searchHasEmailParam(url)) return null;
   const next = new URL(url.href);
   next.pathname = pathname;

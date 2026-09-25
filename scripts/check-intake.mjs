@@ -65317,7 +65317,7 @@ assert.equal(
       "https://www.aiautomatehelp.com/_next/static/immutable/chunks/foo.js?v=1&contact=probe@example.com",
     ),
   )?.search,
-  "?v=1",
+  "",
 );
 assert.equal(
   publicCacheEmailRedirect(
@@ -65336,6 +65336,76 @@ assert.equal(
 assert.equal(
   publicCacheEmailRedirect(
     new URL("https://www.aiautomatehelp.com/status?addr=probe@example.com"),
+  ),
+  null,
+);
+const nextStaticPhone = publicCacheEmailRedirect(
+  new URL(
+    "https://www.aiautomatehelp.com/_next/static/immutable/chunks/foo.js?phone=probe@example.com",
+  ),
+);
+assert.equal(
+  nextStaticPhone?.pathname,
+  "/_next/static/immutable/chunks/foo.js",
+);
+assert.equal(nextStaticPhone?.search, "");
+assert.equal(nextStaticPhone?.href.includes("phone="), false);
+assert.equal(nextStaticPhone?.href.includes("probe@example.com"), false);
+assert.equal(
+  publicCacheEmailRedirect(
+    new URL(
+      "https://www.aiautomatehelp.com/robots.txt?phone=probe@example.com",
+    ),
+  )?.search,
+  "",
+);
+assert.equal(
+  publicCacheEmailRedirect(
+    new URL(
+      "https://www.aiautomatehelp.com/_next/static/immutable/chunks/foo.js?from=probe@example.com",
+    ),
+  )?.href.includes("probe@example.com"),
+  false,
+);
+assert.equal(
+  publicCacheEmailRedirect(
+    new URL("https://www.aiautomatehelp.com/robots.txt?from=probe@example.com"),
+  )?.search,
+  "",
+);
+assert.equal(
+  publicCacheEmailRedirect(
+    new URL(
+      "https://www.aiautomatehelp.com/_next/static/immutable/chunks/foo.js?name=probe@example.com",
+    ),
+  )?.search,
+  "",
+);
+assert.equal(
+  publicCacheEmailRedirect(
+    new URL(
+      "https://www.aiautomatehelp.com/_next/static/immutable/chunks/foo.js?v=1&phone=probe@example.com",
+    ),
+  )?.search,
+  "",
+);
+assert.equal(
+  publicCacheEmailRedirect(
+    new URL(
+      "https://www.aiautomatehelp.com/opengraph-image?phone=probe@example.com",
+    ),
+  )?.pathname,
+  "/opengraph-image",
+);
+assert.equal(
+  publicCacheEmailRedirect(
+    new URL("https://www.aiautomatehelp.com/status?phone=probe@example.com"),
+  ),
+  null,
+);
+assert.equal(
+  publicCacheEmailRedirect(
+    new URL("https://www.aiautomatehelp.com/status?from=probe@example.com"),
   ),
   null,
 );
