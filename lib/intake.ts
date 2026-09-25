@@ -368,15 +368,7 @@ export function parseIntakeTrigger(value: unknown): string | null {
   const raw = sanitizeText(value, FIELD_LIMITS.trigger);
   if (!raw || INTAKE_TRIGGER_URL_RE.test(raw)) return null;
   if (raw.length > FIELD_LIMITS.quoteText) return null;
-  const normalized = raw
-    .replace(/\r\n/g, "\n")
-    .replace(/\r/g, "\n")
-    .replace(/\u2028/g, "\n")
-    .replace(/\u2029/g, "\n")
-    .replace(/\u0085/g, "\n");
-  if (normalized.split("\n").some((line) => line.replace(/[\p{Cf}\p{M}\u115F\u1160\u17B4\u17B5\u2800\u3164\uFFA0\uFFFC]/gu, "").trim() === "")) {
-    return null;
-  }
+  if (intakeHasBlankLine(raw)) return null;
   return raw;
 }
 
@@ -387,15 +379,7 @@ export function parseIntakeTools(value: unknown): string | null {
   const raw = sanitizeText(value, FIELD_LIMITS.tools);
   if (!raw || INTAKE_TOOLS_URL_RE.test(raw)) return null;
   if (raw.length > FIELD_LIMITS.quoteText) return null;
-  const normalized = raw
-    .replace(/\r\n/g, "\n")
-    .replace(/\r/g, "\n")
-    .replace(/\u2028/g, "\n")
-    .replace(/\u2029/g, "\n")
-    .replace(/\u0085/g, "\n");
-  if (normalized.split("\n").some((line) => line.replace(/[\p{Cf}\p{M}\u115F\u1160\u17B4\u17B5\u2800\u3164\uFFA0\uFFFC]/gu, "").trim() === "")) {
-    return null;
-  }
+  if (intakeHasBlankLine(raw)) return null;
   return raw;
 }
 
