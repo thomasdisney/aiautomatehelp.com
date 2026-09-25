@@ -319,6 +319,7 @@ export function parseIntakeName(value: unknown): string | null {
   if (typeof value !== "string") return null;
   const raw = sanitizeText(value, FIELD_LIMITS.name);
   if (!raw || INTAKE_NAME_URL_RE.test(raw)) return null;
+  if (intakeHasBlankLine(raw)) return null;
   return raw;
 }
 
@@ -335,6 +336,7 @@ export function parseIntakeCompany(value: unknown): string | null {
   if (typeof value !== "string") return null;
   const raw = sanitizeText(value, FIELD_LIMITS.company);
   if (!raw || INTAKE_COMPANY_URL_RE.test(raw)) return null;
+  if (intakeHasBlankLine(raw)) return null;
   return raw;
 }
 
