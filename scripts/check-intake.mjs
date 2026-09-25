@@ -64992,6 +64992,10 @@ assert.equal(
   true,
 );
 assert.equal(middlewareSource.includes("/_next/static/:path*"), true);
+assert.equal(
+  middlewareSource.includes('    "/_next/static/:path*",'),
+  true,
+);
 assert.equal(middlewareSource.includes('type: "query"'), true);
 assert.equal(middlewareSource.includes('key: "email"'), true);
 assert.equal(middlewareSource.includes('key: "Email"'), true);
