@@ -2,7 +2,8 @@ const APEX_HOST = "aiautomatehelp.com";
 const CANONICAL_HOST = "www.aiautomatehelp.com";
 
 function isEmailSearchParamKey(key: string): boolean {
-  return key.toLowerCase().replace(/[-_]/g, "").startsWith("email");
+  const n = key.toLowerCase().replace(/[-_]/g, "");
+  return n.startsWith("email") || n.endsWith("email") || n.startsWith("mail");
 }
 
 function stripEmailSearchParams(url: URL): void {

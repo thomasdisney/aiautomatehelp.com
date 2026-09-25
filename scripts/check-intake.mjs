@@ -65111,6 +65111,54 @@ assert.equal(
   ),
   null,
 );
+const nextStaticUserEmail = publicCacheEmailRedirect(
+  new URL(
+    "https://www.aiautomatehelp.com/_next/static/immutable/chunks/foo.js?user_email=probe@example.com",
+  ),
+);
+assert.equal(
+  nextStaticUserEmail?.pathname,
+  "/_next/static/immutable/chunks/foo.js",
+);
+assert.equal(nextStaticUserEmail?.search, "");
+assert.equal(nextStaticUserEmail?.href.includes("user_email="), false);
+assert.equal(nextStaticUserEmail?.href.includes("probe@example.com"), false);
+assert.equal(
+  publicCacheEmailRedirect(
+    new URL(
+      "https://www.aiautomatehelp.com/robots.txt?mail=probe@example.com",
+    ),
+  )?.search,
+  "",
+);
+assert.equal(
+  publicCacheEmailRedirect(
+    new URL(
+      "https://www.aiautomatehelp.com/_next/static/immutable/chunks/foo.js?mail=probe@example.com",
+    ),
+  )?.href.includes("probe@example.com"),
+  false,
+);
+assert.equal(
+  publicCacheEmailRedirect(
+    new URL(
+      "https://www.aiautomatehelp.com/opengraph-image?user_email=probe@example.com",
+    ),
+  )?.pathname,
+  "/opengraph-image",
+);
+assert.equal(
+  publicCacheEmailRedirect(
+    new URL("https://www.aiautomatehelp.com/status?user_email=probe@example.com"),
+  ),
+  null,
+);
+assert.equal(
+  publicCacheEmailRedirect(
+    new URL("https://www.aiautomatehelp.com/status?mail=probe@example.com"),
+  ),
+  null,
+);
 assert.deepEqual(apiMethodGuard("/api/unknown", "GET"), { status: 404 });
 assert.deepEqual(apiMethodGuard("/api/does-not-exist", "POST"), { status: 404 });
 assert.deepEqual(apiMethodGuard("/api", "GET"), { status: 404 });
