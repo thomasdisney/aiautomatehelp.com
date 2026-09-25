@@ -1659,7 +1659,7 @@ assert.equal(
     ref: "https://pay.example.test/receipts",
     email: "pat@example.com",
   }),
-  "/status?email=pat%40example.com",
+  "/status",
 );
 assert.equal(
   statusSearchRedirect({
@@ -1678,7 +1678,7 @@ assert.equal(
   statusSearchRedirect({
     email: ["https://pay.example.test/receipts", "pat@example.com"],
   }),
-  "/status?email=pat%40example.com",
+  "/status",
 );
 assert.equal(
   statusSearchRedirect({
@@ -1691,7 +1691,14 @@ assert.equal(
     ref: id,
     email: ["https://pay.example.test/receipts", "pat@example.com"],
   }),
-  `/status?ref=${id}&email=pat%40example.com`,
+  `/status?ref=${id}`,
+);
+assert.equal(
+  statusSearchRedirect({
+    email: "pat@example.com",
+    utm_source: "x",
+  }),
+  "/status",
 );
 
 assert.equal(emailsMatch("Pat@Example.com", "pat@example.com"), true);

@@ -141,7 +141,7 @@ function firstValidStatusEmail(value: unknown): { raw: boolean; email: string; a
   return { raw, email, array: Array.isArray(value) };
 }
 
-/** Drop a hostile or duplicate ?email= / ?ref= (and unknown keys) so Next.js does not serialize them. */
+/** Drop a hostile or duplicate ?email= / ?ref= (and unknown keys). Redirect Location never includes email. */
 export function statusSearchRedirect(input: {
   ref?: unknown;
   email?: unknown;
@@ -150,14 +150,14 @@ export function statusSearchRedirect(input: {
   const parsedRef = firstValidStatusRef(input.ref);
   const ref = parsedRef.ref;
   const parsedEmail = firstValidStatusEmail(input.email);
-  const email = parsedEmail.email;
-  const dropEmail = parsedEmail.array ? parsedEmail.raw : Boolean(parsedEmail.raw && !email);
+  const dropEmail = parsedEmail.array
+    ? parsedEmail.raw
+    : Boolean(parsedEmail.raw && !parsedEmail.email);
   const dropRef = parsedRef.array ? parsedRef.raw : Boolean(parsedRef.raw && !ref);
   const extra = Object.keys(input).some((key) => key !== "ref" && key !== "email");
   if (!dropEmail && !dropRef && !extra) return null;
   const params = [];
   if (ref) params.push(`ref=${encodeURIComponent(ref)}`);
-  if (email) params.push(`email=${encodeURIComponent(email)}`);
   return params.length ? `/status?${params.join("&")}` : "/status";
 }
 
