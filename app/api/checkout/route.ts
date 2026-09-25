@@ -7,35 +7,36 @@ import { checkoutAllowed, createCheckoutUrl } from "@/lib/stripe";
 
 const hits = new Map<string, number[]>();
 
+function json(body: unknown, status = 200) {
+  return NextResponse.json(body, {
+    status,
+    headers: { "cache-control": "no-store" },
+  });
+}
+
 function notFound() {
-  return NextResponse.json(
-    { ok: false, code: "not_found" },
-    { status: 404, headers: { "cache-control": "no-store" } },
-  );
+  return json({ ok: false, code: "not_found" }, 404);
 }
 
 export function GET() {
-  return NextResponse.json(
-    { connected: paymentConfigured() },
-    { headers: { "cache-control": "no-store" } },
-  );
+  return json({ connected: paymentConfigured() });
 }
 
 export async function POST(request: Request) {
   if (!allowPublicRequest(hits, { ip: requestIp(request.headers), bucket: "checkout" })) {
-    return NextResponse.json({ ok: false, code: "rate_limited" }, { status: 429 });
+    return json({ ok: false, code: "rate_limited" }, 429);
   }
 
   let body: unknown;
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ ok: false, code: "invalid" }, { status: 400 });
+    return json({ ok: false, code: "invalid" }, 400);
   }
 
   const parsed = parseStatusLookup(body);
   if (!parsed.ok) {
-    return NextResponse.json({ ok: false, code: parsed.error }, { status: 400 });
+    return json({ ok: false, code: parsed.error }, 400);
   }
   if (parsed.dropped) return notFound();
 
@@ -43,40 +44,22 @@ export async function POST(request: Request) {
   if (!record || !emailsMatch(record.email, parsed.email)) return notFound();
 
   if (record.status === "paid") {
-    return NextResponse.json(
-      { ok: false, code: "already_paid" },
-      { status: 409, headers: { "cache-control": "no-store" } },
-    );
+    return json({ ok: false, code: "already_paid" }, 409);
   }
   if (!checkoutAllowed(record)) {
-    return NextResponse.json(
-      { ok: false, code: "not_allowed" },
-      { status: 409, headers: { "cache-control": "no-store" } },
-    );
+    return json({ ok: false, code: "not_allowed" }, 409);
   }
   if (!paymentConfigured()) {
-    return NextResponse.json(
-      { ok: false, code: "payment_not_connected" },
-      { status: 503, headers: { "cache-control": "no-store" } },
-    );
+    return json({ ok: false, code: "payment_not_connected" }, 503);
   }
 
   try {
     const url = await createCheckoutUrl(record);
     if (!url) {
-      return NextResponse.json(
-        { ok: false, code: "payment_not_connected" },
-        { status: 503, headers: { "cache-control": "no-store" } },
-      );
+      return json({ ok: false, code: "payment_not_connected" }, 503);
     }
-    return NextResponse.json(
-      { ok: true, url },
-      { headers: { "cache-control": "no-store" } },
-    );
+    return json({ ok: true, url });
   } catch {
-    return NextResponse.json(
-      { ok: false, code: "payment_not_connected" },
-      { status: 503, headers: { "cache-control": "no-store" } },
-    );
+    return json({ ok: false, code: "payment_not_connected" }, 503);
   }
 }

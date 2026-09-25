@@ -64639,6 +64639,16 @@ const statusReplyNoStore =
   statusReplyRouteSource.split('"cache-control": "no-store"').length - 1;
 assert.equal(statusReplyJsonCalls > 0, true);
 assert.equal(statusReplyNoStore, statusReplyJsonCalls);
+const checkoutRouteSource = readFileSync(
+  new URL("../app/api/checkout/route.ts", import.meta.url),
+  "utf8",
+);
+assert.equal(checkoutRouteSource.includes("thomasdisney"), false);
+assert.equal(checkoutRouteSource.includes("nubilith"), false);
+const checkoutJsonCalls = checkoutRouteSource.split("NextResponse.json(").length - 1;
+const checkoutNoStore = checkoutRouteSource.split('"cache-control": "no-store"').length - 1;
+assert.equal(checkoutJsonCalls > 0, true);
+assert.equal(checkoutNoStore, checkoutJsonCalls);
 assert.equal(
   allowPublicRequest(publicHits, {
     ip: "203.0.113.9",
