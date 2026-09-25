@@ -64958,6 +64958,37 @@ assert.equal(
   ),
   null,
 );
+const nextImageEmail = publicCacheEmailRedirect(
+  new URL(
+    "https://www.aiautomatehelp.com/_next/image?url=%2Ficon.svg&w=32&q=75&email=probe@example.com",
+  ),
+);
+assert.equal(nextImageEmail?.pathname, "/_next/image");
+assert.equal(nextImageEmail?.search.includes("url="), true);
+assert.equal(nextImageEmail?.search.includes("email="), false);
+assert.equal(nextImageEmail?.href.includes("probe@example.com"), false);
+assert.equal(
+  publicCacheEmailRedirect(
+    new URL(
+      "https://www.aiautomatehelp.com/_next/image?eMail=probe@example.com",
+    ),
+  )?.search,
+  "",
+);
+assert.equal(
+  publicCacheEmailRedirect(
+    new URL("https://www.aiautomatehelp.com/_next/image?url=%2Ficon.svg&w=32"),
+  ),
+  null,
+);
+assert.equal(
+  publicCacheEmailRedirect(
+    new URL(
+      "https://www.aiautomatehelp.com/_next/images?email=probe@example.com",
+    ),
+  ),
+  null,
+);
 assert.deepEqual(apiMethodGuard("/api/unknown", "GET"), { status: 404 });
 assert.deepEqual(apiMethodGuard("/api/does-not-exist", "POST"), { status: 404 });
 assert.deepEqual(apiMethodGuard("/api", "GET"), { status: 404 });
@@ -64994,6 +65025,10 @@ assert.equal(
 assert.equal(middlewareSource.includes("/_next/static/:path*"), true);
 assert.equal(
   middlewareSource.includes('    "/_next/static/:path*",'),
+  true,
+);
+assert.equal(
+  middlewareSource.includes('    "/_next/image",'),
   true,
 );
 assert.equal(middlewareSource.includes('type: "query"'), true);

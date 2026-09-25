@@ -71,7 +71,10 @@ function canonicalPublicCachePath(pathname: string): string {
 
 function isPublicCachePath(pathname: string): boolean {
   if (PUBLIC_CACHE_PATHS.has(pathname)) return true;
-  return pathname === "/_next/static" || pathname.startsWith("/_next/static/");
+  if (pathname === "/_next/static" || pathname.startsWith("/_next/static/")) {
+    return true;
+  }
+  return pathname === "/_next/image" || pathname.startsWith("/_next/image/");
 }
 
 function searchHasEmailParam(url: URL): boolean {
