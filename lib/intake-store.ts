@@ -27,6 +27,7 @@ import {
   parseOpsEventAtPath,
   parseWorkIndexAtPath,
   toOpsLastPayload,
+  opsLastToPersist,
   toEmailIndexPayload,
   toWorkIndexPayload,
   rankIntakeBlobs,
@@ -299,7 +300,12 @@ export async function getOpsQueue(): Promise<OpsQueue> {
   const recentIds = new Set(recent.map((item) => item.id));
   const missing = workIds.filter((id) => !recentIds.has(id));
   const indexed = missing.length ? await loadIntakeByIds(missing) : [];
-  return summarizeQueue(mergeIntakeForQueue(indexed, recent), last, { paymentConnected });
+  const queue = summarizeQueue(mergeIntakeForQueue(indexed, recent), last, {
+    paymentConnected,
+  });
+  const heal = opsLastToPersist(last, queue.last);
+  if (heal) await recordOpsEvent(heal);
+  return queue;
 }
 
 async function pingOpsSignal(event: OpsEvent): Promise<void> {

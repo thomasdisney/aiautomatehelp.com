@@ -135,6 +135,7 @@ import {
   opsLastPathFromPath,
   parseOpsEventAtPath,
   toOpsLastPayload,
+  opsLastToPersist,
   emailIndexAfterAdd,
   emailIndexAfterDelete,
   workIndexAfterAdd,
@@ -1649,6 +1650,23 @@ assert.deepEqual(storedLastWins.last, {
   status: "quoted",
   at: "2026-08-13T00:00:00.000Z",
 });
+assert.deepEqual(opsLastToPersist(null, derivedLastQueue.last), derivedLastQueue.last);
+assert.equal(opsLastToPersist(storedLastWins.last, derivedLastQueue.last), null);
+assert.equal(opsLastToPersist(null, null), null);
+assert.equal(
+  opsLastToPersist(null, {
+    event: "declined",
+    id: newerLastId,
+    status: "declined",
+    at: "2026-08-14T00:00:00Z",
+  }),
+  null,
+);
+assert.equal("path" in (opsLastToPersist(null, derivedLastQueue.last) ?? {}), false);
+assert.equal("email" in (opsLastToPersist(null, derivedLastQueue.last) ?? {}), false);
+const intakeStoreSource = readFileSync(new URL("../lib/intake-store.ts", import.meta.url), "utf8");
+assert.equal(intakeStoreSource.includes("opsLastToPersist"), true);
+assert.equal(intakeStoreSource.includes("await recordOpsEvent(heal)"), true);
 const inboxRouteSource = readFileSync(new URL("../app/api/inbox/route.ts", import.meta.url), "utf8");
 assert.equal(inboxRouteSource.includes("toInboxItem"), true);
 assert.equal(inboxRouteSource.includes("ok: true, item }"), false);

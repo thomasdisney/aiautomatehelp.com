@@ -181,6 +181,22 @@ export function toOpsLastPayload(input: {
   };
 }
 
+/** Persist derived last only when last.json is missing and the stamp is writable. */
+export function opsLastToPersist(
+  stored: OpsEvent | null,
+  derived: OpsEvent | null,
+): OpsEvent | null {
+  if (stored || !derived) return null;
+  const payload = toOpsLastPayload(derived);
+  if (!payload) return null;
+  return {
+    event: payload.event,
+    id: payload.id,
+    status: payload.status,
+    at: payload.at,
+  };
+}
+
 export function parseOpsEventAtPath(raw: string, pathname: unknown): OpsEvent | null {
   const expected = opsLastPathFromPath(pathname);
   if (!expected) return null;
