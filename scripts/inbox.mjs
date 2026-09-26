@@ -7,7 +7,7 @@
  *   node scripts/inbox.mjs show <uuid>
  *   node scripts/inbox.mjs list   # ids and statuses only
  *   node scripts/inbox.mjs find <email>  # ids for that email only; prints no email
- *   node scripts/inbox.mjs decide <uuid> quoted <dollars> <YYYY-MM-DD> --done <done when> [--note <text>] <quote text>
+ *   node scripts/inbox.mjs decide <uuid> quoted <dollars> <YYYY-MM-DD> [--done <done when>] [--note <text>] <quote text>
  *   node scripts/inbox.mjs decide <uuid> declined <reason>
  *   node scripts/inbox.mjs update <uuid> <text>
  *   node scripts/inbox.mjs note <uuid> <text>
@@ -280,11 +280,10 @@ if (cmd === "decide" && id && status) {
       !Number.isInteger(dollars) ||
       dollars < 1 ||
       !/^\d{4}-\d{2}-\d{2}$/.test(dueAt) ||
-      !doneWhen ||
       !quoteText
     ) {
       console.error(
-        "usage: node scripts/inbox.mjs decide <uuid> quoted <dollars> <YYYY-MM-DD> --done <done when> [--note <text>] <quote text>",
+        "usage: node scripts/inbox.mjs decide <uuid> quoted <dollars> <YYYY-MM-DD> [--done <done when>] [--note <text>] <quote text>",
       );
       process.exit(2);
     }
@@ -336,7 +335,7 @@ console.error("       node scripts/inbox.mjs show <uuid>");
 console.error("       node scripts/inbox.mjs list");
 console.error("       node scripts/inbox.mjs find <email>");
 console.error(
-  "       node scripts/inbox.mjs decide <uuid> quoted <dollars> <YYYY-MM-DD> --done <done when> [--note <text>] <quote text>",
+  "       node scripts/inbox.mjs decide <uuid> quoted <dollars> <YYYY-MM-DD> [--done <done when>] [--note <text>] <quote text>",
 );
 console.error("       node scripts/inbox.mjs decide <uuid> declined <reason>");
 console.error("       node scripts/inbox.mjs update <uuid> <text>");

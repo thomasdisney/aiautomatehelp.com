@@ -14,6 +14,7 @@ import {
   parseIntakeQuoteText,
   parseIntakeStatus,
   parseIntakeUpdateText,
+  parseNamedWorkflow,
   sanitizeText,
   type IntakeRecord,
   type IntakeStatus,
@@ -481,7 +482,6 @@ export function parseInboxPatch(body: unknown): InboxPatch {
     return { ok: false, error: "invalid" };
   }
   const doneWhen = status === "quoted" ? sanitizeText(raw.doneWhen, FIELD_LIMITS.doneWhen) : "";
-  if (status === "quoted" && !doneWhen) return { ok: false, error: "invalid" };
   if (doneWhen && parseIntakeDoneWhen(doneWhen) === null) {
     return { ok: false, error: "invalid" };
   }
@@ -606,11 +606,20 @@ export function applyOperatorPatch(
   }
 
   const nextStatus = patch.status ?? record.status;
-  const nextDoneWhen =
+  let nextDoneWhen =
     patch.status === "quoted"
       ? sanitizeText(patch.doneWhen ?? "", FIELD_LIMITS.doneWhen)
       : record.doneWhen || "";
   if (patch.status === "quoted" && !nextDoneWhen) {
+    const workflow = parseNamedWorkflow(record.message);
+    if (workflow) {
+      nextDoneWhen = sanitizeText(workflow.outcome, FIELD_LIMITS.doneWhen);
+    }
+  }
+  if (patch.status === "quoted" && !nextDoneWhen) {
+    return { ok: false, error: "not_allowed" };
+  }
+  if (patch.status === "quoted" && parseIntakeDoneWhen(nextDoneWhen) === null) {
     return { ok: false, error: "not_allowed" };
   }
   const publicNote = sanitizeText(patch.updateText ?? "", FIELD_LIMITS.updateText);
