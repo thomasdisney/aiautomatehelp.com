@@ -536,13 +536,34 @@ export function toInboxItem(
   return { ...record, workflow: parseNamedWorkflow(record.message) };
 }
 
+function lastFromRecords(records: IntakeRecord[]): OpsEvent | null {
+  let best: OpsEvent | null = null;
+  for (const record of records) {
+    const event = toOpsEvent({
+      event: eventFromStatus(record.status),
+      id: record.id,
+      status: record.status,
+      at: inboxActivityAt(record),
+    });
+    if (!event) continue;
+    if (
+      !best ||
+      event.at > best.at ||
+      (event.at === best.at && event.id.localeCompare(best.id) < 0)
+    ) {
+      best = event;
+    }
+  }
+  return best;
+}
+
 export function summarizeQueue(
   records: IntakeRecord[],
   last: OpsEvent | null,
   options: QueueOptions = {},
 ): OpsQueue {
   const paymentConnected = Boolean(options.paymentConnected);
-  const queue = emptyQueue(last);
+  const queue = emptyQueue(last ?? lastFromRecords(records));
   for (const record of records) {
     queue[record.status] += 1;
     if (hasOpenQuestion(record)) queue.questions += 1;

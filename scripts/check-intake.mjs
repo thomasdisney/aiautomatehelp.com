@@ -1590,6 +1590,65 @@ const namedQueue = summarizeQueue([namedRecord], null);
 assert.equal(JSON.stringify(namedQueue).includes("A form is submitted"), false);
 assert.equal(JSON.stringify(namedQueue).includes("workflow"), false);
 assert.equal(queueJsonHasCustomerText(JSON.stringify(namedQueue)), false);
+assert.deepEqual(namedQueue.last, {
+  event: "received",
+  id,
+  status: "received",
+  at: namedRecord.receivedAt,
+});
+assert.equal("email" in (namedQueue.last ?? {}), false);
+assert.equal("message" in (namedQueue.last ?? {}), false);
+const olderLastId = "22222222-2222-4222-8222-222222222222";
+const newerLastId = "33333333-3333-4333-8333-333333333333";
+const derivedLastQueue = summarizeQueue(
+  [
+    {
+      ...record,
+      id: olderLastId,
+      receivedAt: "2026-08-12T00:00:00.000Z",
+      status: "received",
+    },
+    {
+      ...record,
+      id: newerLastId,
+      receivedAt: "2026-08-12T00:00:00.000Z",
+      status: "declined",
+      declinedAt: "2026-08-13T00:00:00.000Z",
+      updateAt: "2026-08-14T00:00:00.000Z",
+    },
+  ],
+  null,
+);
+assert.deepEqual(derivedLastQueue.last, {
+  event: "declined",
+  id: newerLastId,
+  status: "declined",
+  at: "2026-08-14T00:00:00.000Z",
+});
+assert.equal(JSON.stringify(derivedLastQueue.last).includes("pat@example.com"), false);
+assert.equal(queueJsonHasCustomerText(JSON.stringify({ last: derivedLastQueue.last })), false);
+const storedLastWins = summarizeQueue(
+  [
+    {
+      ...record,
+      id: newerLastId,
+      receivedAt: "2026-08-14T00:00:00.000Z",
+      status: "received",
+    },
+  ],
+  {
+    event: "quoted",
+    id,
+    status: "quoted",
+    at: "2026-08-13T00:00:00.000Z",
+  },
+);
+assert.deepEqual(storedLastWins.last, {
+  event: "quoted",
+  id,
+  status: "quoted",
+  at: "2026-08-13T00:00:00.000Z",
+});
 const inboxRouteSource = readFileSync(new URL("../app/api/inbox/route.ts", import.meta.url), "utf8");
 assert.equal(inboxRouteSource.includes("toInboxItem"), true);
 assert.equal(inboxRouteSource.includes("ok: true, item }"), false);
