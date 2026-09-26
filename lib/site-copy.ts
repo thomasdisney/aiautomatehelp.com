@@ -161,7 +161,7 @@ export function privacyCollectCopy(): string {
 }
 
 export function privacyLookupCopy(): string {
-  return "You can look up a brief you already sent on the status page with the reference and the same email. That check returns the public status, any quote, delivery date, and done-when test I posted, and the notes on that brief in order — not the workflow fields. A later note does not erase an earlier one. A matching status check or reply on this browser may keep the reference and show the original received time from this device so a refresh does not lose them. That copy is not emailed, and it is not your email or those workflow fields. Optional ?email= on the status URL is for same-device convenience only; it is not logged beyond the existing lookup APIs.";
+  return "You can look up a brief you already sent on the status page with the reference and the same email. That check returns the public status, any quote, delivery date, and done-when test I posted, and the notes on that brief in order — not the workflow fields. A later note does not erase an earlier one. A matching status check or reply on this browser may keep the reference and show the original received time from this device so a refresh does not lose them. That copy is not emailed, and it is not your email or those workflow fields.";
 }
 
 export function privacySharingCopy(paymentConnected = false): string {

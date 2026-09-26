@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { StatusEmailPrefiller } from "@/app/components/status-email-prefiller";
 import { StatusForm } from "@/app/components/status-form";
 import { intakeBlobPath } from "@/lib/intake";
 import { paymentConfigured } from "@/lib/payment";
 import { statusIntroCopy } from "@/lib/site-copy";
-import { sanitizeStatusEmailParam, statusSearchRedirect } from "@/lib/status";
+import { statusSearchRedirect } from "@/lib/status";
 
 export const metadata: Metadata = {
   title: "Check a brief",
@@ -18,7 +17,6 @@ export default async function StatusPage({
 }: {
   searchParams: Promise<{
     ref?: string | string[];
-    email?: string | string[];
     [key: string]: string | string[] | undefined;
   }>;
 }) {
@@ -27,7 +25,6 @@ export default async function StatusPage({
   if (stripped) redirect(stripped);
   const ref = typeof params.ref === "string" ? params.ref.trim().toLowerCase() : "";
   const initialId = intakeBlobPath(ref) ? ref : "";
-  const initialEmail = sanitizeStatusEmailParam(params.email);
   const paymentConnected = paymentConfigured();
 
   return (
@@ -42,12 +39,7 @@ export default async function StatusPage({
         </a>
         .
       </p>
-      <p className="mt-4 text-sm leading-relaxed text-ink/60">
-        Optional <span className="font-mono">?email=</span> in the URL pre-fills the email field
-        on this device only. It is not logged beyond the existing status lookup APIs.
-      </p>
       <div className="mt-10 [&_input]:min-h-11 [&_input]:text-base [&_button]:min-h-11">
-        <StatusEmailPrefiller email={initialEmail} />
         <StatusForm initialId={initialId} paymentConnected={paymentConnected} />
       </div>
     </article>

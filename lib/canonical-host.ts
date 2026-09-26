@@ -23,11 +23,35 @@ function stripEmailSearchParams(url: URL): void {
   }
 }
 
-/** Apex → www Location may only keep ?ref= (brief id). Contact aliases are not email-like. */
+/** HTML Location may only keep ?ref= (brief id). Contact aliases are not email-like. */
 function keepStatusRefSearch(url: URL): void {
   const ref = url.searchParams.get("ref");
   url.search = "";
   if (typeof ref === "string" && ref) url.searchParams.set("ref", ref);
+}
+
+function isApiPathname(pathname: string): boolean {
+  return pathname === "/api" || pathname.startsWith("/api/");
+}
+
+function isStatusPathname(pathname: string): boolean {
+  return (pathname.replace(/\/+$/, "") || "/") === "/status";
+}
+
+/**
+ * www HTML pages: drop contact query strings. /status may keep ?ref=.
+ * Status ?email= prefilling is gone — email stays in the POST body.
+ */
+export function pageSearchRedirect(url: URL): URL | null {
+  const pathname = url.pathname;
+  if (isApiPathname(pathname)) return null;
+  if (isPublicCachePath(canonicalPublicCachePath(pathname))) return null;
+  if (!url.search) return null;
+  const next = new URL(url.href);
+  if (isStatusPathname(pathname)) keepStatusRefSearch(next);
+  else next.search = "";
+  if (next.pathname === url.pathname && next.search === url.search) return null;
+  return next;
 }
 
 export function canonicalHostRedirect(
@@ -125,9 +149,9 @@ function searchHasEmailParam(url: URL): boolean {
 
 /**
  * Drop query strings on publicly cached assets so a shared cache cannot store
- * a customer address in the cache key. Status ?email= prefilling is unchanged.
- * /_next/image still needs optimizer params, so only email-like keys are
- * stripped there.
+ * a customer address in the cache key. HTML pages drop contact query strings in
+ * pageSearchRedirect. /_next/image still needs optimizer params, so only
+ * email-like keys are stripped there.
  */
 export function publicCacheEmailRedirect(url: URL): URL | null {
   const pathname = canonicalPublicCachePath(url.pathname);

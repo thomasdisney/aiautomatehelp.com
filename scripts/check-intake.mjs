@@ -200,6 +200,7 @@ import {
 import { apiAllowHeader, apiMethodGuard, apiRewritePath } from "../lib/api-method.ts";
 import {
   canonicalHostRedirect,
+  pageSearchRedirect,
   publicCacheEmailRedirect,
   repeatedSlashRedirect,
 } from "../lib/canonical-host.ts";
@@ -1645,13 +1646,16 @@ assert.equal(sanitizeStatusEmailParam({ email: "pat@example.com" }), "");
 assert.equal(statusSearchRedirect({ email: "pat@https:pay.example.test" }), "/status");
 assert.equal(statusSearchRedirect({ email: "pat@https://pay.example.test/receipts" }), "/status");
 assert.equal(statusSearchRedirect({ email: "pat@pay%.example.test" }), "/status");
-assert.equal(statusSearchRedirect({ email: "pat@example.com" }), null);
+assert.equal(statusSearchRedirect({ email: "pat@example.com" }), "/status");
 assert.equal(statusSearchRedirect({}), null);
 assert.equal(
   statusSearchRedirect({ ref: id, email: "pat@https:pay.example.test" }),
   `/status?ref=${id}`,
 );
-assert.equal(statusSearchRedirect({ ref: id, email: "pat@example.com" }), null);
+assert.equal(
+  statusSearchRedirect({ ref: id, email: "pat@example.com" }),
+  `/status?ref=${id}`,
+);
 assert.equal(statusSearchRedirect({ ref: "https://pay.example.test/receipts" }), "/status");
 assert.equal(statusSearchRedirect({ ref: "javascript:alert(1)" }), "/status");
 assert.equal(statusSearchRedirect({ ref: id }), null);
@@ -2150,6 +2154,7 @@ assert.equal(privacyLookup.includes("those workflow fields"), true);
 assert.equal(privacyLookup.toLowerCase().includes("mailto"), false);
 assert.equal(privacyLookup.includes("thomasdisney"), false);
 assert.equal(privacyLookup.includes("gmail.com"), false);
+assert.equal(privacyLookup.includes("?email="), false);
 
 const privacySharingConnected = privacySharingCopy(true);
 const privacySharingDisconnected = privacySharingCopy(false);
@@ -65500,6 +65505,53 @@ assert.equal(
   ),
   null,
 );
+const wwwStatusEmail = pageSearchRedirect(
+  new URL("https://www.aiautomatehelp.com/status?email=probe@example.com"),
+);
+assert.equal(wwwStatusEmail?.pathname, "/status");
+assert.equal(wwwStatusEmail?.search, "");
+assert.equal(wwwStatusEmail?.href.includes("email="), false);
+assert.equal(wwwStatusEmail?.href.includes("probe@example.com"), false);
+assert.equal(
+  pageSearchRedirect(
+    new URL("https://www.aiautomatehelp.com/status?from=probe@example.com"),
+  )?.search,
+  "",
+);
+assert.equal(
+  pageSearchRedirect(
+    new URL("https://www.aiautomatehelp.com/status?phone=5551234"),
+  )?.href.includes("5551234"),
+  false,
+);
+assert.equal(
+  pageSearchRedirect(
+    new URL(
+      "https://www.aiautomatehelp.com/status?ref=aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee&email=probe@example.com",
+    ),
+  )?.toString(),
+  "https://www.aiautomatehelp.com/status?ref=aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
+);
+assert.equal(
+  pageSearchRedirect(
+    new URL(
+      "https://www.aiautomatehelp.com/status?ref=aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
+    ),
+  ),
+  null,
+);
+assert.equal(
+  pageSearchRedirect(
+    new URL("https://www.aiautomatehelp.com/automation?from=probe@example.com"),
+  )?.search,
+  "",
+);
+assert.equal(
+  pageSearchRedirect(
+    new URL("https://www.aiautomatehelp.com/api/status?email=probe@example.com"),
+  ),
+  null,
+);
 assert.deepEqual(apiMethodGuard("/api/unknown", "GET"), { status: 404 });
 assert.deepEqual(apiMethodGuard("/api/does-not-exist", "POST"), { status: 404 });
 assert.deepEqual(apiMethodGuard("/api", "GET"), { status: 404 });
@@ -65519,6 +65571,7 @@ assert.equal(middlewareSource.includes("apiRewritePath"), true);
 assert.equal(middlewareSource.includes("canonicalHostRedirect"), true);
 assert.equal(middlewareSource.includes("repeatedSlashRedirect"), true);
 assert.equal(middlewareSource.includes("publicCacheEmailRedirect"), true);
+assert.equal(middlewareSource.includes("pageSearchRedirect"), true);
 assert.equal(middlewareSource.includes("NextResponse.rewrite"), true);
 assert.equal(middlewareSource.includes("NextResponse.redirect"), true);
 assert.equal(middlewareSource.includes('"cache-control": "no-store"'), true);
@@ -105397,7 +105450,9 @@ const statusPageSource = readFileSync(
 );
 assert.equal(statusPageSource.includes('href="/automation#start"'), true);
 assert.equal(statusPageSource.includes("do not match"), true);
-assert.equal(statusPageSource.includes("sanitizeStatusEmailParam"), true);
+assert.equal(statusPageSource.includes("sanitizeStatusEmailParam"), false);
+assert.equal(statusPageSource.includes("StatusEmailPrefiller"), false);
+assert.equal(statusPageSource.includes("?email="), false);
 assert.equal(statusPageSource.includes("statusSearchRedirect"), true);
 assert.equal(statusPageSource.includes("function sanitizeEmailParam"), false);
 assert.equal(statusPageSource.includes("/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/"), false);

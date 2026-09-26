@@ -103,7 +103,7 @@ export function parseInboxId(value: unknown): string | null {
   return intakeBlobPath(id) ? id : null;
 }
 
-/** Same-device ?email= convenience. Empty means do not prefill. */
+/** Accept a status-form email. Empty means not a usable address. */
 export function sanitizeStatusEmailParam(value: unknown): string {
   if (typeof value !== "string") return "";
   const parsed = parseIntakeEmail(value);
@@ -126,22 +126,7 @@ function firstValidStatusRef(value: unknown): { raw: boolean; ref: string; array
   return { raw, ref, array: Array.isArray(value) };
 }
 
-function firstValidStatusEmail(value: unknown): { raw: boolean; email: string; array: boolean } {
-  const items = Array.isArray(value) ? value : [value];
-  let raw = false;
-  let email = "";
-  for (const item of items) {
-    if (typeof item !== "string") continue;
-    const trimmed = item.trim();
-    if (!trimmed) continue;
-    raw = true;
-    const candidate = sanitizeStatusEmailParam(item);
-    if (!email && candidate) email = candidate;
-  }
-  return { raw, email, array: Array.isArray(value) };
-}
-
-/** Drop a hostile or duplicate ?email= / ?ref= (and unknown keys). Redirect Location never includes email. */
+/** Drop ?email= and unknown keys. Location may only keep ?ref=. */
 export function statusSearchRedirect(input: {
   ref?: unknown;
   email?: unknown;
@@ -149,13 +134,9 @@ export function statusSearchRedirect(input: {
 }): string | null {
   const parsedRef = firstValidStatusRef(input.ref);
   const ref = parsedRef.ref;
-  const parsedEmail = firstValidStatusEmail(input.email);
-  const dropEmail = parsedEmail.array
-    ? parsedEmail.raw
-    : Boolean(parsedEmail.raw && !parsedEmail.email);
   const dropRef = parsedRef.array ? parsedRef.raw : Boolean(parsedRef.raw && !ref);
-  const extra = Object.keys(input).some((key) => key !== "ref" && key !== "email");
-  if (!dropEmail && !dropRef && !extra) return null;
+  const extra = Object.keys(input).some((key) => key !== "ref");
+  if (!dropRef && !extra) return null;
   const params = [];
   if (ref) params.push(`ref=${encodeURIComponent(ref)}`);
   return params.length ? `/status?${params.join("&")}` : "/status";
