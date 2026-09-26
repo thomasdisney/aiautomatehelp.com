@@ -197,6 +197,27 @@ export function opsLastToPersist(
   };
 }
 
+/** Persist derived work ids only when work.json is empty and there is open work. */
+export function opsWorkToPersist(
+  stored: string[],
+  queue: Pick<OpsQueue, "needs" | "waiting">,
+): string[] | null {
+  const current = parseIdIndex(JSON.stringify({ ids: stored }), WORK_INDEX_MAX_IDS);
+  if (current.length) return null;
+  const ids: string[] = [];
+  const seen = new Set<string>();
+  for (const item of [...queue.needs, ...queue.waiting]) {
+    const id = typeof item.id === "string" ? item.id.trim().toLowerCase() : "";
+    if (!intakeBlobPath(id) || seen.has(id)) continue;
+    seen.add(id);
+    ids.push(id);
+    if (ids.length >= WORK_INDEX_MAX_IDS) break;
+  }
+  const payload = toWorkIndexPayload(ids);
+  if (!payload.ids.length) return null;
+  return payload.ids;
+}
+
 export function parseOpsEventAtPath(raw: string, pathname: unknown): OpsEvent | null {
   const expected = opsLastPathFromPath(pathname);
   if (!expected) return null;

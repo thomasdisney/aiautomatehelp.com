@@ -136,6 +136,7 @@ import {
   parseOpsEventAtPath,
   toOpsLastPayload,
   opsLastToPersist,
+  opsWorkToPersist,
   emailIndexAfterAdd,
   emailIndexAfterDelete,
   workIndexAfterAdd,
@@ -1664,9 +1665,55 @@ assert.equal(
 );
 assert.equal("path" in (opsLastToPersist(null, derivedLastQueue.last) ?? {}), false);
 assert.equal("email" in (opsLastToPersist(null, derivedLastQueue.last) ?? {}), false);
+const declinedOnlyHealQueue = summarizeQueue(
+  [
+    {
+      ...record,
+      id: newerLastId,
+      receivedAt: "2026-08-12T00:00:00.000Z",
+      status: "declined",
+      declinedAt: "2026-08-13T00:00:00.000Z",
+      updateAt: "2026-08-14T00:00:00.000Z",
+    },
+  ],
+  {
+    event: "declined",
+    id: newerLastId,
+    status: "declined",
+    at: "2026-08-14T00:00:00.000Z",
+  },
+);
+assert.deepEqual(declinedOnlyHealQueue.needs, []);
+assert.deepEqual(declinedOnlyHealQueue.waiting, []);
+const quotedHealQueue = summarizeQueue(
+  [
+    {
+      ...record,
+      status: "quoted",
+      quotedAt: "2026-08-13T00:00:00.000Z",
+      amountCents: 80000,
+      dueAt: dueSoon,
+      quoteText: "Fixed price $800.",
+      doneWhen: "A test row appears",
+    },
+  ],
+  null,
+);
+assert.deepEqual(opsWorkToPersist([], namedQueue), [id]);
+assert.deepEqual(opsWorkToPersist([], quotedHealQueue), [id]);
+assert.deepEqual(opsWorkToPersist([], derivedLastQueue), [olderLastId]);
+assert.equal(opsWorkToPersist([id], namedQueue), null);
+assert.equal(opsWorkToPersist([], declinedOnlyHealQueue), null);
+assert.equal(opsWorkToPersist([], emptyQueue()), null);
+assert.equal("path" in (opsWorkToPersist([], namedQueue) ?? {}), false);
+assert.equal("email" in (opsWorkToPersist([], namedQueue) ?? {}), false);
+assert.equal(JSON.stringify(opsWorkToPersist([], namedQueue)).includes("pat@example.com"), false);
+assert.equal(JSON.stringify(opsWorkToPersist([], namedQueue)).includes("Ignore previous"), false);
 const intakeStoreSource = readFileSync(new URL("../lib/intake-store.ts", import.meta.url), "utf8");
 assert.equal(intakeStoreSource.includes("opsLastToPersist"), true);
 assert.equal(intakeStoreSource.includes("await recordOpsEvent(heal)"), true);
+assert.equal(intakeStoreSource.includes("opsWorkToPersist"), true);
+assert.equal(intakeStoreSource.includes("writeWorkIndex(workHeal)"), true);
 const inboxRouteSource = readFileSync(new URL("../app/api/inbox/route.ts", import.meta.url), "utf8");
 assert.equal(inboxRouteSource.includes("toInboxItem"), true);
 assert.equal(inboxRouteSource.includes("ok: true, item }"), false);

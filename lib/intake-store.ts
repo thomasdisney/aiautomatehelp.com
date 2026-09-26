@@ -28,6 +28,7 @@ import {
   parseWorkIndexAtPath,
   toOpsLastPayload,
   opsLastToPersist,
+  opsWorkToPersist,
   toEmailIndexPayload,
   toWorkIndexPayload,
   rankIntakeBlobs,
@@ -305,6 +306,14 @@ export async function getOpsQueue(): Promise<OpsQueue> {
   });
   const heal = opsLastToPersist(last, queue.last);
   if (heal) await recordOpsEvent(heal);
+  const workHeal = opsWorkToPersist(workIds, queue);
+  if (workHeal) {
+    try {
+      await writeWorkIndex(workHeal);
+    } catch {
+      // Healing work must not fail the operator queue.
+    }
+  }
   return queue;
 }
 
