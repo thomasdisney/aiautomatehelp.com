@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "AutomateAI — your AI agent in your pocket";
+export const alt = "ai automate — your AI agent in your pocket";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -30,7 +30,7 @@ export default function OpenGraphImage() {
             background: "#1d4ed8",
           }}
         />
-        <div style={{ fontSize: 36, fontWeight: 700, marginBottom: 24 }}>AutomateAI</div>
+        <div style={{ fontSize: 36, fontWeight: 700, marginBottom: 24 }}>ai automate</div>
         <div style={{ fontSize: 72, lineHeight: 1.1, fontWeight: 700 }}>Your AI agent,</div>
         <div style={{ fontSize: 72, lineHeight: 1.1, fontWeight: 700 }}>in your pocket.</div>
         <div

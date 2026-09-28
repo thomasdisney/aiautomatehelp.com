@@ -1,63 +1,8 @@
 const APEX_HOST = "aiautomatehelp.com";
 const CANONICAL_HOST = "www.aiautomatehelp.com";
 
-function isEmailSearchParamKey(key: string): boolean {
-  const n = key.toLowerCase().replace(/[-_]/g, "");
-  return (
-    n.startsWith("email") ||
-    n.endsWith("email") ||
-    n.startsWith("mail") ||
-    n.endsWith("mail") ||
-    n.startsWith("address") ||
-    n.endsWith("address") ||
-    n.startsWith("addr") ||
-    n.endsWith("addr") ||
-    n.startsWith("contact") ||
-    n.endsWith("contact")
-  );
-}
-
-function stripEmailSearchParams(url: URL): void {
-  for (const key of [...url.searchParams.keys()]) {
-    if (isEmailSearchParamKey(key)) url.searchParams.delete(key);
-  }
-}
-
-/** HTML Location may only keep ?ref= (brief id). Contact aliases are not email-like. */
-function keepStatusRefSearch(url: URL): void {
-  const ref = url.searchParams.get("ref");
-  url.search = "";
-  if (typeof ref === "string" && ref) url.searchParams.set("ref", ref);
-}
-
-function isApiPathname(pathname: string): boolean {
-  return pathname === "/api" || pathname.startsWith("/api/");
-}
-
-function isStatusPathname(pathname: string): boolean {
-  return (pathname.replace(/\/+$/, "") || "/") === "/status";
-}
-
-/**
- * www HTML pages: drop contact query strings. /status may keep ?ref=.
- * Status ?email= prefilling is gone — email stays in the POST body.
- */
-export function pageSearchRedirect(url: URL): URL | null {
-  const pathname = url.pathname;
-  if (isApiPathname(pathname)) return null;
-  if (isPublicCachePath(canonicalPublicCachePath(pathname))) return null;
-  if (!url.search) return null;
-  const next = new URL(url.href);
-  if (isStatusPathname(pathname)) keepStatusRefSearch(next);
-  else next.search = "";
-  if (next.pathname === url.pathname && next.search === url.search) return null;
-  return next;
-}
-
-export function canonicalHostRedirect(
-  hostHeader: unknown,
-  url: URL,
-): URL | null {
+/** Apex requests go to the canonical www host, always over https. */
+export function canonicalHostRedirect(hostHeader: unknown, url: URL): URL | null {
   if (typeof hostHeader !== "string") return null;
   const host = hostHeader.split(":")[0].trim().toLowerCase();
   if (host !== APEX_HOST) return null;
@@ -65,9 +10,7 @@ export function canonicalHostRedirect(
   next.protocol = "https:";
   next.hostname = CANONICAL_HOST;
   next.port = "";
-  stripEmailSearchParams(next);
-  keepStatusRefSearch(next);
-  return publicCacheEmailRedirect(next) ?? next;
+  return next;
 }
 
 /**
@@ -92,81 +35,11 @@ function decodePathSlashes(pathname: string): string {
   return current;
 }
 
-/** Collapse //, \\, and encoded slashes so a public 308/500 cannot keep ?email=. */
+/** Collapse //, \\, and encoded slashes into one clean public path. */
 export function repeatedSlashRedirect(url: URL): URL | null {
   const pathname = decodePathSlashes(url.pathname);
   if (!pathname.includes("//") && !pathname.includes("\\")) return null;
   const next = new URL(url.href);
   next.pathname = pathname.replace(/\\/g, "/").replace(/\/{2,}/g, "/") || "/";
-  stripEmailSearchParams(next);
-  return next;
-}
-
-/** Public, cacheable files. A shared cache must not store ?email= on these URLs. */
-const PUBLIC_CACHE_PATHS = new Set([
-  "/robots.txt",
-  "/sitemap.xml",
-  "/opengraph-image",
-  "/apple-icon",
-  "/icon.svg",
-  "/workflow.svg",
-]);
-
-function canonicalPublicCachePath(pathname: string): string {
-  const collapsed = pathname.replace(/\/+$/, "") || "/";
-  return collapsed;
-}
-
-function isPublicCachePath(pathname: string): boolean {
-  if (PUBLIC_CACHE_PATHS.has(pathname)) return true;
-  if (pathname === "/_next/static" || pathname.startsWith("/_next/static/")) {
-    return true;
-  }
-  if (pathname === "/_next/image" || pathname.startsWith("/_next/image/")) {
-    return true;
-  }
-  return (
-    pathname === "/_vercel/speed-insights" ||
-    pathname.startsWith("/_vercel/speed-insights/")
-  );
-}
-
-/** Hashed static files and robots/icons never need a query string. */
-function pathDropsAllSearch(pathname: string): boolean {
-  if (PUBLIC_CACHE_PATHS.has(pathname)) return true;
-  if (pathname === "/_next/static" || pathname.startsWith("/_next/static/")) {
-    return true;
-  }
-  return (
-    pathname === "/_vercel/speed-insights" ||
-    pathname.startsWith("/_vercel/speed-insights/")
-  );
-}
-
-function searchHasEmailParam(url: URL): boolean {
-  return [...url.searchParams.keys()].some((key) => isEmailSearchParamKey(key));
-}
-
-/**
- * Drop query strings on publicly cached assets so a shared cache cannot store
- * a customer address in the cache key. HTML pages drop contact query strings in
- * pageSearchRedirect. /_next/image still needs optimizer params, so only
- * email-like keys are stripped there.
- */
-export function publicCacheEmailRedirect(url: URL): URL | null {
-  const pathname = canonicalPublicCachePath(url.pathname);
-  if (!isPublicCachePath(pathname)) return null;
-  if (pathDropsAllSearch(pathname)) {
-    if (!url.search) return null;
-    const next = new URL(url.href);
-    next.pathname = pathname;
-    next.search = "";
-    return next;
-  }
-  if (!searchHasEmailParam(url)) return null;
-  const next = new URL(url.href);
-  next.pathname = pathname;
-  stripEmailSearchParams(next);
-  if (next.pathname === url.pathname && next.search === url.search) return null;
   return next;
 }

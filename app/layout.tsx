@@ -2,8 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Source_Serif_4 } from "next/font/google";
 import { SiteFooter } from "@/app/components/site-footer";
 import { SiteHeader } from "@/app/components/site-header";
-import { paymentConfigured } from "@/lib/payment";
-import { siteMetaDescription } from "@/lib/site-copy";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -17,6 +15,8 @@ const sourceSerif = Source_Serif_4({
 });
 
 const siteUrl = "https://www.aiautomatehelp.com";
+const description =
+  "Turn a spare computer into a headless AI coding agent and drive it from your iPhone. Run one command, type the code, and you're connected.";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -25,34 +25,31 @@ export const viewport: Viewport = {
   themeColor: "#f6f1e8",
 };
 
-export async function generateMetadata(): Promise<Metadata> {
-  const description = siteMetaDescription(paymentConfigured());
-  return {
-    metadataBase: new URL(siteUrl),
-    title: {
-      default: "AutomateAI — scoped automation, built to order",
-      template: "%s · AutomateAI",
-    },
+export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "ai automate — your AI agent in your pocket",
+    template: "%s · ai automate",
+  },
+  description,
+  openGraph: {
+    url: "./",
+    siteName: "ai automate",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ai automate",
     description,
-    openGraph: {
-      url: "./",
-      siteName: "AutomateAI",
-      type: "website",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: "AutomateAI",
-      description,
-    },
-    robots: {
-      index: true,
-      follow: true,
-    },
-    icons: {
-      icon: "/icon.svg",
-    },
-  };
-}
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  icons: {
+    icon: "/icon.svg",
+  },
+};
 
 export default function RootLayout({
   children,

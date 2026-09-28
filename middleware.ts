@@ -1,18 +1,10 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { apiMethodGuard, apiRewritePath } from "@/lib/api-method";
-import {
-  canonicalHostRedirect,
-  pageSearchRedirect,
-  publicCacheEmailRedirect,
-  repeatedSlashRedirect,
-} from "@/lib/canonical-host";
+import { canonicalHostRedirect, repeatedSlashRedirect } from "@/lib/canonical-host";
 
 export function middleware(request: NextRequest) {
-  const canonical = canonicalHostRedirect(
-    request.headers.get("host"),
-    request.nextUrl,
-  );
+  const canonical = canonicalHostRedirect(request.headers.get("host"), request.nextUrl);
   if (canonical) {
     const redirect = NextResponse.redirect(canonical);
     redirect.headers.set("cache-control", "no-store");
@@ -21,18 +13,6 @@ export function middleware(request: NextRequest) {
   const slash = repeatedSlashRedirect(request.nextUrl);
   if (slash) {
     const redirect = NextResponse.redirect(slash);
-    redirect.headers.set("cache-control", "no-store");
-    return redirect;
-  }
-  const publicEmail = publicCacheEmailRedirect(request.nextUrl);
-  if (publicEmail) {
-    const redirect = NextResponse.redirect(publicEmail);
-    redirect.headers.set("cache-control", "no-store");
-    return redirect;
-  }
-  const pageSearch = pageSearchRedirect(request.nextUrl);
-  if (pageSearch) {
-    const redirect = NextResponse.redirect(pageSearch);
     redirect.headers.set("cache-control", "no-store");
     return redirect;
   }
@@ -82,27 +62,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    {
-      source: "/((?!_next/static|_next/image).*)",
-      has: [{ type: "host", value: "aiautomatehelp.com" }],
-    },
-    "/api/:path*",
-    "/((?!_next/static|_next/image).*)",
-    "/_next/static/:path*",
-    "/_next/image",
-    "/_vercel/:path*",
-    {
-      source: "/_next/static/:path*",
-      has: [{ type: "query", key: "email" }],
-    },
-    {
-      source: "/_next/static/:path*",
-      has: [{ type: "query", key: "Email" }],
-    },
-    {
-      source: "/_next/static/:path*",
-      has: [{ type: "query", key: "EMAIL" }],
-    },
-  ],
+  matcher: ["/((?!_next/static|_next/image).*)", "/api/:path*"],
 };

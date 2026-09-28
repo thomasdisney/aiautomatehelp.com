@@ -12,9 +12,6 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
-    // Generated intake case corpus (~100k lines); parsing it exhausts the
-    // default ESLint heap. `npm test` still runs it.
-    "scripts/check-intake.mjs",
   ]),
 ]);
 

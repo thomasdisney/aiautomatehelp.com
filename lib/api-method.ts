@@ -1,11 +1,5 @@
 const API_ALLOWED_METHODS: Record<string, readonly string[]> = {
   "/api/agent-code": ["POST"],
-  "/api/checkout": ["GET", "POST"],
-  "/api/inbox": ["GET", "POST", "PATCH", "DELETE"],
-  "/api/intake": ["GET", "POST"],
-  "/api/status": ["POST"],
-  "/api/status/reply": ["POST"],
-  "/api/webhooks/stripe": ["POST"],
 };
 
 const METHOD_ORDER = [

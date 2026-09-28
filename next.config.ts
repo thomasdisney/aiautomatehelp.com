@@ -10,20 +10,23 @@ const securityHeaders = [
   },
 ];
 
+const legacyPaths = ["automation", "status", "privacy", "terms"] as const;
+
 const nextConfig: NextConfig = {
   skipTrailingSlashRedirect: true,
   skipProxyUrlNormalize: true,
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
+  async redirects() {
+    return legacyPaths.map((path) => ({
+      source: `/${path}`,
+      destination: "/",
+      permanent: true,
+    }));
+  },
   async rewrites() {
-    return [
-      { source: "/status/", destination: "/status" },
-      { source: "/automation/", destination: "/automation" },
-      { source: "/privacy/", destination: "/privacy" },
-      { source: "/terms/", destination: "/terms" },
-      { source: "/agent/", destination: "/agent" },
-    ];
+    return [{ source: "/agent/", destination: "/agent" }];
   },
 };
 

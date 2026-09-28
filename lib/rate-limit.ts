@@ -1,15 +1,8 @@
-export const INBOX_ANON_MAX = 10;
-export const INBOX_AUTH_MAX = 60;
-export const INBOX_RATE_WINDOW_MS = 60 * 60 * 1000;
 export const PUBLIC_RATE_WINDOW_MS = 60 * 60 * 1000;
-export const INTAKE_PUBLIC_MAX = 5;
-export const STATUS_PUBLIC_MAX = 10;
-export const REPLY_PUBLIC_MAX = 8;
-export const CHECKOUT_PUBLIC_MAX = 8;
 export const AGENT_PUBLIC_MAX = 8;
 
 const IP_KEY_RE = /[^A-Za-z0-9.:_-]/g;
-const PUBLIC_BUCKETS = ["intake", "status", "reply", "checkout", "agent"] as const;
+const PUBLIC_BUCKETS = ["agent"] as const;
 export type PublicRateBucket = (typeof PUBLIC_BUCKETS)[number];
 
 export type RateLimitStore = Map<string, number[]>;
@@ -42,10 +35,6 @@ export function requestIp(headers: HeaderReader): string {
   });
 }
 
-export function inboxRateKey(ip: string, authorized: boolean): string {
-  return `${authorized ? "auth" : "anon"}:${sanitizeRateIp(ip)}`;
-}
-
 export function publicRateKey(ip: string, bucket: PublicRateBucket | string): string {
   const raw = typeof bucket === "string" ? bucket.trim().toLowerCase() : "";
   const safeBucket = PUBLIC_BUCKETS.includes(raw as PublicRateBucket) ? raw : "pub";
@@ -68,26 +57,6 @@ export function allowRateLimit(
   return true;
 }
 
-export function allowInboxRequest(
-  store: RateLimitStore,
-  input: { ip: string; authorized: boolean; now?: number },
-): boolean {
-  const authorized = Boolean(input.authorized);
-  return allowRateLimit(store, inboxRateKey(input.ip, authorized), {
-    now: input.now,
-    windowMs: INBOX_RATE_WINDOW_MS,
-    max: authorized ? INBOX_AUTH_MAX : INBOX_ANON_MAX,
-  });
-}
-
-function publicMax(bucket: PublicRateBucket): number {
-  if (bucket === "intake") return INTAKE_PUBLIC_MAX;
-  if (bucket === "status") return STATUS_PUBLIC_MAX;
-  if (bucket === "reply") return REPLY_PUBLIC_MAX;
-  if (bucket === "agent") return AGENT_PUBLIC_MAX;
-  return CHECKOUT_PUBLIC_MAX;
-}
-
 export function parsePublicRateBucket(value: unknown): PublicRateBucket | null {
   if (typeof value !== "string") return null;
   const bucket = value.trim().toLowerCase();
@@ -101,16 +70,9 @@ export function allowPublicRequest(
   input: { ip: string; bucket: PublicRateBucket; now?: number },
 ): boolean {
   const bucket = parsePublicRateBucket(input.bucket);
-  if (!bucket) {
-    return allowRateLimit(store, publicRateKey(input.ip, "pub"), {
-      now: input.now,
-      windowMs: PUBLIC_RATE_WINDOW_MS,
-      max: 1,
-    });
-  }
-  return allowRateLimit(store, publicRateKey(input.ip, bucket), {
+  return allowRateLimit(store, publicRateKey(input.ip, bucket ?? "pub"), {
     now: input.now,
     windowMs: PUBLIC_RATE_WINDOW_MS,
-    max: publicMax(bucket),
+    max: bucket ? AGENT_PUBLIC_MAX : 1,
   });
 }
