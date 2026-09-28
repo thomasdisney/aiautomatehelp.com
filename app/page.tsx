@@ -32,7 +32,7 @@ export default function Home() {
         <div className="mx-auto mt-10 max-w-md rounded-2xl border border-ink/10 bg-white p-6 text-left sm:p-8">
           <h2 className="font-serif text-2xl text-ink text-pretty">Connect your agent</h2>
           <p className="mt-1 text-sm text-ink/60">
-            Type the code printed by your agent's setup.
+            Type the code printed by your agent&apos;s setup.
           </p>
           <AgentSetup />
           <p className="mt-5 text-xs leading-relaxed text-ink/50">
