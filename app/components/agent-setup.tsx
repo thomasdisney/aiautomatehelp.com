@@ -50,7 +50,8 @@ export function AgentSetup() {
       window.location.href = json.href ?? `${AGENT_URL}/${encodeURIComponent(c)}`;
     } catch {
       // If the check fails, still attempt connect rather than trapping the user.
-      window.location.href = `${AGENT_URL}/${encodeURIComponent(c)}`;
+      // Concatenation keeps the absolute URL visible to the navigation lint rule.
+      window.location.href = AGENT_URL + "/" + encodeURIComponent(c);
     }
   }
 
