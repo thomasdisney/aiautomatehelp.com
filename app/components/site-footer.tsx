@@ -1,4 +1,4 @@
-import { AGENT_URL, SITE_HOST } from "@/lib/site-config";
+import { AGENT_URL } from "@/lib/site-config";
 
 export function SiteFooter() {
   return (
@@ -21,6 +21,12 @@ export function SiteFooter() {
             Open the app
           </a>
           <a
+            href="/help"
+            className="inline-flex min-h-11 min-w-11 items-center px-2 hover:text-paper"
+          >
+            Help
+          </a>
+          <a
             href={`${AGENT_URL}/legal`}
             className="inline-flex min-h-11 min-w-11 items-center px-2 hover:text-paper"
           >
@@ -29,7 +35,8 @@ export function SiteFooter() {
         </nav>
       </div>
       <div className="border-t border-white/10 py-4 text-center text-xs text-paper/50 safe-pad-x safe-pad-bottom">
-        © {new Date().getFullYear()} Junk Drawer Agents, {SITE_HOST}
+        © {new Date().getFullYear()} Forager Station Holdings LLC. Junk Drawer Agents is run by
+        Forager Station Holdings LLC, a Nevada limited liability company.
       </div>
     </footer>
   );

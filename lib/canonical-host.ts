@@ -5,15 +5,16 @@
 // answered on every host so a page or client that still talks to an old host
 // keeps working.
 //
-// Today: aiautomatehelp.com -> www.aiautomatehelp.com.
-// At cutover the hosts come from env (lib/site-config.ts). Vercel's project
-// domain redirects do the same job at the edge; this is the in-code fallback.
+// aiautomatehelp.com, www.aiautomatehelp.com and www.notjunk.si -> notjunk.si.
+// The canonical host itself never redirects, so notjunk.si can't loop. Hosts
+// come from lib/site-config.ts (env overrides). Vercel's project domain
+// redirects can do the same job at the edge; this works without them.
 
 export type HostConfig = { canonicalHost: string; aliasHosts: readonly string[] };
 
 export const DEFAULT_HOST_CONFIG: HostConfig = {
-  canonicalHost: "www.aiautomatehelp.com",
-  aliasHosts: ["aiautomatehelp.com"],
+  canonicalHost: "notjunk.si",
+  aliasHosts: ["www.notjunk.si", "aiautomatehelp.com", "www.aiautomatehelp.com"],
 };
 
 /** Alias-host requests go to the canonical host, always over https. */
