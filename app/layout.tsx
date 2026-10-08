@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Source_Serif_4 } from "next/font/google";
 import { SiteFooter } from "@/app/components/site-footer";
 import { SiteHeader } from "@/app/components/site-header";
+import { SITE_URL } from "@/lib/site-config";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -14,9 +15,8 @@ const sourceSerif = Source_Serif_4({
   subsets: ["latin"],
 });
 
-const siteUrl = "https://www.aiautomatehelp.com";
 const description =
-  "Turn a spare computer into a headless AI coding agent and drive it from your iPhone. Run one command, type the code, and you're connected.";
+  "Junk Drawer Agents turns a spare computer into a coding agent you run from your phone. You approve every change.";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -26,20 +26,20 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "ai automate — your AI agent in your pocket",
-    template: "%s · ai automate",
+    default: "Junk Drawer Agents",
+    template: "%s | Junk Drawer Agents",
   },
   description,
   openGraph: {
     url: "./",
-    siteName: "ai automate",
+    siteName: "Junk Drawer Agents",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "ai automate",
+    title: "Junk Drawer Agents",
     description,
   },
   robots: {

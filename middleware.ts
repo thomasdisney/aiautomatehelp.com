@@ -2,11 +2,14 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { apiMethodGuard, apiRewritePath } from "@/lib/api-method";
 import { canonicalHostRedirect, repeatedSlashRedirect } from "@/lib/canonical-host";
+import { SITE_ALIAS_HOSTS, SITE_HOST } from "@/lib/site-config";
+
+const HOSTS = { canonicalHost: SITE_HOST, aliasHosts: SITE_ALIAS_HOSTS };
 
 export function middleware(request: NextRequest) {
-  const canonical = canonicalHostRedirect(request.headers.get("host"), request.nextUrl);
+  const canonical = canonicalHostRedirect(request.headers.get("host"), request.nextUrl, HOSTS);
   if (canonical) {
-    const redirect = NextResponse.redirect(canonical);
+    const redirect = NextResponse.redirect(canonical, 308);
     redirect.headers.set("cache-control", "no-store");
     return redirect;
   }

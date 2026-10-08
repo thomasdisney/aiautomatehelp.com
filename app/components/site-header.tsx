@@ -8,7 +8,7 @@ export function SiteHeader() {
           href="/"
           className="inline-flex min-h-11 min-w-11 items-center text-base font-semibold tracking-tight text-ink"
         >
-          ai automate
+          Junk Drawer Agents
         </Link>
       </div>
     </header>

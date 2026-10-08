@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
+import { SITE_URL } from "@/lib/site-config";
 
-const site = "https://www.aiautomatehelp.com";
+const site = SITE_URL;
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [

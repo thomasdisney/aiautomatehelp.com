@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { allowPublicRequest, requestIp } from "@/lib/rate-limit";
+import { AGENT_URL } from "@/lib/site-config";
 
-const AGENT_URL = "https://agent.aiautomatehelp.com";
 const CODE_RE = /^[a-z0-9-]{4,64}$/;
 
 const hits = new Map<string, number[]>();
