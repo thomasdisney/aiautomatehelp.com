@@ -15,7 +15,7 @@ import {
   SITE_ALIAS_HOSTS,
 } from "../lib/site-config.ts";
 
-const ALIASES = ["www.notjunk.si", "aiautomatehelp.com", "www.aiautomatehelp.com"];
+const ALIASES = ["www.notjunk.si"];
 
 test("defaults are the live hosts: notjunk.si landing, app.notjunk.si app", () => {
   assert.equal(DEFAULT_SITE_URL, "https://notjunk.si");
@@ -29,7 +29,7 @@ test("defaults are the live hosts: notjunk.si landing, app.notjunk.si app", () =
   assert.deepEqual(SITE_ALIAS_HOSTS, ALIASES);
 });
 
-test("aiautomatehelp.com, www.aiautomatehelp.com and www.notjunk.si 308 to notjunk.si with path and query", () => {
+test("www.notjunk.si 308s to notjunk.si with path and query", () => {
   for (const host of ALIASES) {
     const to = canonicalHostRedirect(`${host}:443`, new URL(`https://${host}/some/path?code=bright-oak&x=1`));
     assert.equal(to?.href, "https://notjunk.si/some/path?code=bright-oak&x=1", host);
@@ -52,8 +52,10 @@ test("/api/* is answered on every host, never redirected (the setup form POSTs /
   }
 });
 
-test("unknown hosts (previews, vercel.app) are left alone", () => {
+test("unknown hosts (previews, vercel.app, retired domains) are left alone", () => {
   assert.equal(canonicalHostRedirect("aiautomatehelp-abc.vercel.app", new URL("https://x.vercel.app/")), null);
+  assert.equal(canonicalHostRedirect("aiautomatehelp.com", new URL("https://aiautomatehelp.com/")), null);
+  assert.equal(canonicalHostRedirect("www.aiautomatehelp.com", new URL("https://www.aiautomatehelp.com/")), null);
   assert.equal(canonicalHostRedirect("app.notjunk.si", new URL("https://app.notjunk.si/")), null);
   assert.equal(canonicalHostRedirect(undefined, new URL("https://notjunk.si/")), null);
 });

@@ -6,14 +6,14 @@
 //   NEXT_PUBLIC_SITE_URL          canonical landing origin   (default https://notjunk.si)
 //   NEXT_PUBLIC_AGENT_URL         agent app origin           (default https://app.notjunk.si)
 //   NEXT_PUBLIC_SITE_ALIAS_HOSTS  comma list of hosts that 308 to the canonical host
-//                                 (default www.notjunk.si,aiautomatehelp.com,www.aiautomatehelp.com)
+//                                 (default www.notjunk.si)
 //
 // NEXT_PUBLIC_* values are inlined at build time, so changing them needs a
 // redeploy. Keep this module free of imports so tests can load it directly.
 
 export const DEFAULT_SITE_URL = "https://notjunk.si";
 export const DEFAULT_AGENT_URL = "https://app.notjunk.si";
-export const DEFAULT_ALIAS_HOSTS = ["www.notjunk.si", "aiautomatehelp.com", "www.aiautomatehelp.com"];
+export const DEFAULT_ALIAS_HOSTS = ["www.notjunk.si"];
 
 /** Accept only a bare https origin; anything else falls back to the default. */
 export function originOr(value: string | undefined, fallback: string): string {
