@@ -4,8 +4,8 @@
 @font-face {
   font-family: "Bricolage Grotesque";
   src: url("/fonts/bricolage-grotesque-display.woff2") format("woff2");
-  font-weight: 600 800;
-  font-stretch: 75% 100%;
+  font-weight: 700 800;
+  font-stretch: 75% 90%;
   font-style: normal;
   font-display: swap;
 }
