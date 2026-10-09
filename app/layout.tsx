@@ -7,7 +7,7 @@ import "./globals.css";
 // Fonts are self-hosted from /public/fonts (OFL, see NOTICES.md). No web-font
 // download from Google or any other host.
 const description =
-  "notjunk.si turns a spare computer into a coding agent you run from your phone. You approve every change.";
+  "notjunk.si turns an old computer into an always-on agent that owns a job for you. You run it from your phone.";
 
 export const viewport: Viewport = {
   width: "device-width",

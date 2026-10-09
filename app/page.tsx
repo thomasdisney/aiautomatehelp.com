@@ -1,19 +1,22 @@
 import type { Metadata } from "next";
 import { AgentSetup } from "@/app/components/agent-setup";
 import { BackAtWork } from "@/app/components/back-at-work";
+import { CopyCommand } from "@/app/components/copy-command";
 import { AGENT_URL } from "@/lib/site-config";
 
 export const metadata: Metadata = {
   title: { absolute: "notjunk.si: put a spare computer to work" },
   description:
-    "notjunk.si turns a spare computer into a coding agent you run from your phone. You approve every change.",
+    "notjunk.si turns an old computer into an always-on agent that owns a job for you. You run it from your phone.",
   alternates: { canonical: "/" },
 };
+
+const INSTALL = `curl -fsSL ${AGENT_URL}/install | SETUP_CODE=your-code bash`;
 
 const MACHINES = [
   {
     name: "Old laptop",
-    text: "The one with the tired battery and the missing key. Plug it in and let it run.",
+    text: "The one with the tired battery and the missing key. Plug it in and leave it on.",
   },
   {
     name: "Windows 10 PC",
@@ -34,19 +37,62 @@ export default function Home() {
             Put a spare computer to work.
           </h1>
           <p className="lede">
-            Turn an old laptop into a coding agent you run from your phone. It works through your list,
-            opens pull requests, and waits for your OK.
+            notjunk.si turns an old computer into an agent that stays on and owns a job for you, like
+            running your movie server. It handles the whole thing and checks with you on your phone
+            before anything big.
           </p>
-
-          <div className="connect" id="connect">
-            <h2 className="connect-title">Connect your agent</h2>
-            <p className="connect-sub">Type the code your computer showed at the end of setup.</p>
-            <AgentSetup />
-            <p className="connect-note">First time? You&apos;ll pick a password after you connect.</p>
+          <div className="hero-actions">
+            <a className="btn" href="#get-started">
+              Get started
+            </a>
+            <a className="text-link" href={`${AGENT_URL}/`}>
+              Open the app
+            </a>
           </div>
         </div>
         <div className="hero-art">
           <BackAtWork />
+        </div>
+      </section>
+
+      <section className="steps" id="get-started" aria-labelledby="steps-title">
+        <div className="wrap">
+          <h2 id="steps-title" className="section-title">
+            Get started
+          </h2>
+          <p className="section-lede">About 15 minutes. You need an iPhone and the old computer, both online.</p>
+          <ol className="step-list">
+            <li>
+              <h3>Put the app on your iPhone</h3>
+              <p>
+                Open <a href={`${AGENT_URL}/`}>app.notjunk.si</a> in Safari. Tap <strong>Share</strong>, then{" "}
+                <strong>Add to Home Screen</strong>, and open it from there.
+              </p>
+            </li>
+            <li>
+              <h3>Choose your passphrase</h3>
+              <p>
+                In the app, choose <strong>Set up</strong> and pick a passphrase. Then tap{" "}
+                <strong>Pair a device</strong> for a one-time setup code.
+              </p>
+              <p className="step-warn">
+                One passphrase unlocks your account and encrypts everything.{" "}
+                <strong>If you lose it, your data can&apos;t be recovered, not even by us.</strong>
+              </p>
+            </li>
+            <li>
+              <h3>Install on the old computer</h3>
+              <p>Open a terminal on it and run this, with your setup code in place of your-code:</p>
+              <CopyCommand command={INSTALL} />
+              <p>
+                When it finishes, your phone moves on by itself. The setup code works once and expires
+                after 15 minutes.
+              </p>
+            </li>
+          </ol>
+          <p className="steps-more">
+            Stuck somewhere? <a href="/help#set-up-and-pair-a-computer">Read the setup help</a>.
+          </p>
         </div>
       </section>
 
@@ -56,8 +102,8 @@ export default function Home() {
             The computer you stopped using will do.
           </h2>
           <p className="section-lede">
-            It runs on lightweight Linux, with no screen or keyboard needed. Once it&apos;s set up, it stays
-            on in a corner and you use it from your phone.
+            It runs on lightweight Linux, with no screen or keyboard. Give it a job, like a movie server for
+            your own films, and it looks after that job day and night.
           </p>
           <ul className="machine-list">
             {MACHINES.map((m) => (
@@ -70,36 +116,14 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="steps wrap" aria-labelledby="steps-title">
-        <h2 id="steps-title" className="section-title">
-          Setting one up
-        </h2>
-        <ol className="step-list">
-          <li>
-            <h3>On your phone</h3>
-            <p>
-              Open <a href={`${AGENT_URL}/`}>the app</a>, choose <strong>Set up</strong> and pick a password. Then tap{" "}
-              <strong>Pair a device</strong> to get a one-time setup code.
-            </p>
-          </li>
-          <li>
-            <h3>On the old computer</h3>
-            <p>
-              Run the installer and paste the setup code. When it finishes, it prints a
-              pairing code like <span className="code">bright-oak</span>.
-            </p>
-          </li>
-          <li>
-            <h3>Back on your phone</h3>
-            <p>
-              The app moves on by itself when the computer comes online. On iPhone, tap{" "}
-              <strong>Share</strong>, then <strong>Add to Home Screen</strong> to keep it handy.
-            </p>
-          </li>
-        </ol>
-        <p className="steps-more">
-          Stuck somewhere? <a href="/help#set-up-and-pair-a-computer">Read the setup help</a>.
-        </p>
+      <section className="returning wrap" aria-labelledby="connect-title">
+        <div className="connect" id="connect">
+          <h2 id="connect-title" className="connect-title">
+            Already set up?
+          </h2>
+          <p className="connect-sub">Type the pairing code your computer printed to go straight to it.</p>
+          <AgentSetup />
+        </div>
       </section>
     </>
   );

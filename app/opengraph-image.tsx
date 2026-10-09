@@ -42,7 +42,7 @@ export default function OpenGraphImage() {
             opacity: 0.75,
           }}
         >
-          A coding agent you run from your phone.
+          Old computers, back at work. Run from your phone.
         </div>
         <div
           style={{

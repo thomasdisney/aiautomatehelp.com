@@ -382,13 +382,14 @@ a.inline-flex {
 }
 .work-row {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.5em;
   padding: 0.55em 0;
   border-bottom: 1px solid #c9d1cb;
 }
 .work-dot {
   flex: none;
+  margin-top: 0.3em;
   width: 0.7em;
   height: 0.7em;
   border-radius: 50%;
@@ -400,6 +401,8 @@ a.inline-flex {
   font-weight: 700;
 }
 .work-state {
+  display: block;
+  font-weight: 400;
   color: var(--muted);
 }
 .work-card {
@@ -520,19 +523,90 @@ a.inline-flex {
 .steps {
   padding-block: 3.5rem 4.5rem;
 }
+.step-list li > :not(h3):not(:first-child) {
+  grid-column: 2;
+}
+.step-warn {
+  margin-top: 0.75rem;
+  padding: 0.6rem 0.85rem;
+  border-left: 4px solid var(--yellow);
+  background: var(--liner);
+}
+.cmd {
+  margin-top: 0.75rem;
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  border: 2px solid var(--graphite);
+  border-radius: 3px;
+  background: var(--graphite);
+  color: var(--liner);
+}
+.cmd-text {
+  flex: 1;
+  min-width: 0;
+  padding: 0.7rem 0.85rem;
+  font-family: var(--font-code);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  overflow-wrap: break-word;
+  user-select: all;
+}
+@media (max-width: 34rem) {
+  .cmd {
+    flex-wrap: wrap;
+  }
+  .cmd .cmd-btn {
+    flex: 1 0 100%;
+    min-height: 44px;
+  }
+}
+.cmd-btn {
+  flex: none;
+  padding: 0 1.1rem;
+  background: var(--tape);
+  color: #fff;
+  border: 0;
+  font-weight: 700;
+  cursor: pointer;
+}
+.cmd-btn:hover {
+  background: var(--tape-dark);
+}
+.hero-actions {
+  margin-top: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.5rem;
+}
+.hero-actions .btn {
+  text-decoration: none;
+  font-size: var(--step-0);
+  padding-inline: 1.6rem;
+}
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  color: var(--tape);
+  font-weight: 700;
+  text-underline-offset: 0.2em;
+}
+.returning {
+  padding-block: 3.5rem 4.5rem;
+}
+.returning .connect {
+  margin-top: 0;
+}
 .step-list {
   list-style: none;
   counter-reset: step;
   margin: 2.25rem 0 0;
   padding: 0;
   display: grid;
-  gap: 2rem;
-}
-@media (min-width: 760px) {
-  .step-list {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 2.5rem;
-  }
+  gap: 2.25rem;
+  max-width: 44rem;
 }
 .step-list li {
   counter-increment: step;
@@ -558,7 +632,7 @@ a.inline-flex {
 }
 .step-list p {
   margin-top: 0.4rem;
-  max-width: 34ch;
+  max-width: 52ch;
 }
 .steps-more {
   margin-top: 2.5rem;

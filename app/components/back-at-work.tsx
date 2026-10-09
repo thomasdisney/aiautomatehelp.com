@@ -5,7 +5,11 @@
 // goes online at the same moment (globals.css, .work-*). Reduced motion shows
 // the finished state.
 
-const MACHINES = ["Old laptop", "Windows 10 PC", "Chromebook"] as const;
+const MACHINES = [
+  { name: "Old laptop", job: "Movie server" },
+  { name: "Windows 10 PC", job: "Photo backup" },
+  { name: "Chromebook", job: "Home network watch" },
+] as const;
 
 function Tape({ x, y, w, text }: { x: number; y: number; w: number; text: string }) {
   return (
@@ -36,7 +40,7 @@ export function BackAtWork() {
     <figure
       className="work"
       role="img"
-      aria-label="An old laptop, a Windows 10 PC and a Chromebook on a desk with their power lights on. Beside them, a phone lists all three as online, and the old laptop is waiting for your OK."
+      aria-label="An old laptop, a Windows 10 PC and a Chromebook on a desk with their power lights on. Beside them, a phone lists the job each one owns, and the old laptop is asking for your OK before it adds movies."
     >
       <div className="work-inner">
       <svg className="work-desk" viewBox="0 96 440 316" aria-hidden="true" focusable="false">
@@ -91,16 +95,18 @@ export function BackAtWork() {
         <div className="work-screen">
           <p className="work-phone-title">Your computers</p>
           <ul className="work-rows">
-            {MACHINES.map((name, i) => (
-              <li key={name} className={`work-row work-row-${i + 1}`}>
+            {MACHINES.map((m, i) => (
+              <li key={m.name} className={`work-row work-row-${i + 1}`}>
                 <span className="work-dot" />
-                <span className="work-name">{name}</span>
-                <span className="work-state">Online</span>
+                <span className="work-name">
+                  {m.name}
+                  <span className="work-state">{m.job}</span>
+                </span>
               </li>
             ))}
           </ul>
           <div className="work-card">
-            <p>Old laptop is waiting for your OK.</p>
+            <p>Old laptop wants your OK to add 12 movies.</p>
             <span className="work-btn">Review</span>
           </div>
         </div>

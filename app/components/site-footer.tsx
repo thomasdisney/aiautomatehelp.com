@@ -6,7 +6,7 @@ export function SiteFooter() {
       <div className="wrap site-footer-row">
         <div className="site-footer-brand">
           <p className="site-footer-name">notjunk.si</p>
-          <p className="site-footer-tag">A coding agent on a computer you own. You approve every change.</p>
+          <p className="site-footer-tag">Old computers, back at work. You run them from your phone.</p>
         </div>
         <nav className="site-footer-nav" aria-label="Site">
           <a href={`${AGENT_URL}/`}>Open the app</a>
