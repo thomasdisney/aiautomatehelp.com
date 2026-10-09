@@ -7,10 +7,9 @@ export default async function NotFound() {
   await connection();
   return (
     <article className="mx-auto max-w-3xl px-5 py-16 sm:py-24">
-      <p className="text-sm font-medium uppercase tracking-[0.18em] text-ink/50">404</p>
-      <h1 className="font-serif mt-4 text-pretty text-4xl text-ink">Page not found</h1>
+      <h1 className="font-serif text-pretty text-4xl text-ink">Page not found</h1>
       <p className="mt-4 max-w-xl leading-relaxed text-ink/70">
-        That URL is not on this site. Head home to connect your agent.
+        There’s nothing at this address.
       </p>
       <div className="mt-8">
         <Link

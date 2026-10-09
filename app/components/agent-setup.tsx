@@ -1,8 +1,8 @@
 "use client";
 
 import { FormEvent, useRef, useState } from "react";
+import { AGENT_URL } from "@/lib/site-config";
 
-const AGENT_URL = "https://agent.aiautomatehelp.com";
 const CODE_RE = /^[a-z0-9-]{4,64}$/;
 const HINT_ID = "agent-code-hint";
 const ERROR_ID = "agent-code-error";
@@ -23,7 +23,7 @@ export function AgentSetup() {
     e.preventDefault();
     const c = code.trim().toLowerCase();
     if (!CODE_RE.test(c)) {
-      fail("Enter the code from your agent setup (letters, numbers, hyphens).");
+      fail("That doesn’t look like a code. Use lowercase letters, numbers, and hyphens.");
       return;
     }
     setBusy(true);
@@ -41,10 +41,10 @@ export function AgentSetup() {
       };
       if (!json.ok) {
         if (json.code === "not_found") {
-          fail("That code is not active. Check the printout from setup and try again.");
+          fail("We couldn’t find that code. Check what your computer printed and try again.");
           return;
         }
-        fail("Enter the code from your agent setup (letters, numbers, hyphens).");
+        fail("That doesn’t look like a code. Use lowercase letters, numbers, and hyphens.");
         return;
       }
       window.location.href = json.href ?? `${AGENT_URL}/${encodeURIComponent(c)}`;
@@ -79,7 +79,7 @@ export function AgentSetup() {
           setCode(e.target.value);
           setError("");
         }}
-        placeholder="e.g. bright-oak…"
+        placeholder="bright-oak"
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? `${HINT_ID} ${ERROR_ID}` : HINT_ID}
         className="min-h-11 flex-1 rounded-md border border-ink/20 bg-paper px-3 py-2.5 font-mono text-base text-ink placeholder:text-ink/40 focus:border-ink/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
@@ -92,9 +92,8 @@ export function AgentSetup() {
         {busy ? "Checking…" : "Connect"}
       </button>
       <p id={HINT_ID} className="w-full text-xs leading-relaxed text-ink/50">
-        Format matches the setup printout: lowercase letters, numbers, hyphens (e.g.{" "}
-        <span className="font-mono">bright-oak</span>). How to get your code: run setup on the
-        spare computer — it prints the pairing code there.
+        Your computer prints this code when setup finishes. It looks like{" "}
+        <span className="font-mono">bright-oak</span>.
       </p>
       {error ? (
         <p id={ERROR_ID} className="w-full text-sm text-red-700" role="alert" aria-live="polite">

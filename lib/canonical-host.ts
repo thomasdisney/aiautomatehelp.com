@@ -1,14 +1,37 @@
-const APEX_HOST = "aiautomatehelp.com";
-const CANONICAL_HOST = "www.aiautomatehelp.com";
+// Host canonicalization for the landing site.
+//
+// Requests on an alias host are sent to the canonical host with the same path
+// and query (308, so a POST stays a POST). /api/* is never redirected: it is
+// answered on every host so a page or client that still talks to an old host
+// keeps working.
+//
+// aiautomatehelp.com, www.aiautomatehelp.com and www.notjunk.si -> notjunk.si.
+// The canonical host itself never redirects, so notjunk.si can't loop. Hosts
+// come from lib/site-config.ts (env overrides). Vercel's project domain
+// redirects can do the same job at the edge; this works without them.
 
-/** Apex requests go to the canonical www host, always over https. */
-export function canonicalHostRedirect(hostHeader: unknown, url: URL): URL | null {
+export type HostConfig = { canonicalHost: string; aliasHosts: readonly string[] };
+
+export const DEFAULT_HOST_CONFIG: HostConfig = {
+  canonicalHost: "notjunk.si",
+  aliasHosts: ["www.notjunk.si", "aiautomatehelp.com", "www.aiautomatehelp.com"],
+};
+
+/** Alias-host requests go to the canonical host, always over https. */
+export function canonicalHostRedirect(
+  hostHeader: unknown,
+  url: URL,
+  config: HostConfig = DEFAULT_HOST_CONFIG,
+): URL | null {
   if (typeof hostHeader !== "string") return null;
   const host = hostHeader.split(":")[0].trim().toLowerCase();
-  if (host !== APEX_HOST) return null;
+  const canonical = config.canonicalHost.toLowerCase();
+  if (!host || host === canonical) return null;
+  if (!config.aliasHosts.map((h) => h.toLowerCase()).includes(host)) return null;
+  if (url.pathname === "/api" || url.pathname.startsWith("/api/")) return null;
   const next = new URL(url.href);
   next.protocol = "https:";
-  next.hostname = CANONICAL_HOST;
+  next.hostname = canonical;
   next.port = "";
   return next;
 }
