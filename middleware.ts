@@ -6,7 +6,25 @@ import { SITE_ALIAS_HOSTS, SITE_HOST } from "@/lib/site-config";
 
 const HOSTS = { canonicalHost: SITE_HOST, aliasHosts: SITE_ALIAS_HOSTS };
 
+/** Old product hosts; stop serving/redirecting once they are detached from Vercel. */
+const RETIRED_HOSTS = new Set(["aiautomatehelp.com", "www.aiautomatehelp.com"]);
+
+function retiredHostResponse(hostHeader: string | null): NextResponse | null {
+  if (!hostHeader) return null;
+  const host = hostHeader.split(":")[0].trim().toLowerCase();
+  if (!RETIRED_HOSTS.has(host)) return null;
+  return new NextResponse("Gone", {
+    status: 410,
+    headers: {
+      "cache-control": "no-store",
+      "content-type": "text/plain; charset=utf-8",
+    },
+  });
+}
+
 export function middleware(request: NextRequest) {
+  const retired = retiredHostResponse(request.headers.get("host"));
+  if (retired) return retired;
   const canonical = canonicalHostRedirect(request.headers.get("host"), request.nextUrl, HOSTS);
   if (canonical) {
     const redirect = NextResponse.redirect(canonical, 308);

@@ -25,3 +25,13 @@ curl -s https://notjunk.si/robots.txt                             # Host: notjun
 ```
 
 `vercel.json` turns off Vercel deploys for the `chore/notjunk-cutover` branch only.
+
+## Clean product mode (2026-10-09)
+
+`aiautomatehelp.com` and `www.aiautomatehelp.com` are no longer alias hosts.
+Only `www.notjunk.si` 308s to `notjunk.si`. Do not re-add the old domains.
+Redirects lived in `lib/site-config.ts` / middleware (not `vercel.json`, which only gates git deploys).
+Middleware returns 410 for the retired hosts until they are detached from the Vercel project.
+`agent.aiautomatehelp.com` is still attached to the companion project until the
+a1 agent/relay move finishes; remove it after that job lands.
+
