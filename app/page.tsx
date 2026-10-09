@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { AgentSetup } from "@/app/components/agent-setup";
 import { BackAtWork } from "@/app/components/back-at-work";
 import { AGENT_URL } from "@/lib/site-config";
 
@@ -39,10 +38,13 @@ export default function Home() {
           </p>
 
           <div className="connect" id="connect">
-            <h2 className="connect-title">Connect your agent</h2>
-            <p className="connect-sub">Type the code your computer showed at the end of setup.</p>
-            <AgentSetup />
-            <p className="connect-note">First time? You&apos;ll pick a password after you connect.</p>
+            <h2 className="connect-title">Already set up?</h2>
+            <p className="connect-sub">Enter your code in the app to unlock your account.</p>
+            <p className="connect-actions">
+              <a className="btn" href={`${AGENT_URL}/#connect-agent`}>
+                Enter your code
+              </a>
+            </p>
           </div>
         </div>
         <div className="hero-art">
@@ -78,15 +80,14 @@ export default function Home() {
           <li>
             <h3>On your phone</h3>
             <p>
-              Open <a href={`${AGENT_URL}/`}>the app</a>, choose <strong>Set up</strong> and pick a password. Then tap{" "}
-              <strong>Pair a device</strong> to get a one-time setup code.
+              Open <a href={`${AGENT_URL}/`}>the app</a>, choose <strong>Set up</strong> and pick a
+              passphrase. Then tap <strong>Pair a device</strong> to get a one-time setup code.
             </p>
           </li>
           <li>
             <h3>On the old computer</h3>
             <p>
-              Run the installer and paste the setup code. When it finishes, it prints a
-              pairing code like <span className="code">bright-oak</span>.
+              Run the installer and paste the setup code. When it finishes, the computer pairs itself.
             </p>
           </li>
           <li>

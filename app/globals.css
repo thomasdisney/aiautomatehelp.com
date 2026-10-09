@@ -282,6 +282,10 @@ a.inline-flex {
   font-weight: 700;
   font-size: 1.05rem;
   cursor: pointer;
+  text-decoration: none;
+}
+.connect-actions {
+  margin-top: 1.25rem;
 }
 .btn:hover {
   background: var(--tape-dark);
