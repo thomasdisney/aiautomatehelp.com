@@ -1,6 +1,6 @@
-# Junk Drawer Agents — landing
+# notjunk.si — landing
 
-Landing site and pairing front door for Junk Drawer Agents. Today it is served
+Landing site and pairing front door for notjunk.si. Today it is served
 at [www.aiautomatehelp.com](https://www.aiautomatehelp.com/); the app lives at
 [agent.aiautomatehelp.com](https://agent.aiautomatehelp.com/). Both are moving
 to **notjunk.si** (landing) and **app.notjunk.si** (app). See

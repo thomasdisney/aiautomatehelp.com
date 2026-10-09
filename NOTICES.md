@@ -2,13 +2,12 @@
 
 ## Fonts
 
-The site self-hosts two typefaces from `public/fonts/`. They are served from this
+The site self-hosts one typeface from `public/fonts/`. It is served from this
 site only; no font, script or stylesheet is loaded from any other host.
 
 | File | Typeface | License | Copyright |
 |---|---|---|---|
-| `public/fonts/bricolage-grotesque-display.woff2` | Bricolage Grotesque (variable, subset: Basic Latin plus typographic quotes and dashes; weights 700-800, widths 75-90%, optical size fixed at 72) | SIL Open Font License 1.1, full text in `public/fonts/OFL-BricolageGrotesque.txt` | Copyright 2022 The Bricolage Grotesque Project Authors (https://github.com/ateliertriay/bricolage) |
-| `public/fonts/atkinson-hyperlegible-400.woff2`, `public/fonts/atkinson-hyperlegible-700.woff2` | Atkinson Hyperlegible (subset: Latin) | SIL Open Font License 1.1, full text in `public/fonts/OFL-AtkinsonHyperlegible.txt` | Copyright 2020 Braille Institute of America, Inc. |
+| `public/fonts/atkinson-hyperlegible-next.woff2` | Atkinson Hyperlegible Next (variable, subset: Latin; weights 400-800, upright) | SIL Open Font License 1.1, full text in `public/fonts/OFL-AtkinsonHyperlegibleNext.txt` | Copyright 2020-2024 The Atkinson Hyperlegible Next Project Authors (https://github.com/googlefonts/atkinson-hyperlegible-next) |
 
-Neither font declares a Reserved Font Name. The files were subset and converted
-to WOFF2 with fontTools from the upstream releases in the google/fonts repository.
+The font declares no Reserved Font Name. The file was subset and converted to
+WOFF2 with fontTools from the upstream release in the google/fonts repository.

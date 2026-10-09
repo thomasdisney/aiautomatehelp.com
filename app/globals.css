@@ -1,31 +1,16 @@
 @import "tailwindcss";
 
-/* Self-hosted fonts (SIL Open Font License 1.1, see NOTICES.md and public/fonts/). */
+/* Self-hosted font (SIL Open Font License 1.1, see NOTICES.md and public/fonts/). */
 @font-face {
-  font-family: "Bricolage Grotesque";
-  src: url("/fonts/bricolage-grotesque-display.woff2") format("woff2");
-  font-weight: 700 800;
-  font-stretch: 75% 90%;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Atkinson Hyperlegible";
-  src: url("/fonts/atkinson-hyperlegible-400.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Atkinson Hyperlegible";
-  src: url("/fonts/atkinson-hyperlegible-700.woff2") format("woff2");
-  font-weight: 700;
+  font-family: "Atkinson Hyperlegible Next";
+  src: url("/fonts/atkinson-hyperlegible-next.woff2") format("woff2");
+  font-weight: 400 800;
   font-style: normal;
   font-display: swap;
 }
 
 :root {
-  /* Palette: drawer liner and label-maker tape. All text pairs are WCAG AA (4.5:1+). */
+  /* Palette: formica, graphite and label-maker tape. All text pairs are WCAG AA (4.5:1+). */
   --formica: #e3e8e2;
   --liner: #f7f9f5;
   --graphite: #1d2a30;
@@ -41,12 +26,13 @@
   --accent: var(--tape);
   --accent-hover: var(--tape-dark);
 
-  --font-display: "Bricolage Grotesque", "Arial Narrow", system-ui, sans-serif;
-  --font-body: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  /* One family for everything: big x-height, open shapes, normal width. */
+  --font-body: "Atkinson Hyperlegible Next", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: var(--font-body);
   --font-code: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
-  /* Type scale, 1.25 from an 18px body. */
-  --step--1: 0.9rem;
+  /* Type scale, 1.25 from an 18px body. Smallest text is 17px. */
+  --step--1: 1.0625rem;
   --step-0: 1.125rem;
   --step-1: 1.406rem;
   --step-2: 1.758rem;
@@ -76,7 +62,6 @@ body {
 
 .font-serif {
   font-family: var(--font-display);
-  font-stretch: 85%;
   font-weight: 700;
 }
 
@@ -149,12 +134,11 @@ a.inline-flex {
 /* Label-maker tape: the one recurring brand device. */
 .tape {
   display: inline-block;
-  font-size: 1rem;
+  font-size: var(--step--1);
   background: var(--tape);
   color: #fff;
   font-family: var(--font-display);
   font-weight: 700;
-  font-stretch: 90%;
   line-height: 1;
   letter-spacing: 0.04em;
   padding: 0.5em 0.75em 0.45em;
@@ -181,7 +165,7 @@ a.inline-flex {
   text-decoration: none;
 }
 .tape-brand {
-  font-size: 1rem;
+  font-size: var(--step--1);
   transform: rotate(-1.5deg);
 }
 .site-header-nav a {
@@ -215,13 +199,12 @@ a.inline-flex {
 .display {
   font-family: var(--font-display);
   font-weight: 800;
-  font-stretch: 78%;
-  font-size: clamp(3rem, 2rem + 6vw, 6.25rem);
-  line-height: 0.9;
-  letter-spacing: -0.01em;
+  font-size: clamp(2.6rem, 1.9rem + 3.6vw, 4.5rem);
+  line-height: 1.02;
+  letter-spacing: -0.015em;
   text-wrap: balance;
   margin: 0;
-  max-width: 9ch;
+  max-width: 12ch;
 }
 .lede {
   margin-top: 1.5rem;
@@ -231,7 +214,7 @@ a.inline-flex {
   color: var(--muted);
 }
 
-/* Connect panel: one raised surface, squared like a drawer divider. */
+/* Connect panel: the one raised surface on the page. */
 .connect {
   margin-top: 2.25rem;
   max-width: 32rem;
@@ -248,7 +231,6 @@ a.inline-flex {
 .connect-title {
   font-family: var(--font-display);
   font-weight: 700;
-  font-stretch: 85%;
   font-size: var(--step-2);
   line-height: 1.1;
   margin: 0;
@@ -256,7 +238,7 @@ a.inline-flex {
 .connect-sub {
   margin-top: 0.35rem;
   color: var(--muted);
-  font-size: 1rem;
+  font-size: var(--step--1);
 }
 .connect-note {
   margin-top: 1rem;
@@ -315,7 +297,7 @@ a.inline-flex {
 }
 .code-error {
   width: 100%;
-  font-size: 1rem;
+  font-size: var(--step--1);
   color: #a3261b;
   font-weight: 700;
 }
@@ -327,39 +309,143 @@ a.inline-flex {
   border-radius: 3px;
 }
 
-/* The drawer (signature). */
+/* Signature: retired computers back at work, and the phone that runs them. */
 .hero-art {
-  max-width: 38rem;
+  max-width: 40rem;
   width: 100%;
   justify-self: center;
 }
-.drawer {
+.work {
+  margin: 0;
+  container-type: inline-size;
+}
+.work-inner {
+  display: flex;
+  align-items: flex-end;
+}
+.work-desk {
   display: block;
-  width: 100%;
+  flex: 0 0 60%;
+  width: 60%;
   height: auto;
 }
-.drawer-tape text {
-  font-family: var(--font-display);
+.work-tape text {
+  font-family: var(--font-body);
   font-weight: 700;
-  font-stretch: 90%;
   font-size: 18px;
-  letter-spacing: 0.03em;
+  letter-spacing: 0;
 }
+@container (max-width: 30rem) {
+  .work-inner {
+    flex-wrap: wrap;
+  }
+  .work-desk {
+    flex-basis: 100%;
+    width: 100%;
+  }
+  .work .work-phone {
+    margin: -4% 0 0 auto;
+    flex-basis: 66%;
+  }
+  .work .work-screen {
+    font-size: max(14px, 4.2cqi);
+  }
+}
+
+/* The phone is real text, sized to the figure so it scales with it. */
+.work-phone {
+  position: relative;
+  flex: 0 0 42%;
+  margin-left: -2%;
+  padding: 2.4cqi 1.8cqi;
+  background: var(--graphite);
+  border-radius: 6cqi;
+  box-shadow: 0 0 0 2px var(--graphite);
+}
+.work-screen {
+  background: var(--liner);
+  border-radius: 4.4cqi;
+  padding: 5cqi 3.6cqi 4cqi;
+  font-size: max(12px, 2.9cqi);
+  line-height: 1.35;
+  color: var(--graphite);
+}
+.work-phone-title {
+  font-weight: 800;
+  font-size: 1.3em;
+  line-height: 1.15;
+}
+.work-rows {
+  list-style: none;
+  margin: 0.8em 0 0;
+  padding: 0;
+}
+.work-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0.55em 0;
+  border-bottom: 1px solid #c9d1cb;
+}
+.work-dot {
+  flex: none;
+  width: 0.7em;
+  height: 0.7em;
+  border-radius: 50%;
+  background: var(--yellow);
+  box-shadow: 0 0 0 1px #b38d10;
+}
+.work-name {
+  flex: 1;
+  font-weight: 700;
+}
+.work-state {
+  color: var(--muted);
+}
+.work-card {
+  margin-top: 1em;
+  padding: 0.75em;
+  border: 2px solid var(--graphite);
+  border-radius: 3px;
+  background: #fff;
+}
+.work-btn {
+  display: inline-block;
+  margin-top: 0.6em;
+  padding: 0.35em 0.9em;
+  background: var(--tape);
+  color: #fff;
+  font-weight: 700;
+  border-radius: 3px;
+}
+
 @media (prefers-reduced-motion: no-preference) {
-  .drawer-slide {
-    animation: drawer-open 900ms cubic-bezier(0.2, 0.8, 0.2, 1) 150ms both;
+  .work-led {
+    animation: led-on 300ms ease-out both;
   }
-  .drawer-led,
-  .drawer-led-glow {
-    animation: led-on 400ms ease-out 1100ms both;
+  .work-row .work-dot {
+    animation: dot-on 300ms ease-out both;
   }
-}
-@keyframes drawer-open {
-  from {
-    transform: translateY(-44px);
+  .work-row .work-state {
+    animation: state-on 300ms ease-out both;
   }
-  to {
-    transform: translateY(0);
+  .work-led-1,
+  .work-row-1 .work-dot,
+  .work-row-1 .work-state {
+    animation-delay: 500ms;
+  }
+  .work-led-2,
+  .work-row-2 .work-dot,
+  .work-row-2 .work-state {
+    animation-delay: 900ms;
+  }
+  .work-led-3,
+  .work-row-3 .work-dot,
+  .work-row-3 .work-state {
+    animation-delay: 1300ms;
+  }
+  .work-card {
+    animation: card-in 400ms ease-out 1900ms both;
   }
 }
 @keyframes led-on {
@@ -370,12 +456,28 @@ a.inline-flex {
     opacity: 1;
   }
 }
+@keyframes dot-on {
+  from {
+    background: #c9d1cb;
+    box-shadow: 0 0 0 1px #9aa5a0;
+  }
+}
+@keyframes state-on {
+  from {
+    opacity: 0.35;
+  }
+}
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5em);
+  }
+}
 
 /* Sections below the hero */
 .section-title {
   font-family: var(--font-display);
   font-weight: 800;
-  font-stretch: 80%;
   font-size: clamp(2rem, 1.4rem + 2.4vw, 3rem);
   line-height: 1;
   margin: 0;
@@ -443,7 +545,6 @@ a.inline-flex {
   grid-row: span 2;
   font-family: var(--font-display);
   font-weight: 800;
-  font-stretch: 75%;
   font-size: 3.25rem;
   line-height: 0.85;
   color: var(--tape);
@@ -451,7 +552,6 @@ a.inline-flex {
 .step-list h3 {
   font-family: var(--font-display);
   font-weight: 700;
-  font-stretch: 88%;
   font-size: var(--step-1);
   line-height: 1.15;
   margin: 0;
@@ -491,13 +591,12 @@ a.inline-flex {
 .site-footer-name {
   font-family: var(--font-display);
   font-weight: 700;
-  font-stretch: 85%;
   font-size: var(--step-1);
 }
 .site-footer-tag {
   margin-top: 0.25rem;
   color: #b8c3c6;
-  font-size: 1rem;
+  font-size: var(--step--1);
   max-width: 36rem;
 }
 .site-footer-nav {
@@ -548,7 +647,6 @@ a.inline-flex {
   margin-bottom: 1.25rem;
   font-family: var(--font-display);
   font-weight: 800;
-  font-stretch: 78%;
   font-size: clamp(2.75rem, 2rem + 3vw, 4rem);
   line-height: 0.95;
 }
@@ -558,7 +656,6 @@ a.inline-flex {
   border-top: 2px solid var(--graphite);
   font-family: var(--font-display);
   font-weight: 700;
-  font-stretch: 85%;
   font-size: var(--step-3);
   line-height: 1.05;
   scroll-margin-top: 1.5rem;

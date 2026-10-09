@@ -7,7 +7,7 @@ import "./globals.css";
 // Fonts are self-hosted from /public/fonts (OFL, see NOTICES.md). No web-font
 // download from Google or any other host.
 const description =
-  "Junk Drawer Agents turns a spare computer into a coding agent you run from your phone. You approve every change.";
+  "notjunk.si turns a spare computer into a coding agent you run from your phone. You approve every change.";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -19,18 +19,18 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Junk Drawer Agents",
-    template: "%s | Junk Drawer Agents",
+    default: "notjunk.si",
+    template: "%s | notjunk.si",
   },
   description,
   openGraph: {
     url: "./",
-    siteName: "Junk Drawer Agents",
+    siteName: "notjunk.si",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Junk Drawer Agents",
+    title: "notjunk.si",
     description,
   },
   robots: {

@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { AgentSetup } from "@/app/components/agent-setup";
-import { JunkDrawer } from "@/app/components/junk-drawer";
+import { BackAtWork } from "@/app/components/back-at-work";
 import { AGENT_URL } from "@/lib/site-config";
 
 export const metadata: Metadata = {
-  title: { absolute: "Junk Drawer Agents: put a spare computer to work" },
+  title: { absolute: "notjunk.si: put a spare computer to work" },
   description:
-    "Junk Drawer Agents turns a spare computer into a coding agent you run from your phone. You approve every change.",
+    "notjunk.si turns a spare computer into a coding agent you run from your phone. You approve every change.",
   alternates: { canonical: "/" },
 };
 
@@ -34,8 +34,8 @@ export default function Home() {
             Put a spare computer to work.
           </h1>
           <p className="lede">
-            Junk Drawer Agents turns an old laptop into a coding agent you run from your phone. It works
-            through your list, opens pull requests, and waits for your OK.
+            Turn an old laptop into a coding agent you run from your phone. It works through your list,
+            opens pull requests, and waits for your OK.
           </p>
 
           <div className="connect" id="connect">
@@ -46,14 +46,14 @@ export default function Home() {
           </div>
         </div>
         <div className="hero-art">
-          <JunkDrawer />
+          <BackAtWork />
         </div>
       </section>
 
       <section className="machines" aria-labelledby="machines-title">
         <div className="wrap">
           <h2 id="machines-title" className="section-title">
-            The computer in your drawer will do.
+            The computer you stopped using will do.
           </h2>
           <p className="section-lede">
             It runs on lightweight Linux, with no screen or keyboard needed. Once it&apos;s set up, it stays
@@ -85,7 +85,7 @@ export default function Home() {
           <li>
             <h3>On the old computer</h3>
             <p>
-              Run the Junk Drawer Agents installer and paste the setup code. When it finishes, it prints a
+              Run the installer and paste the setup code. When it finishes, it prints a
               pairing code like <span className="code">bright-oak</span>.
             </p>
           </li>

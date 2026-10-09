@@ -4,7 +4,7 @@ import { renderMarkdown } from "@/lib/markdown";
 
 export const metadata: Metadata = {
   title: "Help",
-  description: "Help for Junk Drawer Agents: pairing, troubleshooting, billing and cancelling.",
+  description: "Help for notjunk.si: pairing, troubleshooting, billing and cancelling.",
   alternates: {
     canonical: "/help",
     types: { "text/markdown": "/help.md" },

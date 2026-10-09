@@ -4,9 +4,9 @@
 // text at https://app.notjunk.si/help and /help.md (pwa/help.md in the app
 // repo); keep the two copies identical.
 
-export const HELP_MD = `# Junk Drawer Agents help
+export const HELP_MD = `# notjunk.si help
 
-Answers to common questions about Junk Drawer Agents. This page is written for
+Answers to common questions about notjunk.si. This page is written for
 people and for AI agents helping them. The same text is available as plain
 Markdown at https://app.notjunk.si/help.md and https://notjunk.si/help.md.
 
@@ -35,7 +35,7 @@ under "Legal notices by mail".
 
 ### Use this when
 
-You are setting up Junk Drawer Agents for the first time or adding a computer.
+You are setting up notjunk.si for the first time or adding a computer.
 
 ### Facts
 
@@ -55,7 +55,7 @@ You are setting up Junk Drawer Agents for the first time or adding a computer.
 2. Type a device name (optional) and an account password.
 3. Tap **Set password**.
 4. Tap **Pair a device**. The app shows a one-time setup code.
-5. On the computer, run the Junk Drawer Agents installer and paste the setup
+5. On the computer, run the notjunk.si installer and paste the setup
    code when it asks.
 6. Keep the app open. It moves on by itself when the computer comes online.
 
@@ -260,7 +260,7 @@ You need to send a legal notice, a refund request or a privacy request.
 
 ### Facts
 
-- Junk Drawer Agents is run by Forager Station Holdings LLC, a Nevada limited
+- notjunk.si is run by Forager Station Holdings LLC, a Nevada limited
   liability company.
 - Notices go by mail to its registered agent.
 - There is no support email or phone line.
