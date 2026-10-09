@@ -39,32 +39,33 @@ You are setting up notjunk.si for the first time or adding a computer.
 
 ### Facts
 
-- One account password unlocks every computer you pair. It must be at least 8
-  characters and is case-sensitive.
-- The password is saved on your phone. It is never sent in a web address and
-  never stored on your computer.
-- Pairing uses a **one-time setup code** made by the app. It works once and
-  expires after 15 minutes.
-- When setup finishes, the computer prints a pairing code. Opening
-  https://app.notjunk.si/ followed by that code goes straight to that
-  computer.
+- One **passphrase** of 6 words unlocks your account and every computer you
+  pair. The app makes it for you on your phone. Capitals and the spaces or
+  dashes between words don't matter.
+- The passphrase is also the key that encrypts everything between your phone
+  and your computers, end to end. The relay only passes on scrambled data.
+- notjunk.si never sees your passphrase and can't reset it. **If you lose it,
+  your account and its encrypted data can't be recovered.** Write it down or
+  print the recovery sheet when the app offers it.
+- Pairing a computer needs only the install command and the same passphrase.
 
 ### Steps
 
 1. Open https://app.notjunk.si on your phone and choose **Set up**.
-2. Type a device name (optional) and an account password.
-3. Tap **Set password**.
-4. Tap **Pair a device**. The app shows a one-time setup code.
-5. On the computer, run the notjunk.si installer and paste the setup
-   code when it asks.
-6. Keep the app open. It moves on by itself when the computer comes online.
+2. Write down the 6-word passphrase the app shows, or tap **Print recovery
+   sheet**. Tick the box, then tap **Create account**.
+3. On the computer, open a terminal and run:
+   \`curl -fsSL https://app.notjunk.si/install | bash\`
+   It needs Linux or macOS with git, Node.js 22, npm and curl.
+4. Type the same passphrase when the installer asks.
+5. Keep the app open. It opens your dashboard by itself when the computer
+   comes online.
 
 ### If it still fails
 
-- "Timed out waiting for the device": run the installer again with the same
-  setup code, then reload the app. If the code has expired, tap
-  **Pair a device** for a new one.
-- "That password doesn't match the account": see "Wrong password".
+- "wrong passphrase" on the computer: see "Wrong passphrase".
+- "no notjunk.si account yet": finish **Set up** in the app first.
+- The app keeps waiting: run the install command again, then reload the app.
 
 ## Sign in on another phone
 
@@ -75,24 +76,21 @@ it moved to https://app.notjunk.si.
 
 ### Facts
 
-- Your saved password and pairing live in the browser where you set them up.
-  A new phone, a new browser or a new web address starts empty.
-- A phone that was paired at the app's earlier address keeps working there.
-  To use the new address, sign in once as below.
+- Your unlocked keys live in the browser where you signed in. A new phone, a
+  new browser or a new web address starts empty.
+- The passphrase is all you need. The app finds your computers by itself.
 
 ### Steps
 
 1. Open https://app.notjunk.si and choose **Sign in**.
-2. Type your account password and the pairing code your computer printed.
-3. Tap **Sign in**. The app opens that computer.
-4. To put the app on your home screen: on iPhone, tap **Share**, then
+2. Type your passphrase and tap **Unlock**. The app opens your computer.
+3. To put the app on your home screen: on iPhone, tap **Share**, then
    **Add to Home Screen**. On Android, use the browser menu and choose
    **Install app** or **Add to Home screen**.
 
 ### If it still fails
 
-- You don't have the pairing code: run the installer on the computer again
-  with a new setup code. It prints the code at the end.
+- "Wrong passphrase": see "Wrong passphrase".
 
 ## A computer shows offline
 
@@ -121,31 +119,34 @@ paired never comes online.
 
 ### If it still fails
 
-- Run the installer on the computer again with a new setup code from
-  **Pair a device**. Running it again is safe.
+- Run the install command on the computer again with \`NJ_REPAIR=1\` in front
+  of \`bash\`, and type your passphrase. Running it again is safe.
 
-## Wrong password
+## Wrong passphrase
 
 ### Use this when
 
-The app says "That password doesn't match the account".
+The app says "Wrong passphrase", or the installer says "wrong passphrase".
 
 ### Facts
 
-- There is one account password for all your computers. It is the one you
-  chose at **Set password**, not a GitHub or Stripe password.
-- The password is case-sensitive and at least 8 characters.
+- There is one passphrase for your account and all your computers. It is the
+  6 words the app showed at **Set up**, not a GitHub or Stripe password.
+- Capitals and the spaces or dashes between words don't matter. The words and
+  their order do.
+- A wrong passphrase unlocks nothing and changes nothing.
 
 ### Steps
 
-1. Check caps lock and type the password again.
-2. Make sure you are signing in to the account you set up.
+1. Check each word against your written copy or recovery sheet.
+2. Make sure the words are in the same order.
 3. Try once more.
 
 ### If it still fails
 
-- The password can't be recovered from the app. Paired computers keep working.
-  Setting up again makes a new account.
+- The passphrase can't be recovered or reset, by you or by notjunk.si. Without
+  it, the account's encrypted data can't be read. Setting up again makes a new
+  account and a new passphrase, and each computer must be installed again.
 
 ## Plans and billing
 
@@ -238,7 +239,7 @@ You want to see, correct or delete the personal data we hold about you.
 - Card details and the email on your receipt are held by Stripe.
 - Your agent's work (tasks, logs, code) lives in your own GitHub repositories.
   You can delete it there yourself.
-- Your saved password and pairing live in your phone's browser. Clearing the
+- Your unlocked keys and pairing live in your phone's browser. Clearing the
   site's data in the browser removes them from the phone.
 
 ### Steps
