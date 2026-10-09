@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { AgentSetup } from "@/app/components/agent-setup";
 import { BackAtWork } from "@/app/components/back-at-work";
 import { CopyCommand } from "@/app/components/copy-command";
 import { AGENT_URL } from "@/lib/site-config";
@@ -121,8 +120,12 @@ export default function Home() {
           <h2 id="connect-title" className="connect-title">
             Already set up?
           </h2>
-          <p className="connect-sub">Type the pairing code your computer printed to go straight to it.</p>
-          <AgentSetup />
+          <p className="connect-sub">Enter your code in the app to unlock your account.</p>
+          <p className="connect-actions">
+            <a className="btn" href={`${AGENT_URL}/#connect-agent`}>
+              Enter your code
+            </a>
+          </p>
         </div>
       </section>
     </>
