@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 import { SITE_HOST } from "@/lib/site-config";
 
-export const alt = "Junk Drawer Agents: put a spare computer to work";
+export const alt = "notjunk.si: put a spare computer to work";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -31,7 +31,7 @@ export default function OpenGraphImage() {
             background: "#1d4ed8",
           }}
         />
-        <div style={{ fontSize: 36, fontWeight: 700, marginBottom: 24 }}>Junk Drawer Agents</div>
+        <div style={{ fontSize: 36, fontWeight: 700, marginBottom: 24 }}>notjunk.si</div>
         <div style={{ fontSize: 72, lineHeight: 1.1, fontWeight: 700 }}>Put a spare</div>
         <div style={{ fontSize: 72, lineHeight: 1.1, fontWeight: 700 }}>computer to work.</div>
         <div

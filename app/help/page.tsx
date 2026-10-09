@@ -4,7 +4,7 @@ import { renderMarkdown } from "@/lib/markdown";
 
 export const metadata: Metadata = {
   title: "Help",
-  description: "Help for Junk Drawer Agents: pairing, troubleshooting, billing and cancelling.",
+  description: "Help for notjunk.si: pairing, troubleshooting, billing and cancelling.",
   alternates: {
     canonical: "/help",
     types: { "text/markdown": "/help.md" },
@@ -16,7 +16,7 @@ const html = renderMarkdown(HELP_MD);
 export default function HelpPage() {
   return (
     <article className="help-doc mx-auto max-w-3xl px-5 py-12 sm:py-16">
-      <p className="text-sm text-ink/60">
+      <p className="help-meta">
         Also available as plain Markdown: <a href="/help.md">/help.md</a>
       </p>
       <div dangerouslySetInnerHTML={{ __html: html }} />
