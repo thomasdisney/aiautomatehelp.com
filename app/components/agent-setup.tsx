@@ -58,7 +58,7 @@ export function AgentSetup() {
   return (
     <form
       onSubmit={(e) => void submit(e)}
-      className="mt-8 flex w-full max-w-md flex-col gap-3 sm:flex-row sm:flex-wrap"
+      className="code-form"
       noValidate
     >
       <label htmlFor="agent-code" className="sr-only">
@@ -82,21 +82,21 @@ export function AgentSetup() {
         placeholder="bright-oak"
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? `${HINT_ID} ${ERROR_ID}` : HINT_ID}
-        className="min-h-11 flex-1 rounded-md border border-ink/20 bg-paper px-3 py-2.5 font-mono text-base text-ink placeholder:text-ink/40 focus:border-ink/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
+        className="code-input"
       />
       <button
         type="submit"
         disabled={busy}
-        className="inline-flex min-h-11 items-center justify-center rounded-md bg-ink px-5 py-2.5 text-base font-medium text-paper hover:bg-ink/90 disabled:opacity-60"
+        className="btn"
       >
         {busy ? "Checking…" : "Connect"}
       </button>
-      <p id={HINT_ID} className="w-full text-xs leading-relaxed text-ink/50">
+      <p id={HINT_ID} className="code-hint">
         Your computer prints this code when setup finishes. It looks like{" "}
-        <span className="font-mono">bright-oak</span>.
+        <span className="code">bright-oak</span>.
       </p>
       {error ? (
-        <p id={ERROR_ID} className="w-full text-sm text-red-700" role="alert" aria-live="polite">
+        <p id={ERROR_ID} className="code-error" role="alert" aria-live="polite">
           {error}
         </p>
       ) : null}

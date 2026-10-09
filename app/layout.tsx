@@ -4,7 +4,8 @@ import { SiteHeader } from "@/app/components/site-header";
 import { SITE_URL } from "@/lib/site-config";
 import "./globals.css";
 
-// System fonts only: no web-font download from Google or any other host.
+// Fonts are self-hosted from /public/fonts (OFL, see NOTICES.md). No web-font
+// download from Google or any other host.
 const description =
   "Junk Drawer Agents turns a spare computer into a coding agent you run from your phone. You approve every change.";
 
@@ -12,7 +13,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#f6f1e8",
+  themeColor: "#e3e8e2",
 };
 
 export const metadata: Metadata = {
@@ -49,11 +50,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className="bg-paper font-sans text-ink antialiased"
+        className="antialiased"
       >
         <a
           href="#main"
-          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-white focus:px-3 focus:py-2"
+          className="skip-link"
         >
           Skip to content
         </a>
