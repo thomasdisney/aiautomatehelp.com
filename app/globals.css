@@ -143,8 +143,8 @@ a.inline-flex {
   letter-spacing: 0.04em;
   padding: 0.5em 0.75em 0.45em;
   border-radius: 2px;
-  border-top: 3px solid #2b57c2;
-  text-shadow: 0 1px 0 #0f2a6b;
+  border-top: 3px solid color-mix(in srgb, var(--tape) 78%, white);
+  text-shadow: 0 1px 0 color-mix(in srgb, var(--tape-dark) 75%, black);
 }
 
 /* Header */
