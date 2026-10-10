@@ -582,11 +582,9 @@ a.inline-flex {
 .site-footer-legal {
   border-top: 1px solid #3a484f;
   padding-top: 1rem;
+  padding-inline: 0;
   font-size: var(--step--1);
   color: #b8c3c6;
-}
-.site-footer-legal {
-  padding-inline: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {
