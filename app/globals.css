@@ -240,35 +240,6 @@ a.inline-flex {
   color: var(--muted);
   font-size: var(--step--1);
 }
-.connect-note {
-  margin-top: 1rem;
-  color: var(--muted);
-  font-size: var(--step--1);
-}
-
-.code-form {
-  margin-top: 1.25rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-}
-.code-input {
-  flex: 1 1 12rem;
-  min-width: 0;
-  min-height: 48px;
-  padding: 0.6rem 0.8rem;
-  background: #fff;
-  color: var(--graphite);
-  border: 2px solid var(--muted);
-  border-radius: 3px;
-  font-family: var(--font-code);
-}
-.code-input::placeholder {
-  color: #6b7579;
-}
-.code-input[aria-invalid="true"] {
-  border-color: #a3261b;
-}
 .btn {
   display: inline-flex;
   align-items: center;
@@ -293,17 +264,6 @@ a.inline-flex {
 .btn:disabled {
   opacity: 0.7;
   cursor: progress;
-}
-.code-hint {
-  width: 100%;
-  font-size: var(--step--1);
-  color: var(--muted);
-}
-.code-error {
-  width: 100%;
-  font-size: var(--step--1);
-  color: #a3261b;
-  font-weight: 700;
 }
 .code {
   font-family: var(--font-code);
