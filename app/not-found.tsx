@@ -14,7 +14,7 @@ export default async function NotFound() {
       <div className="mt-8">
         <Link
           href="/"
-          className="inline-flex min-h-11 items-center justify-center rounded-full bg-accent px-5 text-sm font-semibold text-white hover:bg-accent-hover"
+          className="btn"
         >
           Home
         </Link>
