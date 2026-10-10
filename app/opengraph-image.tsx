@@ -15,10 +15,10 @@ export default function OpenGraphImage() {
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
-          background: "#f6f1e8",
-          color: "#16202a",
+          background: "#e3e8e2",
+          color: "#1d2a30",
           padding: "80px",
-          fontFamily: "Georgia, ui-serif, serif",
+          fontFamily: 'system-ui, -apple-system, "Segoe UI", sans-serif',
         }}
       >
         <div
@@ -28,7 +28,7 @@ export default function OpenGraphImage() {
             top: 0,
             bottom: 0,
             width: 18,
-            background: "#1d4ed8",
+            background: "#1e44a0",
           }}
         />
         <div style={{ fontSize: 36, fontWeight: 700, marginBottom: 24 }}>notjunk.si</div>
