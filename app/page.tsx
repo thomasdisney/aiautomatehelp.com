@@ -80,14 +80,15 @@ export default function Home() {
           <li>
             <h3>On your phone</h3>
             <p>
-              Open <a href={`${AGENT_URL}/`}>the app</a>, choose <strong>Set up</strong> and pick a
-              passphrase. Then tap <strong>Pair a device</strong> to get a one-time setup code.
+              Open <a href={`${AGENT_URL}/`}>the app</a>, choose <strong>Set up</strong> and write
+              down the 3-word code it shows.
             </p>
           </li>
           <li>
             <h3>On the old computer</h3>
             <p>
-              Run the installer and paste the setup code. When it finishes, the computer pairs itself.
+              Run the one-line install command the app shows. Check the 6-digit number on the
+              computer matches your phone, then tap <strong>Confirm</strong>.
             </p>
           </li>
           <li>
