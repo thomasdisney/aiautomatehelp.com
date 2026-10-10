@@ -5,7 +5,7 @@
 // goes online at the same moment (globals.css, .work-*). Reduced motion shows
 // the finished state.
 
-const MACHINES = ["Old laptop", "Windows 10 PC", "Chromebook"] as const;
+import { MACHINES } from "@/lib/machines";
 
 function Tape({ x, y, w, text }: { x: number; y: number; w: number; text: string }) {
   return (
@@ -91,10 +91,10 @@ export function BackAtWork() {
         <div className="work-screen">
           <p className="work-phone-title">Your computers</p>
           <ul className="work-rows">
-            {MACHINES.map((name, i) => (
-              <li key={name} className={`work-row work-row-${i + 1}`}>
+            {MACHINES.map((m, i) => (
+              <li key={m.name} className={`work-row work-row-${i + 1}`}>
                 <span className="work-dot" />
-                <span className="work-name">{name}</span>
+                <span className="work-name">{m.name}</span>
                 <span className="work-state">Online</span>
               </li>
             ))}
