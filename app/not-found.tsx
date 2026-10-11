@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 export default async function NotFound() {
   await connection();
   return (
-    <article className="mx-auto max-w-3xl px-5 py-16 sm:py-24">
+    <article className="safe-pad-x safe-pad-bottom mx-auto max-w-3xl px-5 py-16 sm:py-24">
       <h1 className="font-serif text-pretty text-4xl text-ink">Page not found</h1>
       <p className="mt-4 max-w-xl leading-relaxed text-ink/70">
         There’s nothing at this address.
