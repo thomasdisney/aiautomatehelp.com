@@ -17,7 +17,7 @@ export default function HelpPage() {
   return (
     <article className="help-doc mx-auto max-w-3xl px-5 py-12 sm:py-16">
       <p className="help-meta">
-        Also available as plain Markdown: <a href="/help.md">/help.md</a>
+        Also available as plain Markdown: <a href="/help.md">Markdown version</a>
       </p>
       <div dangerouslySetInnerHTML={{ __html: html }} />
     </article>
