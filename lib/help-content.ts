@@ -39,10 +39,10 @@ You are setting up notjunk.si for the first time or adding a computer.
 
 ### Facts
 
-- One account password unlocks every computer you pair. It must be at least 8
-  characters and is case-sensitive.
-- The password is saved on your phone. It is never sent in a web address and
-  never stored on your computer.
+- Your **code** is a 3-word code. It unlocks your account and every computer you
+  pair. The app makes it on your phone; tap for a new one until you like it.
+  Capitals and the spaces or dashes between words don't matter.
+- notjunk.si never sees your code and can't reset it.
 - Pairing uses a **one-time setup code** made by the app. It works once and
   expires after 15 minutes.
 - When setup finishes, the computer prints a pairing code. Opening
@@ -52,8 +52,8 @@ You are setting up notjunk.si for the first time or adding a computer.
 ### Steps
 
 1. Open https://app.notjunk.si on your phone and choose **Set up**.
-2. Type a device name (optional) and an account password.
-3. Tap **Set password**.
+2. Tap for new codes until you like one, write it down (or tap **Print
+   recovery sheet**), tick the box, then tap **Create account**.
 4. Tap **Pair a device**. The app shows a one-time setup code.
 5. On the computer, run the notjunk.si installer and paste the setup
    code when it asks.
@@ -64,7 +64,7 @@ You are setting up notjunk.si for the first time or adding a computer.
 - "Timed out waiting for the device": run the installer again with the same
   setup code, then reload the app. If the code has expired, tap
   **Pair a device** for a new one.
-- "That password doesn't match the account": see "Wrong password".
+- "That code doesn't match the account": see "Wrong code".
 
 ## Sign in on another phone
 
@@ -75,15 +75,15 @@ it moved to https://app.notjunk.si.
 
 ### Facts
 
-- Your saved password and pairing live in the browser where you set them up.
-  A new phone, a new browser or a new web address starts empty.
+- Your keys live in the browser where you signed in. A new phone or browser
+  starts empty.
 - A phone that was paired at the app's earlier address keeps working there.
   To use the new address, sign in once as below.
 
 ### Steps
 
 1. Open https://app.notjunk.si and choose **Sign in**.
-2. Type your account password and the pairing code your computer printed.
+2. Type your 3-word code and tap **Unlock**. Wait while a computer sends the key.
 3. Tap **Sign in**. The app opens that computer.
 4. To put the app on your home screen: on iPhone, tap **Share**, then
    **Add to Home Screen**. On Android, use the browser menu and choose
@@ -124,27 +124,26 @@ paired never comes online.
 - Run the installer on the computer again with a new setup code from
   **Pair a device**. Running it again is safe.
 
-## Wrong password
+## Wrong code
 
 ### Use this when
 
-The app says "That password doesn't match the account".
+The app says "That code doesn't match the account".
 
 ### Facts
 
-- There is one account password for all your computers. It is the one you
-  chose at **Set password**, not a GitHub or Stripe password.
-- The password is case-sensitive and at least 8 characters.
+- A wrong code unlocks nothing.
+- Check each word against your written copy. Words and order matter.
 
 ### Steps
 
-1. Check caps lock and type the password again.
+1. Check each word against your written copy.
 2. Make sure you are signing in to the account you set up.
 3. Try once more.
 
 ### If it still fails
 
-- The password can't be recovered from the app. Paired computers keep working.
+- The code can't be recovered or reset. Paired computers keep working.
   Setting up again makes a new account.
 
 ## Plans and billing
@@ -238,7 +237,7 @@ You want to see, correct or delete the personal data we hold about you.
 - Card details and the email on your receipt are held by Stripe.
 - Your agent's work (tasks, logs, code) lives in your own GitHub repositories.
   You can delete it there yourself.
-- Your saved password and pairing live in your phone's browser. Clearing the
+- Your unlocked keys and pairing live in your phone's browser. Clearing the
   site's data in the browser removes them from the phone.
 
 ### Steps
