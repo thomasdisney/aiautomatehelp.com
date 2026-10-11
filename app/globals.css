@@ -559,7 +559,7 @@ a.inline-flex {
 }
 .site-footer-tag {
   margin-top: 0.25rem;
-  color: #b8c3c6;
+  color: color-mix(in srgb, var(--liner) 74%, transparent);
   font-size: var(--step--1);
   max-width: 36rem;
 }
@@ -580,11 +580,11 @@ a.inline-flex {
   color: var(--yellow);
 }
 .site-footer-legal {
-  border-top: 1px solid #3a484f;
+  border-top: 1px solid color-mix(in srgb, var(--graphite) 85%, var(--liner));
   padding-top: 1rem;
   padding-inline: 0;
   font-size: var(--step--1);
-  color: #b8c3c6;
+  color: color-mix(in srgb, var(--liner) 74%, transparent);
 }
 
 @media (prefers-reduced-motion: reduce) {
