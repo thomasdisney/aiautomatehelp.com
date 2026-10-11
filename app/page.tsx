@@ -73,7 +73,7 @@ export default function Home() {
           <li>
             <h3>On the old computer</h3>
             <p>
-              Run the one-line install command the app shows. Check the 6-digit number on the
+              Run the install command the app shows. Check that the 6-digit number on the
               computer matches your phone, then tap <strong>Confirm</strong>.
             </p>
           </li>
